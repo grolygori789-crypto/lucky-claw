@@ -216,60 +216,64 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
 /* Monitor ----------------------------------------------------------------- */
 .cabinet-monitor {
   position: absolute;
-  left: 44.4%;
-  top: 70.68%;
-  width: 34.2%;
-  height: 4.95%;
+  left: 44.5%;
+  top: 70.66%;
+  width: 35.6%;
+  height: 5.45%;
   transform: translate(-50%, -50%);
   overflow: hidden;
   clip-path: polygon(2.2% 5%, 97.8% 5%, 94.8% 96%, 5.2% 96%);
   border: 1px solid rgba(144,91,54,.38);
   border-radius: 8% / 29%;
-  background: linear-gradient(180deg, #fffaf2 0%, #efd2bd 62%, #d8ae8d 100%);
+  background: linear-gradient(180deg, #fffbf5 0%, #f4dbc4 54%, #dbb08a 100%);
   box-shadow:
-    0 6px 12px rgba(76,43,36,.14),
-    inset 0 2px rgba(255,255,255,.97),
-    inset 0 -4px 6px rgba(119,69,51,.11),
-    inset 0 0 0 1px rgba(255,242,227,.26);
+    0 8px 16px rgba(76,43,36,.16),
+    inset 0 2px rgba(255,255,255,.98),
+    inset 0 -5px 7px rgba(119,69,51,.13),
+    inset 0 0 0 1px rgba(255,242,227,.30),
+    0 0 16px rgba(255,220,180,.08);
 }
 
 .cabinet-monitor::before {
   content: "";
   position: absolute;
-  left: 6.2%; right: 6.2%; top: 13%; bottom: 17%;
-  border-radius: 5.5% / 28%;
-  background: linear-gradient(180deg, #71405a 0%, #4a293d 70%, #39202f 100%);
-  border: 1px solid rgba(255,214,225,.49);
+  left: 5.6%; right: 5.6%; top: 11%; bottom: 15%;
+  border-radius: 5.8% / 28%;
+  background: linear-gradient(180deg, #7b1127 0%, #5e0d22 42%, #45101c 76%, #341016 100%);
+  border: 1px solid rgba(255,223,229,.56);
   box-shadow:
-    inset 0 6px 12px rgba(20,8,14,.45),
-    0 0 12px rgba(218,124,157,.18);
+    inset 0 7px 14px rgba(16,4,7,.38),
+    inset 0 -5px 10px rgba(15,3,6,.28),
+    0 0 16px rgba(155,20,55,.18);
 }
 
 .cabinet-monitor::after {
   content: "";
   position: absolute;
   z-index: 2;
-  left: 12%; right: 12%; top: 21%; height: 17%;
+  left: 10%; right: 10%; top: 16%; height: 18%;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.24), rgba(255,240,245,.08), transparent);
 }
 
 .cabinet-monitor__screen {
   position: absolute;
   z-index: 3;
-  inset: 13% 6.2% 17%;
+  inset: 11% 5.6% 15%;
   display: grid;
   place-items: center;
-  border-radius: 5.5% / 28%;
-  color: rgba(255,249,245,.95);
-  background: radial-gradient(ellipse at 50% 21%, rgba(246,161,190,.22), transparent 46%);
+  border-radius: 5.8% / 28%;
+  color: rgba(255,249,245,.98);
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(255,192,210,.16), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
 }
 
 .cabinet-monitor__screen::before {
   content: "";
   position: absolute;
-  left: 7.5%;
-  bottom: 17%;
+  left: 7.0%;
+  bottom: 16%;
   width: 3px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -280,11 +284,13 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
 .cabinet-monitor__status {
   position: relative;
   z-index: 2;
-  font-size: clamp(6px, 1.28vw, 10px);
-  font-weight: 790;
-  letter-spacing: .22em;
-  text-indent: .22em;
-  text-shadow: 0 1px 3px rgba(31,12,21,.52);
+  font-size: clamp(10px, 2.0vw, 16px);
+  line-height: 1;
+  font-weight: 860;
+  letter-spacing: .24em;
+  text-indent: .24em;
+  text-shadow: 0 1px 3px rgba(31,12,21,.48), 0 0 12px rgba(255,223,228,.10);
+  transform: translateY(12%);
 }
 
 /* Buttons ----------------------------------------------------------------- */
@@ -320,19 +326,19 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
     radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.95) 0 8%, transparent 9%),
     radial-gradient(ellipse at 46% 34%, #ffd8e3 0 18%, #eca4bb 42%, #cc7492 73%, #99536e 100%);
   box-shadow:
-    inset -6px -7px 11px rgba(93,43,59,.19),
-    inset 5px 5px 8px rgba(255,255,255,.40),
-    0 4px 8px rgba(139,68,91,.19),
-    0 0 14px rgba(239,174,198,.11);
+    inset -7px -8px 12px rgba(93,43,59,.20),
+    inset 5px 5px 8px rgba(255,255,255,.42),
+    0 5px 10px rgba(139,68,91,.21),
+    0 0 18px rgba(239,174,198,.16);
 }
 
 .cabinet-button__icon {
   position: absolute;
   z-index: 3;
-  left: 27%;
-  top: 22%;
-  width: 46%;
-  height: 47%;
+  left: 26%;
+  top: 21%;
+  width: 48%;
+  height: 49%;
   display: grid;
   place-items: center;
   color: rgba(255,252,249,.97);
@@ -342,10 +348,10 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
 .cabinet-button__icon svg { width: 100%; height: 100%; overflow: visible; }
 
 .cabinet-button--shuffle {
-  left: 68.7%;
-  top: 70.62%;
-  width: 13.0%;
-  height: 5.2%;
+  left: 68.9%;
+  top: 70.64%;
+  width: 13.8%;
+  height: 5.55%;
 }
 
 .cabinet-button--shuffle::after {
@@ -355,10 +361,10 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
 }
 
 .cabinet-button--drop {
-  left: 84.0%;
-  top: 70.58%;
-  width: 16.0%;
-  height: 6.25%;
+  left: 84.3%;
+  top: 70.60%;
+  width: 16.9%;
+  height: 6.65%;
 }
 
 .cabinet-button--drop::before {
@@ -390,13 +396,26 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
 .cabinet-monitor__screen::after {
   content: "SYSTEM ONLINE";
   position: absolute;
-  top: 18%;
+  top: 16%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(4px, .85vw, 7px);
-  font-weight: 650;
-  letter-spacing: .18em;
-  color: rgba(255, 225, 234, .62);
+  font-size: clamp(4px, .95vw, 7px);
+  font-weight: 720;
+  letter-spacing: .20em;
+  color: rgba(255, 231, 236, .72);
+  text-shadow: 0 1px 2px rgba(30, 6, 11, .34);
+  white-space: nowrap;
+}
+
+html[lang="th"] .cabinet-monitor__screen::after {
+  content: "ระบบพร้อมใช้งาน";
+  letter-spacing: .04em;
+}
+
+html[lang="th"] .cabinet-monitor__status {
+  font-size: clamp(9px, 1.74vw, 14px);
+  letter-spacing: .03em;
+  text-indent: 0;
 }
 
 .cabinet-button--shuffle > .cabinet-button__icon::after,
