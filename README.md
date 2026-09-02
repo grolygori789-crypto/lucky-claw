@@ -85,3 +85,5 @@ Next production batch: **Build 002 — Main Menu Shell**.
 - Premium cherry READY monitor kept
 - Benedict Games acrylic splash retained
 - PWA icon and manifest foundation added
+
+- Pro fix patch: title plush moved foreground, claw reduced/raised, glass reflections strengthened, auto-pause on background added.

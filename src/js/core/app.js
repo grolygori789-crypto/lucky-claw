@@ -108,6 +108,7 @@ function unlockExperienceFromGesture() {
 }
 
 document.addEventListener('pointerdown', unlockExperienceFromGesture, { capture: true });
+document.addEventListener('touchstart', unlockExperienceFromGesture, { capture: true, passive: true });
 document.addEventListener('keydown', unlockExperienceFromGesture, { capture: true });
 
 const languageScreen = bindLanguageScreen({
@@ -131,6 +132,34 @@ document.querySelector('[data-open-language]')?.addEventListener('click', () => 
   returnScreen = 'title';
   showScreen('language');
   languageScreen.focusPreferred(state.language || detectPreferredLanguage());
+});
+
+let autoPausedByVisibility = false;
+
+function handleVisibilityPause() {
+  if (document.hidden) {
+    autoPausedByVisibility = music.isPlaying;
+    if (autoPausedByVisibility) music.pause();
+    return;
+  }
+
+  if (autoPausedByVisibility && document.body.dataset.screen === 'title' && music.musicEnabled) {
+    autoPausedByVisibility = false;
+    void music.play();
+  }
+}
+
+function handlePageHidePause() {
+  autoPausedByVisibility = music.isPlaying;
+  if (autoPausedByVisibility) music.pause();
+}
+
+document.addEventListener('visibilitychange', handleVisibilityPause);
+window.addEventListener('pagehide', handlePageHidePause);
+window.addEventListener('blur', () => {
+  if (document.body.dataset.screen !== 'title') return;
+  autoPausedByVisibility = music.isPlaying;
+  if (autoPausedByVisibility) music.pause();
 });
 
 async function bootstrap() {
