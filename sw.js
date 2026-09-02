@@ -1,13 +1,13 @@
-const CACHE_NAME = 'lucky-claw-shell-v6';
-const BUILD_ID = '001.18';
+const CACHE_NAME = 'lucky-claw-shell-v7';
+const BUILD_ID = '001.19';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './src/css/app.css?v=001.18',
-  './src/css/title-showcase.css?v=001.18',
-  './src/js/core/app.js?v=001.18',
-  './src/js/core/audio-lifecycle.js?v=001.18',
+  './src/css/app.css?v=001.19',
+  './src/css/title-showcase.css?v=001.19',
+  './src/js/core/app.js?v=001.19',
+  './src/js/core/audio-lifecycle.js?v=001.19',
   './src/js/core/pwa-install.js',
   './src/js/core/display-mode.js',
   './src/js/core/i18n.js',
@@ -19,9 +19,9 @@ const APP_SHELL = [
   './src/locales/en.json',
   './src/locales/th.json',
   './assets/machines/classic/cabinet-base.webp',
-  './assets/machines/classic/title-claw-rail.png?v=001.18',
-  './assets/machines/classic/title-claw-head.png?v=001.18',
-  './assets/plushies/title/title-plush-layer.png?v=001.18',
+  './assets/machines/classic/title-claw-rail.png?v=001.19',
+  './assets/machines/classic/title-claw-head.png?v=001.19',
+  './assets/plushies/title/title-plush-layer.png?v=001.19',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-192.png',

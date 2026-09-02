@@ -75,22 +75,28 @@ function waitForCabinet() {
 
 function unlockExperienceFromGesture(event) {
   if (event.target?.closest?.('[data-install-primary]')) return;
-  void requestImmersiveMode();
+
+  // Audio MUST be requested before fullscreen. Fullscreen can consume the
+  // browser's transient user activation and make a later audio.play() fail.
   if (document.body.dataset.screen === 'title' && music.musicEnabled && !music.isPlaying) {
+    music.prepareTitle();
     void music.play();
   }
+
+  void requestImmersiveMode();
 }
 
 document.addEventListener('pointerdown', unlockExperienceFromGesture, { capture: true });
 document.addEventListener('touchstart', unlockExperienceFromGesture, { capture: true, passive: true });
+document.addEventListener('click', unlockExperienceFromGesture, { capture: true });
 document.addEventListener('keydown', unlockExperienceFromGesture, { capture: true });
 
 const languageScreen = bindLanguageScreen({
   async onSelect(language) {
-    // This tap is a trusted gesture: request immersive mode and start the title soundtrack.
-    void requestImmersiveMode();
+    // Preserve the trusted gesture for audio first; fullscreen comes second.
     music.prepareTitle();
     void music.play();
+    void requestImmersiveMode();
 
     const applied = await applyLanguage(language);
     state = saveState({
@@ -216,7 +222,7 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.18' });
+window.LuckyClawBuild = Object.freeze({ id: '001.19' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,
