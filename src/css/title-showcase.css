@@ -1,39 +1,46 @@
 /*
-  Title cabinet presentation.
-  The controls are real production DOM geometry in a locked showcase state.
-  Gameplay reuses the same anchors later and only changes interactivity/state.
+  Lucky Claw title cabinet presentation — tall-phone production plate (841:1870).
+  Controls are DOM/CSS hardware mounted to the physical deck. They remain locked
+  on Title and are deliberately built from the same anchors gameplay will reuse.
 */
+
 .cabinet-stage__image { z-index: 0; }
 .cabinet-stage__warmth { z-index: 1; }
 .cabinet-stage__shine,
-.cabinet-stage__sparkles { z-index: 7; }
+.cabinet-stage__sparkles { z-index: 8; }
 
+/* --------------------------------------------------------------------------
+   FRONT GLASS — restrained laminated acrylic/glass, in front of the playfield.
+   It must read as real glass without lowering target readability.
+   -------------------------------------------------------------------------- */
 .cabinet-stage__glass {
   position: absolute;
-  z-index: 5;
-  left: 4.25%;
-  top: 6.35%;
-  width: 91.5%;
-  height: 58.15%;
+  z-index: 6;
+  left: 2.55%;
+  top: 4.9%;
+  width: 94.9%;
+  height: 62.5%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.26);
-  border-radius: 2.5% 2.5% 1.6% 1.6%;
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  border-radius: 2.2% 2.2% 1.1% 1.1%;
   background:
-    linear-gradient(116deg,
-      transparent 0 14%,
-      rgba(255, 255, 255, 0.105) 18%,
-      rgba(255, 255, 255, 0.025) 24%,
-      transparent 31% 67%,
-      rgba(255, 255, 255, 0.06) 72%,
-      transparent 79%),
+    linear-gradient(111deg,
+      transparent 0 12%,
+      rgba(255,255,255,.115) 16%,
+      rgba(255,255,255,.025) 23%,
+      transparent 30% 63%,
+      rgba(255,255,255,.075) 68%,
+      transparent 76%),
     linear-gradient(180deg,
-      rgba(255, 255, 255, 0.035),
-      transparent 22% 82%,
-      rgba(255, 225, 232, 0.03));
+      rgba(255,255,255,.045),
+      transparent 23% 80%,
+      rgba(255,221,230,.035));
   box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.32),
-    inset 0 -1px rgba(184, 132, 115, 0.08);
-  opacity: 0.42;
+    inset 0 1px rgba(255,255,255,.46),
+    inset 1px 0 rgba(255,255,255,.16),
+    inset -1px 0 rgba(255,255,255,.11),
+    inset 0 -1px rgba(151,101,82,.075);
+  opacity: .38;
   pointer-events: none;
   transition: opacity var(--motion-medium) var(--ease-premium);
 }
@@ -41,329 +48,457 @@
 .cabinet-stage__glass::before {
   content: "";
   position: absolute;
-  left: 3.2%;
-  top: -5%;
-  width: 15%;
-  height: 112%;
-  transform: skewX(-12deg);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
-  filter: blur(1px);
+  left: -8%;
+  top: -10%;
+  width: 29%;
+  height: 122%;
+  transform: skewX(-11deg);
+  background: linear-gradient(90deg,
+    transparent 0 26%,
+    rgba(255,255,255,.018) 31%,
+    rgba(255,255,255,.115) 48%,
+    rgba(255,255,255,.022) 67%,
+    transparent 74%);
+  filter: blur(.8px);
 }
 
 .cabinet-stage__glass::after {
   content: "";
   position: absolute;
-  inset: 2.2% 2.4%;
+  inset: 1.2% 1.1%;
   border-radius: inherit;
-  background: radial-gradient(circle at 72% 13%, rgba(255, 255, 255, 0.14), transparent 18%);
-  opacity: 0.62;
+  background:
+    radial-gradient(ellipse at 78% 10%, rgba(255,255,255,.16), transparent 20%),
+    linear-gradient(180deg, rgba(255,255,255,.055), transparent 9% 91%, rgba(255,255,255,.03));
+  box-shadow: inset 0 0 22px rgba(255,255,255,.018);
+  opacity: .74;
 }
 
+body[data-screen="title"] .cabinet-stage__glass { opacity: .52; }
+
+/* --------------------------------------------------------------------------
+   CONTROL DECK — one coherent console, not four unrelated floating widgets.
+   The trapezoid and shallow vertical scale follow the cabinet shelf perspective.
+   -------------------------------------------------------------------------- */
 .cabinet-controls {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   inset: 0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 420ms var(--ease-premium);
 }
 
-/* A single inset hardware bed makes every control feel mounted to the sloped deck. */
+body[data-screen="title"] .cabinet-controls { opacity: 1; }
+
 .cabinet-controls::before {
   content: "";
   position: absolute;
-  left: 7.6%;
-  top: 66.35%;
-  width: 71.1%;
-  height: 6.15%;
-  border: 1px solid rgba(157, 105, 63, 0.34);
-  border-radius: 8.5% / 34%;
+  left: 5.25%;
+  top: 67.65%;
+  width: 89.5%;
+  height: 6.4%;
+  clip-path: polygon(1.8% 4%, 98.2% 4%, 95.6% 96%, 4.4% 96%);
+  border: 1px solid rgba(150, 98, 57, .31);
+  border-radius: 4.5% / 27%;
   background:
-    radial-gradient(circle at 3.2% 19%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
-    radial-gradient(circle at 96.8% 19%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
-    radial-gradient(circle at 3.2% 81%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
-    radial-gradient(circle at 96.8% 81%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
-    linear-gradient(180deg, rgba(255,255,255,.70), rgba(252,237,225,.48) 50%, rgba(232,198,173,.26));
+    radial-gradient(circle at 4.3% 23%, #fffaf1 0 1px, #b9854b 1.25px 2px, transparent 2.3px),
+    radial-gradient(circle at 95.7% 23%, #fffaf1 0 1px, #b9854b 1.25px 2px, transparent 2.3px),
+    radial-gradient(circle at 5.2% 78%, #fffaf1 0 1px, #b9854b 1.25px 2px, transparent 2.3px),
+    radial-gradient(circle at 94.8% 78%, #fffaf1 0 1px, #b9854b 1.25px 2px, transparent 2.3px),
+    linear-gradient(180deg,
+      rgba(255,255,255,.83) 0%,
+      rgba(255,249,242,.70) 20%,
+      rgba(247,226,211,.53) 72%,
+      rgba(218,180,151,.38) 100%);
   box-shadow:
-    0 5px 10px rgba(92, 53, 43, 0.10),
-    inset 0 2px 2px rgba(255,255,255,.90),
-    inset 0 -3px 7px rgba(140, 83, 65, 0.08);
+    0 6px 13px rgba(77,45,37,.11),
+    inset 0 2px 2px rgba(255,255,255,.98),
+    inset 0 -3px 8px rgba(126,76,55,.08),
+    inset 0 0 0 1px rgba(255,241,225,.23);
 }
 
-body[data-screen="title"] .cabinet-controls { opacity: 1; }
-body[data-screen="title"] .cabinet-stage__glass { opacity: 0.50; }
+.cabinet-controls::after {
+  content: "";
+  position: absolute;
+  left: 9.4%;
+  top: 68.05%;
+  width: 81.0%;
+  height: .12%;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,.75) 12%,
+    rgba(235,200,155,.47) 50%,
+    rgba(255,255,255,.75) 88%,
+    transparent);
+  opacity: .72;
+}
 
-/* --- JOYSTICK ---------------------------------------------------------- */
+/* Joystick ---------------------------------------------------------------- */
 .cabinet-joystick {
   position: absolute;
-  left: 17.0%;
-  top: 69.15%;
-  width: 14.4%;
-  height: 6.4%;
+  left: 15.6%;
+  top: 70.6%;
+  width: 16.4%;
+  height: 6.25%;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 5px 5px rgba(87, 49, 41, 0.16));
+  filter: drop-shadow(0 5px 6px rgba(79,44,39,.17));
 }
 
 .cabinet-joystick__base {
   position: absolute;
-  left: 5%;
-  right: 5%;
+  left: 2%;
+  right: 2%;
   bottom: 5%;
-  height: 43%;
-  border: 1px solid rgba(133, 88, 49, 0.44);
+  height: 36%;
+  border: 1px solid rgba(145,91,49,.43);
   border-radius: 50%;
   background:
-    radial-gradient(ellipse at 50% 34%, #fffdf8 0 36%, #f5dfbd 39% 48%, #b27a43 51% 57%, #f9e7c8 61% 73%, #fff9ef 78% 100%);
+    radial-gradient(ellipse at 50% 35%, #fffdf8 0 39%, #f3d8ae 42% 51%, #a86d38 54% 60%, #f6e3bf 63% 74%, #fffaf1 79% 100%);
   box-shadow:
-    0 4px 7px rgba(83, 48, 39, 0.14),
-    inset 0 2px 3px rgba(255,255,255,.95),
-    inset 0 -2px 4px rgba(117,73,53,.08);
+    0 4px 7px rgba(75,42,36,.13),
+    inset 0 2px 3px rgba(255,255,255,.96),
+    inset 0 -2px 4px rgba(108,64,46,.10);
+}
+
+.cabinet-joystick__base::before {
+  content: "";
+  position: absolute;
+  left: 24%; right: 24%; top: 19%; bottom: 19%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 48% 36%, #80574e 0%, #563832 50%, #36211e 100%);
+  box-shadow: inset 0 3px 5px rgba(19,9,8,.48), 0 1px rgba(255,255,255,.45);
 }
 
 .cabinet-joystick__base::after {
   content: "";
   position: absolute;
-  left: 25%;
-  right: 25%;
-  top: 20%;
-  bottom: 20%;
+  left: 10%; right: 10%; top: 10%; height: 20%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 45%, #785044, #4d302b 72%);
-  box-shadow: inset 0 2px 4px rgba(26,13,11,.45), 0 1px rgba(255,255,255,.4);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.58), transparent);
+  opacity: .75;
 }
 
 .cabinet-joystick__stem {
   position: absolute;
   z-index: 2;
-  left: 46.1%;
-  bottom: 26%;
-  width: 8.3%;
-  height: 43%;
+  left: 46.3%;
+  bottom: 23%;
+  width: 7.4%;
+  height: 45%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #7e5335, #d9b47b 24%, #fff0ca 48%, #c28e55 70%, #6c452f);
-  box-shadow: 1px 2px 3px rgba(73,42,34,.25);
+  background: linear-gradient(90deg, #71482e 0%, #c99a60 24%, #ffefc5 48%, #d0a061 68%, #65402a 100%);
+  box-shadow: 1px 2px 3px rgba(68,38,31,.26);
 }
 
 .cabinet-joystick__knob {
   position: absolute;
   z-index: 3;
   left: 29%;
-  top: 2%;
+  top: 0;
   width: 42%;
   aspect-ratio: 1;
-  border: 1px solid rgba(166, 95, 114, 0.38);
+  border: 1px solid rgba(171,97,117,.38);
   border-radius: 50%;
   background:
-    conic-gradient(from 18deg at 50% 50%, #f7c7d7, #d982a1, #f5b9cc, #c86f91, #f8d3df, #d982a1, #f7c7d7);
+    radial-gradient(circle at 31% 23%, rgba(255,255,255,.93) 0 7%, transparent 8%),
+    conic-gradient(from 12deg, #f8cfdb, #d67f9e, #f2afc4, #c56d8d, #f6ccda, #d37d9b, #f8cfdb);
   box-shadow:
-    inset 5px 5px 9px rgba(255,255,255,.34),
-    inset -6px -7px 10px rgba(93,44,60,.18),
-    0 5px 9px rgba(84,43,54,.20);
+    inset 5px 5px 10px rgba(255,255,255,.35),
+    inset -7px -8px 11px rgba(84,39,53,.20),
+    0 5px 9px rgba(77,39,51,.21),
+    0 0 0 1px rgba(255,235,229,.25);
 }
 
-.cabinet-joystick__knob::before,
-.cabinet-joystick__knob::after {
-  content: "";
-  position: absolute;
-  inset: 11%;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.cabinet-joystick__knob::before {
-  background: linear-gradient(128deg, rgba(255,255,255,.75), transparent 37% 68%, rgba(115,57,75,.13));
-  clip-path: polygon(50% 0, 88% 18%, 100% 55%, 77% 100%, 24% 100%, 0 56%, 13% 18%);
-}
-
-.cabinet-joystick__knob::after {
-  inset: 20% 44% 62% 21%;
-  background: rgba(255,255,255,.82);
-  filter: blur(.5px);
-}
-
-/* --- MONITOR ----------------------------------------------------------- */
+/* Monitor ----------------------------------------------------------------- */
 .cabinet-monitor {
   position: absolute;
-  left: 41.3%;
-  top: 69.15%;
-  width: 25.8%;
-  height: 4.35%;
+  left: 43.0%;
+  top: 70.58%;
+  width: 31.0%;
+  height: 4.25%;
   transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
   overflow: hidden;
-  clip-path: polygon(2.5% 3%, 97.5% 3%, 94.2% 96%, 5.8% 96%);
-  border: 1px solid rgba(145, 92, 55, 0.42);
-  border-radius: 11% / 30%;
-  background: linear-gradient(180deg, #fffaf1 0%, #f2d9c7 62%, #dcb995 100%);
+  clip-path: polygon(2.2% 5%, 97.8% 5%, 94.8% 96%, 5.2% 96%);
+  border: 1px solid rgba(144,91,54,.38);
+  border-radius: 8% / 29%;
+  background: linear-gradient(180deg, #fffaf2 0%, #efd2bd 62%, #d8ae8d 100%);
   box-shadow:
-    0 4px 7px rgba(89,51,42,.12),
-    inset 0 2px rgba(255,255,255,.92),
-    inset 0 -3px 5px rgba(125,76,55,.10);
+    0 4px 8px rgba(76,43,36,.12),
+    inset 0 2px rgba(255,255,255,.95),
+    inset 0 -3px 5px rgba(119,69,51,.10);
+}
+
+.cabinet-monitor::before {
+  content: "";
+  position: absolute;
+  left: 6.2%; right: 6.2%; top: 13%; bottom: 17%;
+  border-radius: 5.5% / 28%;
+  background: linear-gradient(180deg, #71405a 0%, #4a293d 70%, #39202f 100%);
+  border: 1px solid rgba(255,214,225,.49);
+  box-shadow:
+    inset 0 5px 10px rgba(20,8,14,.42),
+    0 0 8px rgba(218,124,157,.14);
+}
+
+.cabinet-monitor::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 12%; right: 12%; top: 21%; height: 17%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
 }
 
 .cabinet-monitor__screen {
   position: absolute;
-  inset: 17% 7.5% 18%;
+  z-index: 3;
+  inset: 13% 6.2% 17%;
   display: grid;
   place-items: center;
-  overflow: hidden;
-  border: 1px solid rgba(255, 224, 229, 0.66);
-  border-radius: 9% / 30%;
-  color: rgba(255, 250, 246, 0.96);
-  background:
-    radial-gradient(ellipse at 50% 20%, rgba(245,167,192,.32), transparent 45%),
-    linear-gradient(180deg, #733f59 0%, #5c3047 62%, #452638 100%);
-  box-shadow:
-    inset 0 4px 10px rgba(23,10,17,.42),
-    inset 0 -1px rgba(255,255,255,.06),
-    0 0 9px rgba(225,126,161,.18);
+  border-radius: 5.5% / 28%;
+  color: rgba(255,249,245,.95);
+  background: radial-gradient(ellipse at 50% 21%, rgba(246,161,190,.22), transparent 46%);
 }
 
 .cabinet-monitor__screen::before {
   content: "";
   position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 9%;
-  height: 25%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
-}
-
-.cabinet-monitor__screen::after {
-  content: "";
-  position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: 13%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,205,219,.34), transparent);
+  left: 7.5%;
+  bottom: 17%;
+  width: 3px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f2c58e;
+  box-shadow: 0 0 5px rgba(242,197,142,.72), 7px 0 0 rgba(255,255,255,.18);
 }
 
 .cabinet-monitor__status {
   position: relative;
-  z-index: 1;
-  font-size: clamp(5px, 1.32vw, 9px);
-  font-weight: 820;
-  letter-spacing: .18em;
-  text-indent: .18em;
-  text-shadow: 0 1px 3px rgba(35,14,24,.5);
+  z-index: 2;
+  font-size: clamp(5px, 1.18vw, 9px);
+  font-weight: 790;
+  letter-spacing: .22em;
+  text-indent: .22em;
+  text-shadow: 0 1px 3px rgba(31,12,21,.52);
 }
 
-/* --- BUTTON HARDWARE --------------------------------------------------- */
+/* Buttons ----------------------------------------------------------------- */
 .cabinet-button {
   position: absolute;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  filter: drop-shadow(0 5px 6px rgba(84,47,40,.16));
+  filter: drop-shadow(0 5px 6px rgba(77,43,37,.16));
 }
 
 .cabinet-button::before {
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(136, 86, 45, 0.46);
+  border: 1px solid rgba(139,88,46,.46);
   border-radius: inherit;
   background:
-    radial-gradient(ellipse at 50% 34%, #fffdf6 0 42%, #f2d9af 45% 54%, #a96f3c 57% 63%, #f5dfb9 67% 78%, #fff9ee 82%);
+    radial-gradient(ellipse at 50% 32%, #fffdf6 0 43%, #f1d5a8 46% 55%, #a66b37 58% 64%, #f4ddb4 68% 78%, #fff9ef 83% 100%);
   box-shadow:
-    0 4px 7px rgba(84,46,38,.13),
-    inset 0 2px 2px rgba(255,255,255,.95),
-    inset 0 -2px 4px rgba(106,65,46,.08);
+    0 4px 7px rgba(76,42,35,.13),
+    inset 0 2px 2px rgba(255,255,255,.96),
+    inset 0 -2px 4px rgba(103,61,44,.09);
 }
 
 .cabinet-button::after {
   content: "";
   position: absolute;
-  inset: 17% 14% 19%;
-  border: 1px solid rgba(177, 98, 123, 0.33);
-  border-radius: 50%;
+  inset: 16% 14% 20%;
+  border: 1px solid rgba(176,97,121,.34);
+  border-radius: inherit;
   background:
-    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.93) 0 8%, transparent 9%),
-    radial-gradient(ellipse at 46% 34%, #ffd7e3 0 18%, #eea8bf 42%, #d17b99 72%, #a55e78 100%);
+    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.95) 0 8%, transparent 9%),
+    radial-gradient(ellipse at 46% 34%, #ffd8e3 0 18%, #eca4bb 42%, #cc7492 73%, #99536e 100%);
   box-shadow:
-    inset -5px -6px 9px rgba(103,49,67,.17),
-    inset 4px 4px 7px rgba(255,255,255,.35),
-    0 2px 4px rgba(144,72,94,.18);
+    inset -5px -6px 9px rgba(93,43,59,.18),
+    inset 4px 4px 7px rgba(255,255,255,.36),
+    0 2px 5px rgba(139,68,91,.17);
 }
 
 .cabinet-button__icon {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   left: 30%;
-  top: 25%;
+  top: 24%;
   width: 40%;
   height: 42%;
   display: grid;
   place-items: center;
-  color: rgba(255,252,249,.96);
-  filter: drop-shadow(0 1px 2px rgba(103,47,67,.42));
+  color: rgba(255,252,249,.97);
+  filter: drop-shadow(0 1px 2px rgba(98,44,64,.42));
 }
 
-.cabinet-button__icon svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
+.cabinet-button__icon svg { width: 100%; height: 100%; overflow: visible; }
 
 .cabinet-button--shuffle {
-  left: 60.2%;
-  top: 69.15%;
-  width: 10.0%;
-  height: 4.25%;
+  left: 67.6%;
+  top: 70.56%;
+  width: 11.1%;
+  height: 4.55%;
 }
 
 .cabinet-button--shuffle::after {
   background:
-    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.90) 0 8%, transparent 9%),
-    radial-gradient(ellipse at 46% 34%, #f4d8e9 0 18%, #dcaac9 43%, #bd7fa8 73%, #8f5d83 100%);
+    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.92) 0 8%, transparent 9%),
+    radial-gradient(ellipse at 46% 34%, #f3d9e8 0 18%, #d9a5c4 43%, #b97aa2 73%, #84577a 100%);
 }
 
 .cabinet-button--drop {
-  left: 72.0%;
-  top: 69.10%;
-  width: 11.8%;
-  height: 4.85%;
+  left: 82.5%;
+  top: 70.50%;
+  width: 13.4%;
+  height: 5.15%;
 }
 
+.cabinet-button--drop::before {
+  box-shadow:
+    0 5px 9px rgba(75,42,34,.15),
+    inset 0 2px 2px rgba(255,255,255,.97),
+    inset 0 -2px 4px rgba(103,61,44,.09),
+    0 0 0 2px rgba(236,203,157,.10);
+}
+
+/* Locked showcase motion: alive, never disabled-looking. */
 body[data-screen="title"] .cabinet-monitor__screen {
-  animation: title-monitor-breathe 3.4s ease-in-out infinite alternate;
+  animation: title-monitor-breathe 3.5s ease-in-out infinite alternate;
 }
 
 body[data-screen="title"] .cabinet-button--drop::after {
-  animation: title-drop-breathe 2.8s ease-in-out infinite alternate;
+  animation: title-drop-breathe 2.9s ease-in-out infinite alternate;
 }
 
-/* The language control is utility, not part of the cabinet's visual hierarchy. */
+/* --------------------------------------------------------------------------
+   TITLE BRANDING — anchored to the inner back panel, independent of screen ratio.
+   -------------------------------------------------------------------------- */
+.screen--title .title-lockup {
+  position: absolute;
+  left: 50%;
+  top: 31.8%;
+  width: min(68%, 520px);
+  margin: 0;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  text-shadow: 0 3px 16px rgba(74,42,36,.11);
+}
+
+.screen--title.is-active .title-lockup {
+  animation: title-lockup-premium 680ms var(--ease-premium) 90ms both;
+}
+
+.screen--title .title-lockup__eyebrow {
+  margin-bottom: 9px;
+  color: rgba(111,78,67,.74);
+  font-size: clamp(9px, 2.45vw, 13px);
+  font-weight: 760;
+  letter-spacing: .17em;
+}
+
+.screen--title .game-logo__lucky {
+  color: #694942;
+  font-size: clamp(32px, 10vw, 59px);
+  font-weight: 900;
+  letter-spacing: .095em;
+  text-shadow: 0 2px rgba(255,255,255,.31);
+}
+
+.screen--title .game-logo__claw {
+  margin-top: 14px;
+  font-size: clamp(57px, 17vw, 96px);
+  background: linear-gradient(180deg, #e6bd7b 0%, #bd8549 45%, #8b592f 77%, #704326 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 1px rgba(255,242,219,.35);
+  filter: drop-shadow(0 3px 0 rgba(255,240,214,.48)) drop-shadow(0 7px 10px rgba(112,70,45,.10));
+}
+
+.screen--title .title-lockup__ornament {
+  width: min(72%, 270px);
+  margin: 17px auto 10px;
+  color: #b9854d;
+  opacity: .83;
+}
+
+.screen--title .title-lockup__tagline {
+  color: rgba(111,79,70,.76);
+  font-size: clamp(11px, 3.0vw, 15px);
+  font-weight: 580;
+  letter-spacing: .005em;
+}
+
+/* Language utility: intentionally small and jewel-like, not a floating web chip. */
 .screen--title .language-chip {
-  top: calc(var(--safe-top) + 8px);
-  right: calc(var(--safe-right) + 7px);
+  top: calc(var(--safe-top) + 10px);
+  right: calc(var(--safe-right) + 8px);
   bottom: auto;
-  min-width: 50px;
-  min-height: 42px;
+  min-width: 58px;
+  min-height: 40px;
+  gap: 5px;
   padding: 0 10px;
-  border-color: rgba(185,137,78,.34);
-  color: #77564e;
-  background: rgba(255,250,245,.74);
-  box-shadow: 0 6px 18px rgba(72,45,40,.10), inset 0 1px rgba(255,255,255,.88);
-  backdrop-filter: blur(10px) saturate(1.05);
-  font-size: 11px;
+  border: 1px solid rgba(190,143,92,.42);
+  border-radius: 999px;
+  color: #76574f;
+  background:
+    linear-gradient(150deg, rgba(255,253,248,.87), rgba(248,231,220,.72));
+  box-shadow:
+    0 8px 19px rgba(73,42,36,.10),
+    inset 0 1px rgba(255,255,255,.95),
+    inset 0 -1px rgba(151,101,73,.08);
+  backdrop-filter: blur(9px) saturate(1.06);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+
+.screen--title .language-chip span:last-child {
+  padding-left: 5px;
+  border-left: 1px solid rgba(149,105,76,.22);
+}
+
+@keyframes title-lockup-premium {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(.985); filter: blur(2px); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
 }
 
 @keyframes title-monitor-breathe {
-  from { filter: brightness(.96); }
-  to { filter: brightness(1.07); }
+  from { filter: brightness(.96) saturate(.97); }
+  to { filter: brightness(1.07) saturate(1.04); }
 }
 
 @keyframes title-drop-breathe {
-  from { filter: brightness(.98); box-shadow: inset -5px -6px 9px rgba(103,49,67,.17), inset 4px 4px 7px rgba(255,255,255,.35), 0 2px 4px rgba(144,72,94,.16); }
-  to { filter: brightness(1.05); box-shadow: inset -5px -6px 9px rgba(103,49,67,.14), inset 4px 4px 7px rgba(255,255,255,.40), 0 2px 9px rgba(201,101,135,.25); }
+  from {
+    box-shadow: inset -5px -6px 9px rgba(93,43,59,.18), inset 4px 4px 7px rgba(255,255,255,.36), 0 2px 5px rgba(139,68,91,.15);
+  }
+  to {
+    box-shadow: inset -5px -6px 9px rgba(93,43,59,.14), inset 4px 4px 7px rgba(255,255,255,.42), 0 2px 10px rgba(214,112,145,.31);
+  }
+}
+
+@media (max-aspect-ratio: 9/20) {
+  /* Very tall screens: preserve the cabinet width hierarchy and let only the frame crop. */
+  .screen--title .title-lockup { top: 31.5%; }
+}
+
+@media (min-aspect-ratio: 10/19) {
+  /* Shorter phones crop a little top/bottom; keep controls and title centered in safe zones. */
+  .screen--title .title-lockup { top: 31.2%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body[data-screen="title"] .cabinet-monitor__screen,
-  body[data-screen="title"] .cabinet-button--drop::after {
+  body[data-screen="title"] .cabinet-button--drop::after,
+  .screen--title.is-active .title-lockup {
     animation: none;
+  }
+
+  .screen--title .title-lockup {
+    opacity: 1;
+    transform: translate(-50%, -50%);
   }
 }

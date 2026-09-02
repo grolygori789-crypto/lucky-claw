@@ -446,7 +446,9 @@ Browser language may preselect, but player can override.
 
 ### Title cabinet presentation
 
-The approved cabinet base remains a clean physical plate. Title presentation adds production layers rather than baking controls or effects into the cabinet image:
+The approved Classic Pink cabinet base is the tall-phone production plate at **841×1870 (~9:20)**. Runtime framing preserves this aspect ratio and scales the stage to cover the viewport; it must never stretch the cabinet. On non-target phone ratios, only a small amount of the outer cabinet frame may crop so the game still reads as full-screen rather than a centered poster with empty bands.
+
+The cabinet base remains a clean physical plate. Title presentation adds production layers rather than baking controls or effects into the cabinet image:
 - curated Title Plush Layer when its final transparent asset is approved;
 - separate claw layer when its final transparent asset is approved;
 - restrained front-glass overlay;
@@ -454,7 +456,9 @@ The approved cabinet base remains a clean physical plate. Title presentation add
 
 On Title, the control set is a powered-on showcase state: visually complete, premium, and non-interactive. It must not look greyed-out or broken. Gameplay later reuses the same control geometry and changes it to an interactive state, avoiding a visual jump between Title and play.
 
-The front glass is a foreground visual layer, not an input surface. Reflection must stay subtle enough that plush targets and the claw remain easy to read.
+The front glass is a foreground visual layer, not an input surface. It uses restrained laminated-glass edge highlights, a soft directional reflection, and low-opacity sheen; reflection must stay subtle enough that plush targets and the claw remain easy to read.
+
+The control deck follows one coherent hardware-console language: pearl enamel, champagne-gold trim, smoked rose display glass, shallow perspective, and shared lighting. Joystick, monitor, SHUFFLE, and DROP must read as mounted hardware from the same machine—not independent web widgets placed over an image.
 
 
 ---
