@@ -6,8 +6,66 @@
 
 .cabinet-stage__image { z-index: 0; }
 .cabinet-stage__warmth { z-index: 1; }
+.cabinet-title-plush { z-index: 3; }
+.cabinet-title-claw { z-index: 4; }
 .cabinet-stage__shine,
-.cabinet-stage__sparkles { z-index: 8; }
+.cabinet-stage__sparkles { z-index: 9; }
+
+
+
+/* --------------------------------------------------------------------------
+   TITLE CLAW + RAIL — integrated visual layer matching the cabinet artwork.
+   The rail sits under the canopy and the claw hangs low enough to feel usable
+   without covering the title copy. This remains a visual title presentation
+   asset; gameplay can later split the rail and moving head if needed.
+   -------------------------------------------------------------------------- */
+.cabinet-title-claw {
+  position: absolute;
+  left: 50.05%;
+  top: 7.1%;
+  width: 93.2%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-8px) scale(.985);
+  transform-origin: 50% 0%;
+  transition:
+    opacity 560ms var(--ease-premium),
+    transform 760ms var(--ease-premium);
+}
+
+.cabinet-title-claw::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 51.2%;
+  top: 71.6%;
+  width: 18.5%;
+  height: 3.4%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(87,43,39,.18) 0%, rgba(118,66,57,.10) 46%, transparent 74%);
+  filter: blur(8px);
+  opacity: .72;
+}
+
+.cabinet-title-claw__image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  display: block;
+  filter:
+    drop-shadow(0 12px 14px rgba(87,49,42,.12))
+    saturate(1.01)
+    contrast(1.01);
+}
+
+body[data-screen="title"] .cabinet-title-claw {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition-delay: 60ms;
+}
+
 
 /* --------------------------------------------------------------------------
    FRONT GLASS — restrained laminated acrylic/glass, in front of the playfield.
@@ -74,7 +132,118 @@
   opacity: .74;
 }
 
-body[data-screen="title"] .cabinet-stage__glass { opacity: .52; }
+body[data-screen="title"] .cabinet-stage__glass { opacity: .45; }
+
+/* --------------------------------------------------------------------------
+   TITLE PLUSH DISPLAY — a curated five-plush showcase sitting physically on
+   the cabinet floor. The source PNG stays isolated from the machine artwork.
+   -------------------------------------------------------------------------- */
+.cabinet-title-plush {
+  position: absolute;
+  left: 62%;
+  bottom: 33.25%;
+  width: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(9px) scale(.985);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 620ms var(--ease-premium),
+    transform 760ms var(--ease-premium);
+}
+
+.cabinet-title-plush::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: .8%;
+  width: 78%;
+  height: 5.8%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(87,43,39,.24) 0%, rgba(117,65,56,.13) 45%, transparent 74%);
+  filter: blur(7px);
+  opacity: .78;
+}
+
+.cabinet-title-plush::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 51%;
+  bottom: -1.1%;
+  width: 88%;
+  height: 9%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255,184,196,.13), transparent 70%);
+  filter: blur(5px);
+}
+
+.cabinet-title-plush__image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  display: block;
+  filter:
+    drop-shadow(0 5px 5px rgba(78,42,38,.11))
+    saturate(.99)
+    contrast(1.015);
+}
+
+body[data-screen="title"] .cabinet-title-plush {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition-delay: 130ms;
+}
+
+/* A second foreground reflection layer makes the front panel read as actual
+   glass without washing out the plush artwork or title typography. */
+.cabinet-stage__glass-sheen {
+  position: absolute;
+  z-index: 7;
+  left: 2.55%;
+  top: 4.9%;
+  width: 94.9%;
+  height: 62.5%;
+  overflow: hidden;
+  border-radius: 2.2% 2.2% 1.1% 1.1%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 520ms var(--ease-premium);
+}
+
+.cabinet-stage__glass-sheen::before {
+  content: "";
+  position: absolute;
+  left: 5%;
+  top: -12%;
+  width: 19%;
+  height: 128%;
+  transform: skewX(-13deg);
+  background: linear-gradient(90deg, transparent 0 20%, rgba(255,255,255,.035) 29%, rgba(255,255,255,.13) 49%, rgba(255,255,255,.025) 69%, transparent 78%);
+  filter: blur(1px);
+}
+
+.cabinet-stage__glass-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 82% 11%, rgba(255,255,255,.18), transparent 17%),
+    linear-gradient(180deg, rgba(255,255,255,.035), transparent 11% 91%, rgba(255,235,237,.055));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.34),
+    inset 1px 0 rgba(255,255,255,.10),
+    inset -1px 0 rgba(255,255,255,.08),
+    inset 0 -1px rgba(255,255,255,.13);
+}
+
+body[data-screen="title"] .cabinet-stage__glass-sheen {
+  opacity: .62;
+}
 
 /* --------------------------------------------------------------------------
    CONTROL DECK — one coherent console, not four unrelated floating widgets.
@@ -143,7 +312,7 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   width: 19.2%;
   height: 7.3%;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 8px 10px rgba(79,44,39,.19));
+  filter: drop-shadow(0 9px 12px rgba(79,44,39,.22));
 }
 
 .cabinet-joystick__base {
@@ -210,7 +379,7 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
     inset -8px -9px 13px rgba(84,39,53,.22),
     0 7px 12px rgba(77,39,51,.24),
     0 0 0 1px rgba(255,235,229,.32),
-    0 0 18px rgba(244,193,214,.14);
+    0 0 24px rgba(244,193,214,.18);
 }
 
 /* Monitor ----------------------------------------------------------------- */
@@ -247,7 +416,7 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
     inset 0 7px 14px rgba(79,7,25,.23),
     inset 0 -6px 11px rgba(68,6,21,.30),
     inset 0 1px rgba(255,239,242,.28),
-    0 0 17px rgba(220,40,79,.23),
+    0 0 20px rgba(220,40,79,.26),
     0 0 7px rgba(255,164,183,.11);
 }
 
@@ -575,5 +744,10 @@ body[data-screen="title"] .cabinet-button--drop::after {
   .screen--title .title-lockup {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+
+  .cabinet-title-plush,
+  .cabinet-title-claw {
+    transition: none;
   }
 }

@@ -1434,3 +1434,10 @@ A simple hue rotation is not a full theme.
 > **We are not trying to prove how complicated a browser game can be. We are trying to make a simple browser game feel irresistible, polished, and expensive.**
 
 Whenever a difficult implementation and a simpler illusion create nearly the same player experience, choose the simpler illusion—then execute it beautifully.
+
+
+## Build 001 update — Title cabinet presentation and PWA foundation
+- Approved tall 9:20 cabinet base remains the canonical title stage plate.
+- Title now uses separate runtime layers for cabinet base, plush showcase, claw/rail showcase, control-deck UI, and front-glass reflections.
+- The title claw is currently a presentation asset and is intentionally positioned to match the approved title composition. Gameplay may later split this into rail + moving head without changing the visual language.
+- PWA install foundation is introduced in Build 001: production icons, manifest, service worker registration, portrait standalone mode, and install prompt plumbing for future Settings UI.

@@ -78,3 +78,10 @@ Planned directories appear when production content reaches them; Git history rem
 Current production includes the bilingual app shell, Benedict Games intro, Lucky Claw title treatment, first-run language selection, persistence, responsive portrait baseline, the approved Classic Pink cabinet base, locked premium title-control presentation, subtle front-glass treatment, and the five-track soundtrack foundation with a compact title player.
 
 Next production batch: **Build 002 — Main Menu Shell**.
+
+
+## Latest patch in this workspace
+- Title plush + claw + front glass integrated
+- Premium cherry READY monitor kept
+- Benedict Games acrylic splash retained
+- PWA icon and manifest foundation added

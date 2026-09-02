@@ -14,6 +14,7 @@ let returnScreen = 'title';
 
 const music = new MusicManager(state.settings);
 installDisplayMode();
+installPWAFoundation();
 
 music.addEventListener('preferencechange', (event) => {
   state = saveState({
@@ -24,6 +25,44 @@ music.addEventListener('preferencechange', (event) => {
     },
   });
 });
+
+
+function installPWAFoundation() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch((error) => {
+        console.warn('[Lucky Claw] Service worker registration failed.', error);
+      });
+    }, { once: true });
+  }
+
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    window.LuckyClawPWA = Object.freeze({
+      canPrompt: true,
+      promptInstall: async () => {
+        if (!deferredPrompt) return false;
+        const prompt = deferredPrompt;
+        deferredPrompt = null;
+        await prompt.prompt();
+        const choice = await prompt.userChoice.catch(() => null);
+        return choice?.outcome === 'accepted';
+      },
+    });
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    window.LuckyClawPWA = Object.freeze({ canPrompt: false, promptInstall: async () => false });
+  });
+
+  if (!window.LuckyClawPWA) {
+    window.LuckyClawPWA = Object.freeze({ canPrompt: false, promptInstall: async () => false });
+  }
+}
 
 function showScreen(name) {
   screens.forEach((screen, key) => {
