@@ -1,7 +1,7 @@
 import { detectPreferredLanguage, setLanguage, translate } from './i18n.js';
 import { installDisplayMode, requestImmersiveMode } from './display-mode.js';
 import { loadState, saveState } from './storage.js';
-import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.17';
+import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.18';
 import { createPWAController } from './pwa-install.js';
 import { MusicManager } from '../systems/music-manager.js';
 import { bindLanguageScreen } from '../screens/language.js';
@@ -20,7 +20,7 @@ const pwa = createPWAController({
   onInstalled: () => document.querySelector('[data-install-gate]')?.setAttribute('hidden', ''),
 });
 
-const audioLifecycle = music.addEventListener('preferencechange', (event) => {
+music.addEventListener('preferencechange', (event) => {
   state = saveState({
     ...state,
     settings: {
@@ -28,6 +28,11 @@ const audioLifecycle = music.addEventListener('preferencechange', (event) => {
       ...event.detail,
     },
   });
+});
+
+const audioLifecycle = bindAudioLifecycle({
+  music,
+  getScreen: () => document.body.dataset.screen,
 });
 
 
@@ -211,7 +216,7 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.17' });
+window.LuckyClawBuild = Object.freeze({ id: '001.18' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,
