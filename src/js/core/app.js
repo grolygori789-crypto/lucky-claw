@@ -16,6 +16,8 @@ const music = new MusicManager(state.settings);
 installDisplayMode();
 installPWAFoundation();
 
+
+
 music.addEventListener('preferencechange', (event) => {
   state = saveState({
     ...state,
@@ -30,7 +32,9 @@ music.addEventListener('preferencechange', (event) => {
 function installPWAFoundation() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch((error) => {
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((registration) => {
+        void registration.update();
+      }).catch((error) => {
         console.warn('[Lucky Claw] Service worker registration failed.', error);
       });
     }, { once: true });
@@ -134,33 +138,30 @@ document.querySelector('[data-open-language]')?.addEventListener('click', () => 
   languageScreen.focusPreferred(state.language || detectPreferredLanguage());
 });
 
-let autoPausedByVisibility = false;
+let autoPausedByLifecycle = false;
 
-function handleVisibilityPause() {
-  if (document.hidden) {
-    autoPausedByVisibility = music.isPlaying;
-    if (autoPausedByVisibility) music.pause();
-    return;
-  }
+function pauseForLifecycle() {
+  if (!music.isPlaying) return;
+  autoPausedByLifecycle = true;
+  music.pause();
+}
 
-  if (autoPausedByVisibility && document.body.dataset.screen === 'title' && music.musicEnabled) {
-    autoPausedByVisibility = false;
+function resumeAfterLifecycle() {
+  if (!autoPausedByLifecycle) return;
+  autoPausedByLifecycle = false;
+  if (document.body.dataset.screen === 'title' && music.musicEnabled) {
     void music.play();
   }
 }
 
-function handlePageHidePause() {
-  autoPausedByVisibility = music.isPlaying;
-  if (autoPausedByVisibility) music.pause();
-}
-
-document.addEventListener('visibilitychange', handleVisibilityPause);
-window.addEventListener('pagehide', handlePageHidePause);
-window.addEventListener('blur', () => {
-  if (document.body.dataset.screen !== 'title') return;
-  autoPausedByVisibility = music.isPlaying;
-  if (autoPausedByVisibility) music.pause();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseForLifecycle();
+  else resumeAfterLifecycle();
 });
+window.addEventListener('pagehide', pauseForLifecycle);
+window.addEventListener('pageshow', () => { if (!document.hidden) resumeAfterLifecycle(); });
+document.addEventListener('freeze', pauseForLifecycle);
+document.addEventListener('resume', () => { if (!document.hidden) resumeAfterLifecycle(); });
 
 async function bootstrap() {
   const preferredLanguage = state.language || detectPreferredLanguage();
@@ -185,6 +186,8 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
+window.LuckyClawBuild = Object.freeze({ id: '001.15' });
+
 window.LuckyClawAudio = Object.freeze({
   manager: music,
   lockTrackForRound: () => music.lockTrackForRound(),

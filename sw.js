@@ -1,11 +1,12 @@
-const CACHE_NAME = 'lucky-claw-shell-v1';
+const CACHE_NAME = 'lucky-claw-shell-v3';
+const BUILD_ID = '001.15';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './src/css/app.css',
-  './src/css/title-showcase.css',
-  './src/js/core/app.js',
+  './src/css/app.css?v=001.15',
+  './src/css/title-showcase.css?v=001.15',
+  './src/js/core/app.js?v=001.15',
   './src/js/core/display-mode.js',
   './src/js/core/i18n.js',
   './src/js/core/storage.js',
@@ -16,18 +17,13 @@ const APP_SHELL = [
   './src/locales/en.json',
   './src/locales/th.json',
   './assets/machines/classic/cabinet-base.webp',
-  './assets/machines/classic/title-claw-rail.png',
-  './assets/plushies/title/title-plush-layer.png',
+  './assets/machines/classic/title-claw-rail.png?v=001.15',
+  './assets/plushies/title/title-plush-layer.png?v=001.15',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-192.png',
   './assets/icons/icon-maskable-512.png',
-  './assets/icons/apple-touch-icon.png',
-  './assets/audio/main-title-theme.mp3',
-  './assets/audio/cozy-claw.mp3',
-  './assets/audio/toy-boutique.mp3',
-  './assets/audio/lucky-rush.mp3',
-  './assets/audio/dreamy-arcade.mp3'
+  './assets/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -36,19 +32,61 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)));
+    await self.clients.claim();
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of clients) {
+      try { client.postMessage({ type: 'BUILD_UPDATED', build: BUILD_ID }); } catch {}
+      try {
+        const url = new URL(client.url);
+        if (url.origin === self.location.origin) {
+          url.searchParams.set('lc_build', BUILD_ID);
+          await client.navigate(url.href);
+        }
+      } catch {}
+    }
+  })());
 });
 
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response && response.ok) await cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    throw error;
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response && response.ok) await cache.put(request, response.clone());
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
-      return response;
-    }).catch(() => cached))
-  );
+  const request = event.request;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (url.pathname.includes('/assets/audio/')) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  event.respondWith(networkFirst(request));
 });
