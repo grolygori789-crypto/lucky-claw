@@ -11,5 +11,12 @@
   "music.mute": "Mute music",
   "music.unmute": "Unmute music",
   "rotate.title": "Best in portrait",
-  "rotate.body": "Turn your phone upright to play."
+  "rotate.body": "Turn your phone upright to play.",
+  "install.title": "Install Lucky Claw",
+  "install.body": "Add the game to your Home Screen for fullscreen play and faster launch.",
+  "install.primary": "Install now",
+  "install.later": "Not now",
+  "install.ios": "Tap Share, then choose Add to Home Screen.",
+  "install.manual": "Open your browser menu and choose Install app or Add to Home screen.",
+  "install.continue": "Continue"
 }

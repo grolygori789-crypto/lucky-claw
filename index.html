@@ -16,13 +16,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Lucky Claw">
   <link rel="preload" as="image" href="./assets/machines/classic/cabinet-base.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="./assets/plushies/title/title-plush-layer.png?v=001.15">
-  <link rel="preload" as="image" href="./assets/machines/classic/title-claw-rail.png?v=001.15">
-  <link rel="stylesheet" href="./src/css/app.css?v=001.15">
-  <link rel="stylesheet" href="./src/css/title-showcase.css?v=001.15">
-  <script type="module" src="./src/js/core/app.js?v=001.15"></script>
+  <link rel="preload" as="image" href="./assets/plushies/title/title-plush-layer.png?v=001.16">
+  <link rel="preload" as="image" href="./assets/machines/classic/title-claw-rail.png?v=001.16">
+  <link rel="preload" as="image" href="./assets/machines/classic/title-claw-head.png?v=001.16">
+  <link rel="stylesheet" href="./src/css/app.css?v=001.16">
+  <link rel="stylesheet" href="./src/css/title-showcase.css?v=001.16">
+  <script type="module" src="./src/js/core/app.js?v=001.16"></script>
 </head>
-<body data-build="001.15" data-screen="splash">
+<body data-build="001.16" data-screen="splash">
   <main class="app-shell" id="app" aria-live="polite">
     <div class="cabinet-stage" aria-hidden="true">
       <img
@@ -40,7 +41,7 @@
       <div class="cabinet-title-plush" data-title-plush>
         <img
           class="cabinet-title-plush__image"
-          src="./assets/plushies/title/title-plush-layer.png?v=001.15"
+          src="./assets/plushies/title/title-plush-layer.png?v=001.16"
           width="841"
           height="932"
           alt=""
@@ -48,15 +49,17 @@
         >
       </div>
 
-      <div class="cabinet-title-claw" data-title-claw>
-        <img
-          class="cabinet-title-claw__image"
-          src="./assets/machines/classic/title-claw-rail.png?v=001.15"
-          width="1122"
-          height="614"
-          alt=""
-          decoding="async"
-        >
+
+      <div class="cabinet-title-claw-system" data-title-claw>
+        <img class="cabinet-title-rail__image" src="./assets/machines/classic/title-claw-rail.png?v=001.16" width="1122" height="360" alt="" decoding="async">
+        <div class="cabinet-title-shaft" aria-hidden="true">
+          <span class="cabinet-title-shaft__chrome"></span>
+          <span class="cabinet-title-shaft__gold cabinet-title-shaft__gold--top"></span>
+          <span class="cabinet-title-shaft__gold cabinet-title-shaft__gold--bottom"></span>
+          <span class="cabinet-title-shaft__cable cabinet-title-shaft__cable--left"></span>
+          <span class="cabinet-title-shaft__cable cabinet-title-shaft__cable--right"></span>
+        </div>
+        <img class="cabinet-title-claw-head__image" src="./assets/machines/classic/title-claw-head.png?v=001.16" width="570" height="600" alt="" decoding="async">
       </div>
 
       <div class="cabinet-stage__glass"></div>
@@ -137,7 +140,6 @@
           <span class="game-logo__lucky">LUCKY</span>
           <span class="game-logo__claw">CLAW</span>
         </h1>
-        <div class="title-lockup__ornament" aria-hidden="true"><span></span>✦<span></span></div>
         <p class="title-lockup__tagline" data-i18n="title.tagline">Pick your favorite. Make it yours.</p>
       </div>
 
@@ -147,6 +149,22 @@
       </button>
     </section>
   </main>
+
+  <section class="install-gate" data-install-gate hidden aria-modal="true" role="dialog" aria-labelledby="install-title">
+    <div class="install-gate__veil" aria-hidden="true"></div>
+    <div class="install-gate__card">
+      <div class="install-gate__icon-wrap" aria-hidden="true"><img class="install-gate__icon" src="./assets/icons/icon-192.png" width="80" height="80" alt=""></div>
+      <div class="install-gate__copy">
+        <div class="install-gate__eyebrow">BENEDICT GAMES</div>
+        <h2 id="install-title" data-i18n="install.title">Install Lucky Claw</h2>
+        <p data-install-message data-i18n="install.body">Add the game to your Home Screen for fullscreen play and faster launch.</p>
+      </div>
+      <div class="install-gate__actions">
+        <button class="install-gate__primary" type="button" data-install-primary data-i18n="install.primary">Install now</button>
+        <button class="install-gate__later" type="button" data-install-later data-i18n="install.later">Not now</button>
+      </div>
+    </div>
+  </section>
 
   <aside class="rotate-overlay" aria-hidden="true">
     <div class="rotate-overlay__phone" aria-hidden="true"></div>

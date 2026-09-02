@@ -1441,3 +1441,13 @@ Whenever a difficult implementation and a simpler illusion create nearly the sam
 - Title now uses separate runtime layers for cabinet base, plush showcase, claw/rail showcase, control-deck UI, and front-glass reflections.
 - The title claw is currently a presentation asset and is intentionally positioned to match the approved title composition. Gameplay may later split this into rail + moving head without changing the visual language.
 - PWA install foundation is introduced in Build 001: production icons, manifest, service worker registration, portrait standalone mode, and install prompt plumbing for future Settings UI.
+
+
+## Build 001.16 — Install gate and claw-layer correction
+- Title ornament line/star under the logo is removed.
+- Title claw presentation is split into three production layers: static rail/carriage, CSS telescopic shaft, and transparent claw-head sprite. This removes the pasted-shaft artifact and creates cleaner motion anchors for Build 003.
+- Title claw scale is increased to match the approved visual reference while preserving a clear gap above the foreground plush showcase.
+- First-open mobile flow now presents a dedicated install gate after the Benedict Games intro. Chromium/Android uses the native `beforeinstallprompt` flow when available; iOS and unsupported in-app browsers receive explicit Add to Home Screen / browser-install guidance.
+- Installed PWA launches with `display: fullscreen` and portrait orientation. Browser fullscreen is still requested on trusted user interaction because browsers do not permit unconditional fullscreen on page load.
+- Music lifecycle handling is isolated and tested: background/page hide/freeze pauses music and eligible return resumes it.
+- Service worker cache is `lucky-claw-shell-v4`, network-first for app code/assets, with audio runtime caching and no forced client navigation on activation.

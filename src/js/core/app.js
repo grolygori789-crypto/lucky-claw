@@ -1,6 +1,8 @@
-import { detectPreferredLanguage, setLanguage } from './i18n.js';
+import { detectPreferredLanguage, setLanguage, translate } from './i18n.js';
 import { installDisplayMode, requestImmersiveMode } from './display-mode.js';
 import { loadState, saveState } from './storage.js';
+import { bindAudioLifecycle } from './audio-lifecycle.js';
+import { createPWAController } from './pwa-install.js';
 import { MusicManager } from '../systems/music-manager.js';
 import { bindLanguageScreen } from '../screens/language.js';
 import { runSplash } from '../screens/splash.js';
@@ -14,7 +16,9 @@ let returnScreen = 'title';
 
 const music = new MusicManager(state.settings);
 installDisplayMode();
-installPWAFoundation();
+const pwa = createPWAController({
+  onInstalled: () => document.querySelector('[data-install-gate]')?.setAttribute('hidden', ''),
+});
 
 
 
@@ -28,45 +32,6 @@ music.addEventListener('preferencechange', (event) => {
   });
 });
 
-
-function installPWAFoundation() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((registration) => {
-        void registration.update();
-      }).catch((error) => {
-        console.warn('[Lucky Claw] Service worker registration failed.', error);
-      });
-    }, { once: true });
-  }
-
-  let deferredPrompt = null;
-
-  window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-    window.LuckyClawPWA = Object.freeze({
-      canPrompt: true,
-      promptInstall: async () => {
-        if (!deferredPrompt) return false;
-        const prompt = deferredPrompt;
-        deferredPrompt = null;
-        await prompt.prompt();
-        const choice = await prompt.userChoice.catch(() => null);
-        return choice?.outcome === 'accepted';
-      },
-    });
-  });
-
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    window.LuckyClawPWA = Object.freeze({ canPrompt: false, promptInstall: async () => false });
-  });
-
-  if (!window.LuckyClawPWA) {
-    window.LuckyClawPWA = Object.freeze({ canPrompt: false, promptInstall: async () => false });
-  }
-}
 
 function showScreen(name) {
   screens.forEach((screen, key) => {
@@ -104,7 +69,8 @@ function waitForCabinet() {
   });
 }
 
-function unlockExperienceFromGesture() {
+function unlockExperienceFromGesture(event) {
+  if (event.target?.closest?.('[data-install-primary]')) return;
   void requestImmersiveMode();
   if (document.body.dataset.screen === 'title' && music.musicEnabled && !music.isPlaying) {
     void music.play();
@@ -138,30 +104,91 @@ document.querySelector('[data-open-language]')?.addEventListener('click', () => 
   languageScreen.focusPreferred(state.language || detectPreferredLanguage());
 });
 
-let autoPausedByLifecycle = false;
 
-function pauseForLifecycle() {
-  if (!music.isPlaying) return;
-  autoPausedByLifecycle = true;
-  music.pause();
+const installGate = document.querySelector('[data-install-gate]');
+const installPrimary = installGate?.querySelector('[data-install-primary]');
+const installLater = installGate?.querySelector('[data-install-later]');
+const installMessage = installGate?.querySelector('[data-install-message]');
+let installGateResolve = null;
+let installGateMode = 'native';
+
+function unlockTitleAudio() {
+  if (!music.musicEnabled) return;
+  music.prepareTitle();
+  void music.play();
 }
 
-function resumeAfterLifecycle() {
-  if (!autoPausedByLifecycle) return;
-  autoPausedByLifecycle = false;
-  if (document.body.dataset.screen === 'title' && music.musicEnabled) {
-    void music.play();
+function closeInstallGate() {
+  if (!installGate) return;
+  installGate.hidden = true;
+  installGateResolve?.();
+  installGateResolve = null;
+}
+
+function refreshInstallGateCopy(mode) {
+  installGateMode = mode;
+  if (!installMessage || !installPrimary) return;
+
+  if (mode === 'native') {
+    installMessage.textContent = translate('install.body');
+    installPrimary.textContent = translate('install.primary');
+    return;
   }
+
+  if (mode === 'ios') {
+    installMessage.textContent = translate('install.ios');
+    installPrimary.textContent = translate('install.continue');
+    return;
+  }
+
+  installMessage.textContent = translate('install.manual');
+  installPrimary.textContent = translate('install.continue');
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) pauseForLifecycle();
-  else resumeAfterLifecycle();
+async function maybeShowInstallGate() {
+  if (!installGate || pwa.isStandalone() || !pwa.isMobile()) return;
+  if (sessionStorage.getItem('lucky-claw:install-dismissed') === '1') return;
+
+  const nativeReady = await pwa.waitForNativePrompt(1400);
+  const mode = nativeReady ? 'native' : pwa.isIOS() ? 'ios' : 'manual';
+  refreshInstallGateCopy(mode);
+  installGate.hidden = false;
+
+  await new Promise((resolve) => { installGateResolve = resolve; });
+}
+
+installPrimary?.addEventListener('click', async () => {
+  unlockTitleAudio();
+
+  if (installGateMode === 'native') {
+    const result = await pwa.promptInstall();
+    if (result.accepted) {
+      closeInstallGate();
+      return;
+    }
+    // If the native prompt was dismissed, continue in-browser without trapping the user.
+    void requestImmersiveMode();
+    closeInstallGate();
+    return;
+  }
+
+  // iOS and browsers without beforeinstallprompt cannot be installed by script.
+  // The card already shows the exact OS/browser action; continue in immersive mode.
+  void requestImmersiveMode();
+  closeInstallGate();
 });
-window.addEventListener('pagehide', pauseForLifecycle);
-window.addEventListener('pageshow', () => { if (!document.hidden) resumeAfterLifecycle(); });
-document.addEventListener('freeze', pauseForLifecycle);
-document.addEventListener('resume', () => { if (!document.hidden) resumeAfterLifecycle(); });
+
+installLater?.addEventListener('click', () => {
+  sessionStorage.setItem('lucky-claw:install-dismissed', '1');
+  unlockTitleAudio();
+  void requestImmersiveMode();
+  closeInstallGate();
+});
+
+bindAudioLifecycle({
+  music,
+  getScreen: () => document.body.dataset.screen,
+});
 
 async function bootstrap() {
   const preferredLanguage = state.language || detectPreferredLanguage();
@@ -169,6 +196,7 @@ async function bootstrap() {
 
   showScreen('splash');
   await runSplash();
+  await maybeShowInstallGate();
 
   if (state.firstRunComplete && state.language) {
     showScreen('title');
@@ -186,7 +214,7 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.15' });
+window.LuckyClawBuild = Object.freeze({ id: '001.16' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,

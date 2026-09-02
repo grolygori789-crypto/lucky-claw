@@ -520,6 +520,27 @@ body.is-splash-running .splash-brand {
   transform: scale(0.96);
 }
 
+
+
+/* PWA INSTALL GATE --------------------------------------------------------- */
+.install-gate[hidden]{display:none!important;}
+.install-gate{position:fixed;z-index:160;inset:0;display:grid;place-items:end center;padding:18px max(14px,env(safe-area-inset-right)) max(20px,calc(env(safe-area-inset-bottom) + 12px)) max(14px,env(safe-area-inset-left));}
+.install-gate__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,247,242,.08),rgba(78,43,42,.20));backdrop-filter:blur(4px) saturate(1.04);}
+.install-gate__card{position:relative;width:min(100%,430px);display:grid;grid-template-columns:76px 1fr;gap:14px 15px;padding:17px;border:1px solid rgba(255,255,255,.82);border-radius:28px;color:#694b45;background:linear-gradient(150deg,rgba(255,253,249,.94),rgba(255,231,237,.90));box-shadow:0 24px 64px rgba(76,42,39,.20),0 6px 18px rgba(187,104,128,.13),inset 0 1px rgba(255,255,255,.98),inset 0 -1px rgba(172,110,82,.08);backdrop-filter:blur(18px) saturate(1.12);animation:install-card-in 460ms var(--ease-premium) both;}
+.install-gate__icon-wrap{width:76px;height:76px;padding:3px;border-radius:22px;background:linear-gradient(145deg,#fffaf5,#e8bd88 52%,#fff1dd);box-shadow:0 8px 18px rgba(91,50,44,.15),inset 0 1px rgba(255,255,255,.88);}
+.install-gate__icon{width:100%;height:100%;display:block;object-fit:cover;border-radius:19px;}
+.install-gate__copy{min-width:0;align-self:center;}
+.install-gate__eyebrow{margin-bottom:4px;color:#b77a59;font-size:9px;font-weight:850;letter-spacing:.17em;}
+.install-gate h2{margin:0;font-size:clamp(20px,5.8vw,26px);line-height:1.05;letter-spacing:-.025em;}
+.install-gate p{margin:7px 0 0;color:rgba(105,75,69,.76);font-size:12px;line-height:1.42;}
+.install-gate__actions{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:9px;}
+.install-gate button{min-height:48px;border-radius:17px;font-weight:800;cursor:pointer;}
+.install-gate__primary{border:1px solid rgba(144,55,76,.28);color:#fff9f7;background:radial-gradient(circle at 34% 16%,rgba(255,255,255,.22),transparent 18%),linear-gradient(180deg,#ef5676 0%,#d82a52 48%,#ac183d 100%);box-shadow:0 9px 18px rgba(168,29,66,.22),inset 0 1px rgba(255,255,255,.42),inset 0 -3px 5px rgba(95,9,35,.16);}
+.install-gate__primary:active{transform:translateY(1px) scale(.985);}
+.install-gate__later{min-width:92px;padding:0 14px;border:1px solid rgba(169,122,91,.18);color:#755a53;background:rgba(255,251,247,.74);box-shadow:inset 0 1px rgba(255,255,255,.88);}
+@keyframes install-card-in{from{opacity:0;transform:translateY(18px) scale(.975);filter:blur(2px);}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}}
+@media(min-width:700px){.install-gate{place-items:center;}}
+
 .rotate-overlay {
   position: fixed;
   z-index: 100;

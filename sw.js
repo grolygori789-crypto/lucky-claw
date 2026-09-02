@@ -1,12 +1,14 @@
-const CACHE_NAME = 'lucky-claw-shell-v3';
-const BUILD_ID = '001.15';
+const CACHE_NAME = 'lucky-claw-shell-v4';
+const BUILD_ID = '001.16';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './src/css/app.css?v=001.15',
-  './src/css/title-showcase.css?v=001.15',
-  './src/js/core/app.js?v=001.15',
+  './src/css/app.css?v=001.16',
+  './src/css/title-showcase.css?v=001.16',
+  './src/js/core/app.js?v=001.16',
+  './src/js/core/audio-lifecycle.js',
+  './src/js/core/pwa-install.js',
   './src/js/core/display-mode.js',
   './src/js/core/i18n.js',
   './src/js/core/storage.js',
@@ -17,8 +19,9 @@ const APP_SHELL = [
   './src/locales/en.json',
   './src/locales/th.json',
   './assets/machines/classic/cabinet-base.webp',
-  './assets/machines/classic/title-claw-rail.png?v=001.15',
-  './assets/plushies/title/title-plush-layer.png?v=001.15',
+  './assets/machines/classic/title-claw-rail.png?v=001.16',
+  './assets/machines/classic/title-claw-head.png?v=001.16',
+  './assets/plushies/title/title-plush-layer.png?v=001.16',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-192.png',
@@ -39,13 +42,6 @@ self.addEventListener('activate', (event) => {
     const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const client of clients) {
       try { client.postMessage({ type: 'BUILD_UPDATED', build: BUILD_ID }); } catch {}
-      try {
-        const url = new URL(client.url);
-        if (url.origin === self.location.origin) {
-          url.searchParams.set('lc_build', BUILD_ID);
-          await client.navigate(url.href);
-        }
-      } catch {}
     }
   })());
 });
