@@ -444,6 +444,19 @@ Options:
 
 Browser language may preselect, but player can override.
 
+### Title cabinet presentation
+
+The approved cabinet base remains a clean physical plate. Title presentation adds production layers rather than baking controls or effects into the cabinet image:
+- curated Title Plush Layer when its final transparent asset is approved;
+- separate claw layer when its final transparent asset is approved;
+- restrained front-glass overlay;
+- DOM/CSS 2.5D joystick, monitor, SHUFFLE button, and DROP button anchored to the cabinet deck.
+
+On Title, the control set is a powered-on showcase state: visually complete, premium, and non-interactive. It must not look greyed-out or broken. Gameplay later reuses the same control geometry and changes it to an interactive state, avoiding a visual jump between Title and play.
+
+The front glass is a foreground visual layer, not an input surface. Reflection must stay subtle enough that plush targets and the claw remain easy to read.
+
+
 ---
 
 ## 12. Main Menu
@@ -595,7 +608,23 @@ Short, crisp, not noisy.
 
 ### Music
 
-Optional lightweight ambient arcade loop with clean looping and respectful default volume.
+Lucky Claw uses a fixed launch soundtrack of five production tracks:
+- Main Title Theme
+- Cozy Claw
+- Toy Boutique
+- Lucky Rush
+- Dreamy Arcade
+
+Player-facing track names display only the song title; no “Lucky Claw” suffix is shown in the media player.
+
+Music UX is hybrid:
+- Title uses a compact player with Play/Pause and Mute/Unmute while Main Title Theme remains the signature title track.
+- Main Menu exposes the full minimal player: Previous/Next, Play/Pause, Shuffle, Repeat Off/Playlist/Track, volume decrease/increase, and direct track selection.
+- Gameplay keeps a compact player. The track active when a round begins is locked for that round; track-change requests may be queued for the next round.
+- The final 30 seconds enter Dynamic Urgency Mode. Playback rate rises progressively and smoothly, reaching a restrained maximum near the final seconds, then always resets to 1.00× when the round ends.
+- User mute/volume choices always win; urgency never forces music back on.
+
+Music preferences persist locally. Audio must remain subordinate to gameplay SFX and retain enough headroom for claw, shuffle, drop, chute, and reward sounds.
 
 ### Haptics
 
@@ -1076,7 +1105,8 @@ Deliver:
 - Collection / Themes / Missions entry;
 - Settings;
 - points display;
-- selected-theme presence.
+- selected-theme presence;
+- full minimal soundtrack player using the approved five-track set.
 
 Do not expose dead controls.
 
@@ -1090,7 +1120,8 @@ Deliver:
 - grab evaluation;
 - miss / grip / lift / success;
 - prize chute;
-- reset loop.
+- reset loop;
+- per-round soundtrack track lock and final-30-second Dynamic Urgency integration.
 
 Goal: repeatable claw attempt that is already fun.
 

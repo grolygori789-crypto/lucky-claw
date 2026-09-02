@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'lucky-claw:save';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 const DEFAULT_STATE = Object.freeze({
   schemaVersion: SCHEMA_VERSION,
@@ -11,12 +11,25 @@ const DEFAULT_STATE = Object.freeze({
   missionProgress: {},
   settings: {
     music: true,
+    musicVolume: 0.55,
+    musicShuffle: false,
+    musicRepeat: 'all',
+    musicTrack: 'main-title-theme',
     sfx: true,
     haptics: true,
     reducedEffects: false,
   },
   firstRunComplete: false,
 });
+
+const REPEAT_MODES = new Set(['off', 'all', 'one']);
+const TRACK_IDS = new Set([
+  'main-title-theme',
+  'cozy-claw',
+  'toy-boutique',
+  'lucky-rush',
+  'dreamy-arcade',
+]);
 
 function cloneDefaults() {
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -55,8 +68,22 @@ function normalizeState(candidate) {
   }
 
   if (candidate.settings && typeof candidate.settings === 'object' && !Array.isArray(candidate.settings)) {
-    for (const key of Object.keys(safe.settings)) {
-      if (typeof candidate.settings[key] === 'boolean') safe.settings[key] = candidate.settings[key];
+    const settings = candidate.settings;
+
+    for (const key of ['music', 'musicShuffle', 'sfx', 'haptics', 'reducedEffects']) {
+      if (typeof settings[key] === 'boolean') safe.settings[key] = settings[key];
+    }
+
+    if (Number.isFinite(settings.musicVolume)) {
+      safe.settings.musicVolume = Math.min(1, Math.max(0, settings.musicVolume));
+    }
+
+    if (REPEAT_MODES.has(settings.musicRepeat)) {
+      safe.settings.musicRepeat = settings.musicRepeat;
+    }
+
+    if (TRACK_IDS.has(settings.musicTrack)) {
+      safe.settings.musicTrack = settings.musicTrack;
     }
   }
 
@@ -87,4 +114,3 @@ export function saveState(state) {
 
   return safe;
 }
-

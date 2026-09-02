@@ -4,6 +4,12 @@
   "title.eyebrow": "Benedict Games ขอเสนอ",
   "title.tagline": "เล็งตัวที่ชอบ แล้วคีบกลับบ้าน",
   "title.language": "เปลี่ยนภาษา",
+  "controls.ready": "พร้อม",
+  "music.player": "เครื่องเล่นเพลง",
+  "music.play": "เล่นเพลง",
+  "music.pause": "หยุดเพลงชั่วคราว",
+  "music.mute": "ปิดเสียงเพลง",
+  "music.unmute": "เปิดเสียงเพลง",
   "rotate.title": "เล่นแนวตั้งสนุกกว่า",
   "rotate.body": "หมุนมือถือเป็นแนวตั้งเพื่อเล่น"
 }

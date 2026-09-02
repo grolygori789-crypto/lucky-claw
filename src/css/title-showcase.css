@@ -1,0 +1,249 @@
+/* Title cabinet presentation layers. Gameplay reuses these visual anchors later. */
+.cabinet-stage__image { z-index: 0; }
+.cabinet-stage__warmth { z-index: 1; }
+.cabinet-stage__shine,
+.cabinet-stage__sparkles { z-index: 6; }
+
+.cabinet-stage__glass {
+  position: absolute;
+  z-index: 3;
+  left: 4.3%;
+  top: 6.4%;
+  width: 91.4%;
+  height: 58.1%;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 2.4% 2.4% 1.6% 1.6%;
+  background:
+    linear-gradient(116deg, transparent 0 16%, rgba(255, 255, 255, 0.11) 20%, transparent 29% 64%, rgba(255, 255, 255, 0.075) 69%, transparent 76%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 24% 82%, rgba(255, 226, 231, 0.045));
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.36),
+    inset 0 -1px rgba(204, 151, 129, 0.09);
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity var(--motion-medium) var(--ease-premium);
+}
+
+.cabinet-stage__glass::after {
+  content: "";
+  position: absolute;
+  inset: 2.2% 2.4%;
+  border-radius: inherit;
+  background: radial-gradient(circle at 72% 13%, rgba(255, 255, 255, 0.18), transparent 18%);
+  opacity: 0.68;
+}
+
+.cabinet-controls {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms var(--ease-premium);
+}
+
+body[data-screen="title"] .cabinet-controls {
+  opacity: 1;
+}
+
+body[data-screen="title"] .cabinet-stage__glass {
+  opacity: 0.58;
+}
+
+.cabinet-joystick {
+  position: absolute;
+  left: 17.4%;
+  top: 69.35%;
+  width: 13.7%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 5px rgba(99, 58, 49, 0.18));
+}
+
+.cabinet-joystick__base {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 8%;
+  height: 38%;
+  border: 1px solid rgba(133, 87, 50, 0.48);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 42%, #fffaf2 0 38%, #eacda8 40% 49%, #9e6a3f 52% 58%, #f7e3c2 61% 72%, #fff8ef 76%);
+  box-shadow:
+    0 3px 5px rgba(88, 49, 41, 0.16),
+    inset 0 2px 3px rgba(255, 255, 255, 0.88);
+}
+
+.cabinet-joystick__stem {
+  position: absolute;
+  left: 46.2%;
+  bottom: 27%;
+  width: 8%;
+  height: 39%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8f633e, #f1d6ab 38%, #fff2d6 52%, #aa764a 78%, #7d5132);
+  box-shadow: 1px 1px 2px rgba(75, 44, 37, 0.22);
+}
+
+.cabinet-joystick__knob {
+  position: absolute;
+  left: 27%;
+  top: 5%;
+  width: 46%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(167, 93, 111, 0.44);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 27%, rgba(255, 255, 255, 0.96) 0 9%, transparent 10%),
+    radial-gradient(circle at 42% 34%, #ffdce6 0 16%, #efabc0 39%, #cf7e9b 71%, #9b5c70 100%);
+  box-shadow:
+    inset -5px -7px 11px rgba(108, 55, 72, 0.18),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.46),
+    0 4px 8px rgba(86, 45, 55, 0.2);
+}
+
+.cabinet-monitor {
+  position: absolute;
+  left: 42.8%;
+  top: 69.35%;
+  width: 24.7%;
+  height: 5.15%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(147, 91, 61, 0.46);
+  border-radius: 17% / 33%;
+  background:
+    linear-gradient(180deg, rgba(255, 247, 242, 0.96), rgba(243, 214, 209, 0.86));
+  box-shadow:
+    0 4px 7px rgba(93, 53, 44, 0.13),
+    inset 0 1px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 5px rgba(139, 80, 72, 0.09);
+}
+
+.cabinet-monitor__screen {
+  position: absolute;
+  inset: 16% 7%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 225, 226, 0.72);
+  border-radius: 13% / 32%;
+  color: rgba(255, 247, 241, 0.96);
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255, 189, 205, 0.28), transparent 47%),
+    linear-gradient(180deg, #a35c73, #74435a);
+  box-shadow:
+    inset 0 2px 8px rgba(34, 15, 23, 0.31),
+    0 0 8px rgba(226, 137, 162, 0.16);
+}
+
+.cabinet-monitor__screen::before {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 11%;
+  height: 22%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.17), transparent);
+}
+
+.cabinet-monitor__status {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(5px, 1.45vw, 10px);
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-shadow: 0 1px 3px rgba(49, 19, 31, 0.35);
+}
+
+.cabinet-button {
+  position: absolute;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: drop-shadow(0 4px 6px rgba(92, 50, 43, 0.18));
+}
+
+.cabinet-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(132, 84, 46, 0.5);
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 38%, #fff9ef 0 42%, #e7c598 45% 55%, #a36f42 58% 66%, #f8e5c1 69% 100%);
+  box-shadow:
+    0 3px 6px rgba(88, 49, 40, 0.13),
+    inset 0 1px 2px rgba(255, 255, 255, 0.94);
+}
+
+.cabinet-button::after {
+  content: "";
+  position: absolute;
+  inset: 17%;
+  border: 1px solid rgba(180, 104, 126, 0.39);
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 35% 27%, rgba(255, 255, 255, 0.96) 0 7%, transparent 8%),
+    radial-gradient(circle at 43% 33%, #ffdce5 0 15%, #efb0c3 38%, #d986a0 72%, #b76882 100%);
+  box-shadow:
+    inset -4px -6px 9px rgba(115, 55, 74, 0.16),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.4),
+    0 1px 5px rgba(209, 109, 139, 0.22);
+}
+
+.cabinet-button__icon {
+  position: absolute;
+  z-index: 2;
+  inset: 27%;
+  display: grid;
+  place-items: center;
+  color: #fff9f5;
+  filter: drop-shadow(0 1px 2px rgba(119, 58, 76, 0.38));
+}
+
+.cabinet-button__icon svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cabinet-button--shuffle {
+  left: 60.5%;
+  top: 69.35%;
+  width: 10.5%;
+}
+
+.cabinet-button--drop {
+  left: 72.8%;
+  top: 69.35%;
+  width: 12.5%;
+}
+
+body[data-screen="title"] .cabinet-monitor__screen {
+  animation: title-monitor-breathe 3.2s ease-in-out infinite alternate;
+}
+
+body[data-screen="title"] .cabinet-button--drop::after {
+  animation: title-drop-breathe 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes title-monitor-breathe {
+  from { filter: brightness(0.96); }
+  to { filter: brightness(1.08); }
+}
+
+@keyframes title-drop-breathe {
+  from { box-shadow: inset -4px -6px 9px rgba(115, 55, 74, 0.16), inset 3px 3px 7px rgba(255, 255, 255, 0.4), 0 1px 5px rgba(209, 109, 139, 0.18); }
+  to { box-shadow: inset -4px -6px 9px rgba(115, 55, 74, 0.13), inset 3px 3px 7px rgba(255, 255, 255, 0.46), 0 1px 10px rgba(209, 109, 139, 0.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-screen="title"] .cabinet-monitor__screen,
+  body[data-screen="title"] .cabinet-button--drop::after {
+    animation: none;
+  }
+}

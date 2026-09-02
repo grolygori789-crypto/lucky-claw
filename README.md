@@ -75,6 +75,6 @@ Planned directories appear when production content reaches them; Git history rem
 
 **Build 001 — Pre-main-menu Foundation**
 
-Current production includes the bilingual app shell, Benedict Games intro, Lucky Claw title treatment, first-run language selection, persistence, responsive portrait baseline, and the approved Classic Pink cabinet base.
+Current production includes the bilingual app shell, Benedict Games intro, Lucky Claw title treatment, first-run language selection, persistence, responsive portrait baseline, the approved Classic Pink cabinet base, locked premium title-control presentation, subtle front-glass treatment, and the five-track soundtrack foundation with a compact title player.
 
 Next production batch: **Build 002 — Main Menu Shell**.

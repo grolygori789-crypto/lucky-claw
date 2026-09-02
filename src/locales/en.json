@@ -4,6 +4,12 @@
   "title.eyebrow": "Benedict Games presents",
   "title.tagline": "Pick your favorite. Make it yours.",
   "title.language": "Change language",
+  "controls.ready": "READY",
+  "music.player": "Music player",
+  "music.play": "Play music",
+  "music.pause": "Pause music",
+  "music.mute": "Mute music",
+  "music.unmute": "Unmute music",
   "rotate.title": "Best in portrait",
   "rotate.body": "Turn your phone upright to play."
 }
