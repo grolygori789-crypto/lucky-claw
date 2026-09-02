@@ -1,0 +1,22 @@
+{
+  "language.title": "言語を選択",
+  "language.subtitle": "あとからいつでも変更できます。",
+  "title.eyebrow": "Benedict Gamesがお届けします",
+  "title.tagline": "お気に入りを、つかまえよう。",
+  "title.language": "言語を変更",
+  "controls.ready": "READY",
+  "music.player": "ミュージックプレイヤー",
+  "music.play": "音楽を再生",
+  "music.pause": "一時停止",
+  "music.mute": "音楽をミュート",
+  "music.unmute": "ミュートを解除",
+  "rotate.title": "縦向きがおすすめ",
+  "rotate.body": "端末を縦向きにしてプレイしてください。",
+  "install.title": "Lucky Clawをインストール",
+  "install.body": "ホーム画面に追加すると、フルスクリーンですぐに遊べます。",
+  "install.primary": "インストール",
+  "install.later": "あとで",
+  "install.ios": "共有ボタンをタップして、「ホーム画面に追加」を選んでください。",
+  "install.manual": "ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選んでください。",
+  "install.continue": "続ける"
+}

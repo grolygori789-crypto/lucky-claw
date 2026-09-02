@@ -1,10 +1,12 @@
-const SUPPORTED = new Set(['th', 'en']);
+const SUPPORTED = new Set(['th', 'en', 'ja']);
 let activeLanguage = 'en';
 let activeDictionary = {};
 
 export function detectPreferredLanguage() {
   const browser = (navigator.languages?.[0] || navigator.language || 'en').toLowerCase();
-  return browser.startsWith('th') ? 'th' : 'en';
+  if (browser.startsWith('th')) return 'th';
+  if (browser.startsWith('ja')) return 'ja';
+  return 'en';
 }
 
 export async function setLanguage(language) {

@@ -42,7 +42,7 @@ function normalizeState(candidate) {
     return safe;
   }
 
-  if (candidate.language === 'th' || candidate.language === 'en') {
+  if (candidate.language === 'th' || candidate.language === 'en' || candidate.language === 'ja') {
     safe.language = candidate.language;
   }
 

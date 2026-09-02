@@ -12,7 +12,6 @@
     html, body, #app { touch-action: none !important; }
     body { -webkit-touch-callout: none; user-select: none; }
     img { -webkit-touch-callout: none; -webkit-user-drag: none; user-select: none; }
-    .cabinet-stage img, .install-gate__icon { pointer-events: none !important; }
     body[data-boot-ready="false"] .app-shell { opacity: 0 !important; pointer-events: none !important; }
     body[data-boot-ready="true"] .app-shell { opacity: 1; transition: opacity 180ms ease-out; }
     .lc-boot-cover {
@@ -30,6 +29,37 @@
       box-shadow: 0 8px 26px rgba(112,67,59,.14), 0 0 0 5px rgba(255,248,241,.38);
     }
     body[data-boot-ready="true"] .lc-boot-cover { opacity: 0; visibility: hidden; }
+    body[data-boot-ready="true"][data-screen="splash"] .cabinet-title-claw-system,
+    body[data-boot-ready="true"][data-screen="language"] .cabinet-title-claw-system {
+      opacity: 1 !important; transform: translateY(0) !important; transition: none !important;
+    }
+    body[data-boot-ready="true"][data-screen="splash"] .cabinet-title-plush,
+    body[data-boot-ready="true"][data-screen="language"] .cabinet-title-plush {
+      opacity: 1 !important;
+      transform: translateX(-50%) translateY(0) scale(1) !important;
+      transition: none !important;
+    }
+    body[data-boot-ready="true"][data-screen="splash"] .cabinet-controls,
+    body[data-boot-ready="true"][data-screen="language"] .cabinet-controls {
+      opacity: 1 !important; transition: none !important;
+    }
+    body[data-boot-ready="true"][data-screen="splash"] .cabinet-stage__glass,
+    body[data-boot-ready="true"][data-screen="language"] .cabinet-stage__glass {
+      opacity: .74 !important;
+    }
+    body[data-boot-ready="true"][data-screen="splash"] .cabinet-stage__glass-sheen,
+    body[data-boot-ready="true"][data-screen="language"] .cabinet-stage__glass-sheen {
+      opacity: .84 !important; transition: none !important;
+    }
+    /* Three native-first language choices: TH / EN / JA. */
+    .language-card .language-options {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .language-card .choice-button { padding-inline: 8px; }
+    @media (max-width: 340px) {
+      .language-card .language-options { grid-template-columns: 1fr; gap: 10px; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .lc-boot-cover, body[data-boot-ready="true"] .app-shell { transition: none; }
     }
@@ -48,9 +78,9 @@
   <link rel="preload" as="image" href="./assets/machines/classic/title-claw-head.png?v=001.20" fetchpriority="high">
   <link rel="stylesheet" href="./src/css/app.css?v=001.20">
   <link rel="stylesheet" href="./src/css/title-showcase.css?v=001.20">
-  <script type="module" src="./src/js/core/app.js?v=001.21"></script>
+  <script type="module" src="./src/js/core/app.js?v=001.23"></script>
 </head>
-<body data-build="001.21" data-screen="splash" data-boot-ready="false">
+<body data-build="001.23" data-screen="splash" data-boot-ready="false">
   <div class="lc-boot-cover" data-boot-cover aria-hidden="true">
     <div class="lc-boot-cover__mark">✦</div>
   </div>
@@ -161,6 +191,10 @@
           <button class="choice-button" type="button" data-language="en">
             <span class="choice-button__primary">English</span>
             <span class="choice-button__secondary">EN</span>
+          </button>
+          <button class="choice-button" type="button" data-language="ja">
+            <span class="choice-button__primary">日本語</span>
+            <span class="choice-button__secondary">JA</span>
           </button>
         </div>
       </div>

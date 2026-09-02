@@ -1,24 +1,25 @@
-const CACHE_NAME = 'lucky-claw-shell-v9';
+const CACHE_NAME = 'lucky-claw-shell-v11';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '001.21';
+const BUILD_ID = '001.23';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './src/css/app.css?v=001.20',
   './src/css/title-showcase.css?v=001.20',
-  './src/js/core/app.js?v=001.21',
+  './src/js/core/app.js?v=001.23',
   './src/js/core/audio-lifecycle.js?v=001.20',
   './src/js/core/pwa-install.js?v=001.20',
   './src/js/core/display-mode.js?v=001.21',
-  './src/js/core/i18n.js?v=001.20',
-  './src/js/core/storage.js?v=001.20',
+  './src/js/core/i18n.js?v=001.23',
+  './src/js/core/storage.js?v=001.23',
   './src/js/data/soundtrack.js',
   './src/js/screens/language.js?v=001.20',
   './src/js/screens/splash.js?v=001.20',
   './src/js/systems/music-manager.js?v=001.20',
   './src/locales/en.json',
   './src/locales/th.json',
+  './src/locales/ja.json',
   './assets/machines/classic/cabinet-base.webp',
   './assets/machines/classic/title-claw-rail.png?v=001.20',
   './assets/machines/classic/title-claw-head.png?v=001.20',
