@@ -1,11 +1,11 @@
-import { detectPreferredLanguage, setLanguage, translate } from './i18n.js';
-import { installDisplayMode, requestImmersiveMode } from './display-mode.js';
-import { loadState, saveState } from './storage.js';
-import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.18';
-import { createPWAController } from './pwa-install.js';
-import { MusicManager } from '../systems/music-manager.js';
-import { bindLanguageScreen } from '../screens/language.js';
-import { runSplash } from '../screens/splash.js';
+import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=001.20';
+import { installDisplayMode, requestImmersiveMode } from './display-mode.js?v=001.20';
+import { loadState, saveState } from './storage.js?v=001.20';
+import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
+import { createPWAController } from './pwa-install.js?v=001.20';
+import { MusicManager } from '../systems/music-manager.js?v=001.20';
+import { bindLanguageScreen } from '../screens/language.js?v=001.20';
+import { runSplash } from '../screens/splash.js?v=001.20';
 
 const screens = new Map(
   [...document.querySelectorAll('[data-screen]')].map((element) => [element.dataset.screen, element]),
@@ -222,7 +222,7 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.19' });
+window.LuckyClawBuild = Object.freeze({ id: '001.20' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,
