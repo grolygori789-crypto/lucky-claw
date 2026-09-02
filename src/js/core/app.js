@@ -1,7 +1,7 @@
 import { detectPreferredLanguage, setLanguage, translate } from './i18n.js';
 import { installDisplayMode, requestImmersiveMode } from './display-mode.js';
 import { loadState, saveState } from './storage.js';
-import { bindAudioLifecycle } from './audio-lifecycle.js';
+import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.17';
 import { createPWAController } from './pwa-install.js';
 import { MusicManager } from '../systems/music-manager.js';
 import { bindLanguageScreen } from '../screens/language.js';
@@ -20,9 +20,7 @@ const pwa = createPWAController({
   onInstalled: () => document.querySelector('[data-install-gate]')?.setAttribute('hidden', ''),
 });
 
-
-
-music.addEventListener('preferencechange', (event) => {
+const audioLifecycle = music.addEventListener('preferencechange', (event) => {
   state = saveState({
     ...state,
     settings: {
@@ -44,9 +42,10 @@ function showScreen(name) {
 
   if (name === 'title') {
     music.prepareTitle();
-    // Browsers may refuse audible autoplay before a trusted gesture.
-    // A global first-interaction unlock installed below retries seamlessly.
-    void music.play();
+    // If the OS install sheet/backgrounding paused audio, resume the same
+    // unlocked media element. Otherwise try normal playback; the global
+    // trusted-gesture handler remains the fallback for autoplay-restricted browsers.
+    if (!audioLifecycle.resumeIfEligible()) void music.play();
   }
 }
 
@@ -185,23 +184,21 @@ installLater?.addEventListener('click', () => {
   closeInstallGate();
 });
 
-bindAudioLifecycle({
-  music,
-  getScreen: () => document.body.dataset.screen,
-});
-
 async function bootstrap() {
   const preferredLanguage = state.language || detectPreferredLanguage();
   await Promise.all([applyLanguage(preferredLanguage), waitForCabinet()]);
 
   showScreen('splash');
   await runSplash();
+
+  // Put the real title behind the install sheet first. This keeps audio in the
+  // correct screen state if Android temporarily backgrounds the page while the
+  // native installer is open, and it makes the install interaction a valid
+  // gesture for unlocking the title soundtrack.
+  showScreen('title');
   await maybeShowInstallGate();
 
-  if (state.firstRunComplete && state.language) {
-    showScreen('title');
-    return;
-  }
+  if (state.firstRunComplete && state.language) return;
 
   returnScreen = 'title';
   showScreen('language');
@@ -214,7 +211,7 @@ bootstrap().catch((error) => {
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.16' });
+window.LuckyClawBuild = Object.freeze({ id: '001.17' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,

@@ -2,30 +2,34 @@ export function bindAudioLifecycle({ music, getScreen }) {
   let autoPausedByLifecycle = false;
 
   function pauseForLifecycle() {
-    if (!music.isPlaying) return;
+    if (!music.isPlaying) return false;
     autoPausedByLifecycle = true;
     music.pause();
+    return true;
   }
 
-  function resumeAfterLifecycle() {
-    if (!autoPausedByLifecycle) return;
+  function resumeIfEligible() {
+    if (!autoPausedByLifecycle) return false;
+    if (document.hidden) return false;
+    if (getScreen() !== 'title') return false;
+    if (!music.musicEnabled) return false;
+
     autoPausedByLifecycle = false;
-    if (getScreen() === 'title' && music.musicEnabled) {
-      void music.play();
-    }
+    void music.play();
+    return true;
   }
 
   function onVisibilityChange() {
     if (document.hidden) pauseForLifecycle();
-    else resumeAfterLifecycle();
+    else resumeIfEligible();
   }
 
   function onPageShow() {
-    if (!document.hidden) resumeAfterLifecycle();
+    resumeIfEligible();
   }
 
   function onResume() {
-    if (!document.hidden) resumeAfterLifecycle();
+    resumeIfEligible();
   }
 
   document.addEventListener('visibilitychange', onVisibilityChange);
@@ -34,11 +38,16 @@ export function bindAudioLifecycle({ music, getScreen }) {
   document.addEventListener('freeze', pauseForLifecycle);
   document.addEventListener('resume', onResume);
 
-  return () => {
-    document.removeEventListener('visibilitychange', onVisibilityChange);
-    window.removeEventListener('pagehide', pauseForLifecycle);
-    window.removeEventListener('pageshow', onPageShow);
-    document.removeEventListener('freeze', pauseForLifecycle);
-    document.removeEventListener('resume', onResume);
-  };
+  return Object.freeze({
+    pauseForLifecycle,
+    resumeIfEligible,
+    get hasPendingResume() { return autoPausedByLifecycle; },
+    destroy() {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', pauseForLifecycle);
+      window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('freeze', pauseForLifecycle);
+      document.removeEventListener('resume', onResume);
+    },
+  });
 }
