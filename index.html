@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8e9df">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Lucky Claw — a premium claw-machine game by Benedict Interactive.">
+  <title>Lucky Claw</title>
+  <link rel="preload" as="image" href="./assets/machines/classic/cabinet-base.webp" fetchpriority="high">
+  <link rel="stylesheet" href="./src/css/app.css">
+  <script type="module" src="./src/js/core/app.js"></script>
+</head>
+<body data-build="001">
+  <main class="app-shell" id="app" aria-live="polite">
+    <div class="cabinet-stage" aria-hidden="true">
+      <img
+        class="cabinet-stage__image"
+        src="./assets/machines/classic/cabinet-base.webp"
+        width="941"
+        height="1672"
+        alt=""
+        decoding="async"
+        fetchpriority="high"
+      >
+      <div class="cabinet-stage__warmth"></div>
+      <div class="cabinet-stage__shine"></div>
+      <div class="cabinet-stage__sparkles">
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+
+    <section class="screen screen--splash is-active" data-screen="splash" aria-label="Benedict Games intro">
+      <div class="splash-brand" data-splash-brand>
+        <div class="splash-brand__star" aria-hidden="true">✦</div>
+        <div class="splash-brand__name">BENEDICT GAMES</div>
+        <div class="splash-brand__parent">by Benedict Interactive</div>
+      </div>
+    </section>
+
+    <section class="screen screen--language" data-screen="language" aria-labelledby="language-title" aria-hidden="true">
+      <div class="glass-card language-card">
+        <div class="mini-brand" aria-hidden="true">LUCKY CLAW</div>
+        <h1 id="language-title" data-i18n="language.title">Choose your language</h1>
+        <p data-i18n="language.subtitle">You can change this anytime.</p>
+
+        <div class="language-options" role="group" aria-labelledby="language-title">
+          <button class="choice-button" type="button" data-language="th">
+            <span class="choice-button__primary">ไทย</span>
+            <span class="choice-button__secondary">TH</span>
+          </button>
+          <button class="choice-button" type="button" data-language="en">
+            <span class="choice-button__primary">English</span>
+            <span class="choice-button__secondary">EN</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen screen--title" data-screen="title" aria-labelledby="game-title" aria-hidden="true">
+      <div class="title-lockup">
+        <div class="title-lockup__eyebrow" data-i18n="title.eyebrow">Benedict Games presents</div>
+        <h1 class="game-logo" id="game-title">
+          <span class="game-logo__lucky">LUCKY</span>
+          <span class="game-logo__claw">CLAW</span>
+        </h1>
+        <div class="title-lockup__ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <p class="title-lockup__tagline" data-i18n="title.tagline">Pick your favorite. Make it yours.</p>
+      </div>
+
+      <button class="language-chip" type="button" data-open-language aria-label="Change language">
+        <span aria-hidden="true">A/ก</span>
+        <span data-language-code>EN</span>
+      </button>
+    </section>
+  </main>
+
+  <aside class="rotate-overlay" aria-hidden="true">
+    <div class="rotate-overlay__phone" aria-hidden="true"></div>
+    <strong data-i18n="rotate.title">Best in portrait</strong>
+    <span data-i18n="rotate.body">Turn your phone upright to play.</span>
+  </aside>
+
+  <noscript>
+    <div class="noscript">Lucky Claw needs JavaScript enabled to run.</div>
+  </noscript>
+</body>
+</html>

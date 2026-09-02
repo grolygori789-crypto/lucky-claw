@@ -164,9 +164,11 @@ This loop is sacred. Meta systems support it; they never bury it.
 ### Controls
 
 Initial production control:
-- Left
-- Right
-- DROP
+- horizontal joystick — the player drags/holds left or right to position the claw;
+- SHUFFLE — optional hold control that stirs/repositions the plush pile for up to approximately 15 seconds per attempt;
+- DROP — the primary action that commits the attempt.
+
+SHUFFLE is a low-complexity agency feature: presentation may imply a physical mixing mechanism, while implementation uses controlled plush repositioning and motion rather than full rigid-body simulation.
 
 After DROP:
 - automatic descent;
@@ -425,7 +427,7 @@ Preferred:
 - Benedict Interactive remains the parent identity;
 - optional playful game-label treatment may appear visually;
 - no long cinematic;
-- approx. 1.2–1.8 seconds unless real loading requires more.
+- approx. 2.6–3.0 seconds for the approved Benedict Games intro; reduced-motion mode may shorten nonessential presentation.
 
 Possible motion:
 - cabinet lights activate;
@@ -492,12 +494,14 @@ Avoid currency bloat.
 
 ### Controls
 
-Large touch targets:
-- Left
-- DROP
-- Right
+The approved physical cabinet art keeps the control deck visually clean. Interactive controls are DOM/CSS 2.5D overlays anchored to the cabinet coordinate system so visual size and touch-target size can be tuned independently.
 
-DROP is the emotional primary action and receives the strongest tactile treatment.
+Large touch targets:
+- horizontal joystick;
+- SHUFFLE;
+- DROP.
+
+DROP is the emotional primary action and receives the strongest tactile treatment. SHUFFLE is secondary and must never compete visually with DROP. Touch hit areas may extend invisibly beyond the rendered control artwork where needed for comfortable one-handed play.
 
 ---
 
@@ -949,6 +953,7 @@ No multi-page tutorial.
 
 Teach by doing:
 - “Move the claw”
+- optionally introduce SHUFFLE without blocking the first attempt
 - highlight DROP
 - “Drop it!”
 - let the real attempt happen.
@@ -1078,7 +1083,8 @@ Do not expose dead controls.
 ### Build 003 — Core Claw Loop
 
 Deliver:
-- horizontal movement;
+- horizontal joystick movement;
+- SHUFFLE hold mechanic with a bounded per-attempt duration;
 - DROP sequence;
 - basic plush targets;
 - grab evaluation;

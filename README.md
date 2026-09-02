@@ -69,10 +69,12 @@ Premium perception should come from art direction, motion, sound, feedback, prog
     └── fonts/
 ```
 
-Empty approved directories are retained with `.gitkeep` until their first production file arrives.
+Planned directories appear when production content reaches them; Git history remains the archive instead of keeping speculative empty folders.
 
 ## Status
 
-**Foundation / pre-production**
+**Build 001 — Pre-main-menu Foundation**
 
-Next production batch: **Build 001 — Pre-main-menu Foundation**.
+Current production includes the bilingual app shell, Benedict Games intro, Lucky Claw title treatment, first-run language selection, persistence, responsive portrait baseline, and the approved Classic Pink cabinet base.
+
+Next production batch: **Build 002 — Main Menu Shell**.
