@@ -1,5 +1,5 @@
 import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=001.20';
-import { installDisplayMode, requestImmersiveMode } from './display-mode.js?v=001.20';
+import { installDisplayMode, requestImmersiveMode } from './display-mode.js?v=001.21';
 import { loadState, saveState } from './storage.js?v=001.20';
 import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
 import { createPWAController } from './pwa-install.js?v=001.20';
@@ -64,13 +64,38 @@ async function applyLanguage(language) {
   }
 }
 
-function waitForCabinet() {
-  const image = document.querySelector('.cabinet-stage__image');
-  if (!image || image.complete) return Promise.resolve();
-  return new Promise((resolve) => {
-    image.addEventListener('load', resolve, { once: true });
-    image.addEventListener('error', resolve, { once: true });
-  });
+async function waitForImageReady(image) {
+  if (!image) return;
+
+  if (!image.complete) {
+    await new Promise((resolve) => {
+      image.addEventListener('load', resolve, { once: true });
+      image.addEventListener('error', resolve, { once: true });
+    });
+  }
+
+  if (typeof image.decode === 'function') {
+    try { await image.decode(); } catch {}
+  }
+}
+
+async function waitForCriticalVisuals() {
+  const criticalImages = [
+    document.querySelector('.cabinet-stage__image'),
+    document.querySelector('.cabinet-title-plush__image'),
+    document.querySelector('.cabinet-title-rail__image'),
+    document.querySelector('.cabinet-title-claw-head__image'),
+  ].filter(Boolean);
+
+  await Promise.all(criticalImages.map(waitForImageReady));
+
+  // Two frames guarantee decoded images + CSS-built controls are composited
+  // together before the boot cover is removed. This prevents the empty-cabinet flash.
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function revealBootSurface() {
+  document.body.dataset.bootReady = 'true';
 }
 
 function unlockExperienceFromGesture(event) {
@@ -197,7 +222,8 @@ installLater?.addEventListener('click', () => {
 
 async function bootstrap() {
   const preferredLanguage = state.language || detectPreferredLanguage();
-  await Promise.all([applyLanguage(preferredLanguage), waitForCabinet()]);
+  await Promise.all([applyLanguage(preferredLanguage), waitForCriticalVisuals()]);
+  revealBootSurface();
 
   showScreen('splash');
   await runSplash();
@@ -218,11 +244,12 @@ async function bootstrap() {
 
 bootstrap().catch((error) => {
   console.error('[Lucky Claw] App failed to start.', error);
+  revealBootSurface();
 });
 
 // Reserved production hooks for Build 002/003. Settings owns the visible music controls;
 // gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.20' });
+window.LuckyClawBuild = Object.freeze({ id: '001.21' });
 
 window.LuckyClawAudio = Object.freeze({
   manager: music,

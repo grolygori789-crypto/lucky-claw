@@ -1,16 +1,16 @@
-const CACHE_NAME = 'lucky-claw-shell-v8';
+const CACHE_NAME = 'lucky-claw-shell-v9';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '001.20';
+const BUILD_ID = '001.21';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './src/css/app.css?v=001.20',
   './src/css/title-showcase.css?v=001.20',
-  './src/js/core/app.js?v=001.20',
+  './src/js/core/app.js?v=001.21',
   './src/js/core/audio-lifecycle.js?v=001.20',
   './src/js/core/pwa-install.js?v=001.20',
-  './src/js/core/display-mode.js?v=001.20',
+  './src/js/core/display-mode.js?v=001.21',
   './src/js/core/i18n.js?v=001.20',
   './src/js/core/storage.js?v=001.20',
   './src/js/data/soundtrack.js',
@@ -77,6 +77,18 @@ async function networkFirst(request) {
   }
 }
 
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  if (response && response.ok && response.status === 200) {
+    await cache.put(request, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
@@ -95,6 +107,21 @@ self.addEventListener('fetch', (event) => {
   // be added later with explicit full-file precaching + range slicing.
   if (request.destination === 'audio' || url.pathname.includes('/assets/audio/')) {
     event.respondWith(fetch(request));
+    return;
+  }
+
+  // Visual production assets are revisioned and precached. Cache-first makes
+  // repeat/PWA launches paint the fully assembled cabinet immediately instead
+  // of waiting on the network for plush/claw/icon layers every time.
+  const isRevisionedStatic = url.searchParams.has('v')
+    && (request.destination === 'style' || request.destination === 'script' || request.destination === 'image');
+
+  if (isRevisionedStatic
+      || request.destination === 'image'
+      || url.pathname.includes('/assets/machines/')
+      || url.pathname.includes('/assets/plushies/')
+      || url.pathname.includes('/assets/icons/')) {
+    event.respondWith(cacheFirst(request));
     return;
   }
 
