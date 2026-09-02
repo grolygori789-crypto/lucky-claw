@@ -239,12 +239,16 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   position: absolute;
   left: 5.6%; right: 5.6%; top: 11%; bottom: 15%;
   border-radius: 5.8% / 28%;
-  background: linear-gradient(180deg, #7b1127 0%, #5e0d22 42%, #45101c 76%, #341016 100%);
-  border: 1px solid rgba(255,223,229,.56);
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(255, 138, 165, .24), transparent 46%),
+    linear-gradient(180deg, #e83f61 0%, #d52248 33%, #b9153b 64%, #8e1532 84%, #681324 100%);
+  border: 1px solid rgba(255,229,233,.64);
   box-shadow:
-    inset 0 7px 14px rgba(16,4,7,.38),
-    inset 0 -5px 10px rgba(15,3,6,.28),
-    0 0 16px rgba(155,20,55,.18);
+    inset 0 7px 14px rgba(79,7,25,.23),
+    inset 0 -6px 11px rgba(68,6,21,.30),
+    inset 0 1px rgba(255,239,242,.28),
+    0 0 17px rgba(220,40,79,.23),
+    0 0 7px rgba(255,164,183,.11);
 }
 
 .cabinet-monitor::after {
@@ -253,7 +257,7 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   z-index: 2;
   left: 10%; right: 10%; top: 16%; height: 18%;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.24), rgba(255,240,245,.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), rgba(255,235,241,.13), transparent);
 }
 
 .cabinet-monitor__screen {
@@ -265,8 +269,8 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   border-radius: 5.8% / 28%;
   color: rgba(255,249,245,.98);
   background:
-    radial-gradient(ellipse at 50% 22%, rgba(255,192,210,.16), transparent 46%),
-    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    radial-gradient(ellipse at 50% 18%, rgba(255,209,219,.18), transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,0) 48%);
 }
 
 .cabinet-monitor__screen::before {
@@ -289,7 +293,7 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   font-weight: 860;
   letter-spacing: .24em;
   text-indent: .24em;
-  text-shadow: 0 1px 3px rgba(31,12,21,.48), 0 0 12px rgba(255,223,228,.10);
+  text-shadow: 0 1px 3px rgba(65,5,20,.42), 0 0 13px rgba(255,235,239,.17);
   transform: translateY(12%);
 }
 
@@ -402,8 +406,8 @@ body[data-screen="title"] .cabinet-controls { opacity: 1; }
   font-size: clamp(4px, .95vw, 7px);
   font-weight: 720;
   letter-spacing: .20em;
-  color: rgba(255, 231, 236, .72);
-  text-shadow: 0 1px 2px rgba(30, 6, 11, .34);
+  color: rgba(255, 240, 243, .80);
+  text-shadow: 0 1px 2px rgba(78, 6, 22, .30);
   white-space: nowrap;
 }
 
