@@ -1,8 +1,8 @@
 import { detectPreferredLanguage, setLanguage } from './i18n.js';
+import { installDisplayMode, requestImmersiveMode } from './display-mode.js';
 import { loadState, saveState } from './storage.js';
 import { MusicManager } from '../systems/music-manager.js';
 import { bindLanguageScreen } from '../screens/language.js';
-import { bindTitlePlayer } from '../screens/title-player.js';
 import { runSplash } from '../screens/splash.js';
 
 const screens = new Map(
@@ -13,7 +13,7 @@ let state = loadState();
 let returnScreen = 'title';
 
 const music = new MusicManager(state.settings);
-const titlePlayer = bindTitlePlayer(music);
+installDisplayMode();
 
 music.addEventListener('preferencechange', (event) => {
   state = saveState({
@@ -33,21 +33,21 @@ function showScreen(name) {
   });
 
   document.body.dataset.screen = name;
-  if (name === 'title') music.prepareTitle();
+
+  if (name === 'title') {
+    music.prepareTitle();
+    // Browsers may refuse audible autoplay before a trusted gesture.
+    // A global first-interaction unlock installed below retries seamlessly.
+    void music.play();
+  }
 }
 
 async function applyLanguage(language) {
   try {
-    const applied = await setLanguage(language);
-    titlePlayer.refresh();
-    return applied;
+    return await setLanguage(language);
   } catch (error) {
     console.error('[Lucky Claw] Localization failed.', error);
-    if (language !== 'en') {
-      const applied = await setLanguage('en');
-      titlePlayer.refresh();
-      return applied;
-    }
+    if (language !== 'en') return setLanguage('en');
     throw error;
   }
 }
@@ -61,10 +61,20 @@ function waitForCabinet() {
   });
 }
 
+function unlockExperienceFromGesture() {
+  void requestImmersiveMode();
+  if (document.body.dataset.screen === 'title' && music.musicEnabled && !music.isPlaying) {
+    void music.play();
+  }
+}
+
+document.addEventListener('pointerdown', unlockExperienceFromGesture, { capture: true });
+document.addEventListener('keydown', unlockExperienceFromGesture, { capture: true });
+
 const languageScreen = bindLanguageScreen({
   async onSelect(language) {
-    // The language tap is a genuine user gesture, so use it to start the title soundtrack.
-    // If the browser still blocks playback, the compact title player remains available.
+    // This tap is a trusted gesture: request immersive mode and start the title soundtrack.
+    void requestImmersiveMode();
     music.prepareTitle();
     void music.play();
 
@@ -105,9 +115,10 @@ bootstrap().catch((error) => {
   console.error('[Lucky Claw] App failed to start.', error);
 });
 
-// Reserved production hooks for Build 003 gameplay. Keeping them on one namespace
-// avoids wiring UI directly to audio internals later.
+// Reserved production hooks for Build 002/003. Settings owns the visible music controls;
+// gameplay owns round locking and urgency without exposing a player over the cabinet.
 window.LuckyClawAudio = Object.freeze({
+  manager: music,
   lockTrackForRound: () => music.lockTrackForRound(),
   unlockTrackAfterRound: (options) => music.unlockTrackAfterRound(options),
   setUrgency: (secondsRemaining) => music.setUrgency(secondsRemaining),

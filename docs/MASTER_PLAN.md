@@ -617,10 +617,10 @@ Lucky Claw uses a fixed launch soundtrack of five production tracks:
 
 Player-facing track names display only the song title; no “Lucky Claw” suffix is shown in the media player.
 
-Music UX is hybrid:
-- Title uses a compact player with Play/Pause and Mute/Unmute while Main Title Theme remains the signature title track.
-- Main Menu exposes the full minimal player: Previous/Next, Play/Pause, Shuffle, Repeat Off/Playlist/Track, volume decrease/increase, and direct track selection.
-- Gameplay keeps a compact player. The track active when a round begins is locked for that round; track-change requests may be queued for the next round.
+Music UX is intentionally unobtrusive:
+- Title plays Main Title Theme with no visible media player; the soundtrack supports the title rather than competing with it.
+- The full minimal player lives inside Settings only: Previous/Next, Play/Pause, Shuffle, Repeat Off/Playlist/Track, volume decrease/increase, and direct track selection.
+- Gameplay has no persistent media-player overlay. The track active when a round begins is locked for that round; track-change requests made through Settings may be queued for the next round.
 - The final 30 seconds enter Dynamic Urgency Mode. Playback rate rises progressively and smoothly, reaching a restrained maximum near the final seconds, then always resets to 1.00× when the round ends.
 - User mute/volume choices always win; urgency never forces music back on.
 
@@ -900,15 +900,14 @@ Required baseline:
 
 Primary: portrait.
 
-Do not depend on browser orientation-lock APIs working everywhere.
+The runtime should aggressively prefer an immersive portrait presentation:
+- disable page pinch-zoom/double-tap zoom for the game surface;
+- request fullscreen on the first trusted user gesture where the browser permits it;
+- request portrait orientation lock once fullscreen is available;
+- detect landscape and keep a tasteful rotate-device overlay as the guaranteed fallback;
+- remain safe when fullscreen or orientation locking is denied by the browser or host webview.
 
-Instead:
-- design for portrait;
-- detect landscape;
-- show a tasteful rotate-device overlay;
-- remain safe when lock is unavailable.
-
-Never promise platform behavior browsers cannot guarantee.
+Web security rules do not permit guaranteed audible autoplay, fullscreen entry, or orientation locking before a trusted user gesture on every browser. The installable PWA later strengthens the standalone portrait experience, but the web build must never falsely claim platform behavior it cannot enforce.
 
 ---
 
@@ -1106,7 +1105,7 @@ Deliver:
 - Settings;
 - points display;
 - selected-theme presence;
-- full minimal soundtrack player using the approved five-track set.
+- Settings containing the full minimal soundtrack player using the approved five-track set.
 
 Do not expose dead controls.
 

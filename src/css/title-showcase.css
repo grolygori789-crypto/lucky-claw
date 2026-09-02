@@ -1,27 +1,53 @@
-/* Title cabinet presentation layers. Gameplay reuses these visual anchors later. */
+/*
+  Title cabinet presentation.
+  The controls are real production DOM geometry in a locked showcase state.
+  Gameplay reuses the same anchors later and only changes interactivity/state.
+*/
 .cabinet-stage__image { z-index: 0; }
 .cabinet-stage__warmth { z-index: 1; }
 .cabinet-stage__shine,
-.cabinet-stage__sparkles { z-index: 6; }
+.cabinet-stage__sparkles { z-index: 7; }
 
 .cabinet-stage__glass {
   position: absolute;
-  z-index: 3;
-  left: 4.3%;
-  top: 6.4%;
-  width: 91.4%;
-  height: 58.1%;
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  border-radius: 2.4% 2.4% 1.6% 1.6%;
+  z-index: 5;
+  left: 4.25%;
+  top: 6.35%;
+  width: 91.5%;
+  height: 58.15%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 2.5% 2.5% 1.6% 1.6%;
   background:
-    linear-gradient(116deg, transparent 0 16%, rgba(255, 255, 255, 0.11) 20%, transparent 29% 64%, rgba(255, 255, 255, 0.075) 69%, transparent 76%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 24% 82%, rgba(255, 226, 231, 0.045));
+    linear-gradient(116deg,
+      transparent 0 14%,
+      rgba(255, 255, 255, 0.105) 18%,
+      rgba(255, 255, 255, 0.025) 24%,
+      transparent 31% 67%,
+      rgba(255, 255, 255, 0.06) 72%,
+      transparent 79%),
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.035),
+      transparent 22% 82%,
+      rgba(255, 225, 232, 0.03));
   box-shadow:
-    inset 0 1px rgba(255, 255, 255, 0.36),
-    inset 0 -1px rgba(204, 151, 129, 0.09);
+    inset 0 1px rgba(255, 255, 255, 0.32),
+    inset 0 -1px rgba(184, 132, 115, 0.08);
   opacity: 0.42;
   pointer-events: none;
   transition: opacity var(--motion-medium) var(--ease-premium);
+}
+
+.cabinet-stage__glass::before {
+  content: "";
+  position: absolute;
+  left: 3.2%;
+  top: -5%;
+  width: 15%;
+  height: 112%;
+  transform: skewX(-12deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+  filter: blur(1px);
 }
 
 .cabinet-stage__glass::after {
@@ -29,8 +55,8 @@
   position: absolute;
   inset: 2.2% 2.4%;
   border-radius: inherit;
-  background: radial-gradient(circle at 72% 13%, rgba(255, 255, 255, 0.18), transparent 18%);
-  opacity: 0.68;
+  background: radial-gradient(circle at 72% 13%, rgba(255, 255, 255, 0.14), transparent 18%);
+  opacity: 0.62;
 }
 
 .cabinet-controls {
@@ -42,167 +68,237 @@
   transition: opacity 420ms var(--ease-premium);
 }
 
-body[data-screen="title"] .cabinet-controls {
-  opacity: 1;
+/* A single inset hardware bed makes every control feel mounted to the sloped deck. */
+.cabinet-controls::before {
+  content: "";
+  position: absolute;
+  left: 7.6%;
+  top: 66.35%;
+  width: 71.1%;
+  height: 6.15%;
+  border: 1px solid rgba(157, 105, 63, 0.34);
+  border-radius: 8.5% / 34%;
+  background:
+    radial-gradient(circle at 3.2% 19%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
+    radial-gradient(circle at 96.8% 19%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
+    radial-gradient(circle at 3.2% 81%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
+    radial-gradient(circle at 96.8% 81%, #fff8ec 0 1px, #b88750 1.4px 2.2px, transparent 2.5px),
+    linear-gradient(180deg, rgba(255,255,255,.70), rgba(252,237,225,.48) 50%, rgba(232,198,173,.26));
+  box-shadow:
+    0 5px 10px rgba(92, 53, 43, 0.10),
+    inset 0 2px 2px rgba(255,255,255,.90),
+    inset 0 -3px 7px rgba(140, 83, 65, 0.08);
 }
 
-body[data-screen="title"] .cabinet-stage__glass {
-  opacity: 0.58;
-}
+body[data-screen="title"] .cabinet-controls { opacity: 1; }
+body[data-screen="title"] .cabinet-stage__glass { opacity: 0.50; }
 
+/* --- JOYSTICK ---------------------------------------------------------- */
 .cabinet-joystick {
   position: absolute;
-  left: 17.4%;
-  top: 69.35%;
-  width: 13.7%;
-  aspect-ratio: 1;
+  left: 17.0%;
+  top: 69.15%;
+  width: 14.4%;
+  height: 6.4%;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 4px 5px rgba(99, 58, 49, 0.18));
+  filter: drop-shadow(0 5px 5px rgba(87, 49, 41, 0.16));
 }
 
 .cabinet-joystick__base {
   position: absolute;
-  left: 7%;
-  right: 7%;
-  bottom: 8%;
-  height: 38%;
-  border: 1px solid rgba(133, 87, 50, 0.48);
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  height: 43%;
+  border: 1px solid rgba(133, 88, 49, 0.44);
   border-radius: 50%;
   background:
-    radial-gradient(ellipse at 50% 42%, #fffaf2 0 38%, #eacda8 40% 49%, #9e6a3f 52% 58%, #f7e3c2 61% 72%, #fff8ef 76%);
+    radial-gradient(ellipse at 50% 34%, #fffdf8 0 36%, #f5dfbd 39% 48%, #b27a43 51% 57%, #f9e7c8 61% 73%, #fff9ef 78% 100%);
   box-shadow:
-    0 3px 5px rgba(88, 49, 41, 0.16),
-    inset 0 2px 3px rgba(255, 255, 255, 0.88);
+    0 4px 7px rgba(83, 48, 39, 0.14),
+    inset 0 2px 3px rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(117,73,53,.08);
+}
+
+.cabinet-joystick__base::after {
+  content: "";
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 20%;
+  bottom: 20%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 45%, #785044, #4d302b 72%);
+  box-shadow: inset 0 2px 4px rgba(26,13,11,.45), 0 1px rgba(255,255,255,.4);
 }
 
 .cabinet-joystick__stem {
   position: absolute;
-  left: 46.2%;
-  bottom: 27%;
-  width: 8%;
-  height: 39%;
+  z-index: 2;
+  left: 46.1%;
+  bottom: 26%;
+  width: 8.3%;
+  height: 43%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #8f633e, #f1d6ab 38%, #fff2d6 52%, #aa764a 78%, #7d5132);
-  box-shadow: 1px 1px 2px rgba(75, 44, 37, 0.22);
+  background: linear-gradient(90deg, #7e5335, #d9b47b 24%, #fff0ca 48%, #c28e55 70%, #6c452f);
+  box-shadow: 1px 2px 3px rgba(73,42,34,.25);
 }
 
 .cabinet-joystick__knob {
   position: absolute;
-  left: 27%;
-  top: 5%;
-  width: 46%;
+  z-index: 3;
+  left: 29%;
+  top: 2%;
+  width: 42%;
   aspect-ratio: 1;
-  border: 1px solid rgba(167, 93, 111, 0.44);
+  border: 1px solid rgba(166, 95, 114, 0.38);
   border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 27%, rgba(255, 255, 255, 0.96) 0 9%, transparent 10%),
-    radial-gradient(circle at 42% 34%, #ffdce6 0 16%, #efabc0 39%, #cf7e9b 71%, #9b5c70 100%);
+    conic-gradient(from 18deg at 50% 50%, #f7c7d7, #d982a1, #f5b9cc, #c86f91, #f8d3df, #d982a1, #f7c7d7);
   box-shadow:
-    inset -5px -7px 11px rgba(108, 55, 72, 0.18),
-    inset 4px 4px 8px rgba(255, 255, 255, 0.46),
-    0 4px 8px rgba(86, 45, 55, 0.2);
+    inset 5px 5px 9px rgba(255,255,255,.34),
+    inset -6px -7px 10px rgba(93,44,60,.18),
+    0 5px 9px rgba(84,43,54,.20);
 }
 
+.cabinet-joystick__knob::before,
+.cabinet-joystick__knob::after {
+  content: "";
+  position: absolute;
+  inset: 11%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cabinet-joystick__knob::before {
+  background: linear-gradient(128deg, rgba(255,255,255,.75), transparent 37% 68%, rgba(115,57,75,.13));
+  clip-path: polygon(50% 0, 88% 18%, 100% 55%, 77% 100%, 24% 100%, 0 56%, 13% 18%);
+}
+
+.cabinet-joystick__knob::after {
+  inset: 20% 44% 62% 21%;
+  background: rgba(255,255,255,.82);
+  filter: blur(.5px);
+}
+
+/* --- MONITOR ----------------------------------------------------------- */
 .cabinet-monitor {
   position: absolute;
-  left: 42.8%;
-  top: 69.35%;
-  width: 24.7%;
-  height: 5.15%;
+  left: 41.3%;
+  top: 69.15%;
+  width: 25.8%;
+  height: 4.35%;
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(147, 91, 61, 0.46);
-  border-radius: 17% / 33%;
-  background:
-    linear-gradient(180deg, rgba(255, 247, 242, 0.96), rgba(243, 214, 209, 0.86));
+  clip-path: polygon(2.5% 3%, 97.5% 3%, 94.2% 96%, 5.8% 96%);
+  border: 1px solid rgba(145, 92, 55, 0.42);
+  border-radius: 11% / 30%;
+  background: linear-gradient(180deg, #fffaf1 0%, #f2d9c7 62%, #dcb995 100%);
   box-shadow:
-    0 4px 7px rgba(93, 53, 44, 0.13),
-    inset 0 1px rgba(255, 255, 255, 0.95),
-    inset 0 -2px 5px rgba(139, 80, 72, 0.09);
+    0 4px 7px rgba(89,51,42,.12),
+    inset 0 2px rgba(255,255,255,.92),
+    inset 0 -3px 5px rgba(125,76,55,.10);
 }
 
 .cabinet-monitor__screen {
   position: absolute;
-  inset: 16% 7%;
+  inset: 17% 7.5% 18%;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 225, 226, 0.72);
-  border-radius: 13% / 32%;
-  color: rgba(255, 247, 241, 0.96);
+  overflow: hidden;
+  border: 1px solid rgba(255, 224, 229, 0.66);
+  border-radius: 9% / 30%;
+  color: rgba(255, 250, 246, 0.96);
   background:
-    radial-gradient(circle at 50% 32%, rgba(255, 189, 205, 0.28), transparent 47%),
-    linear-gradient(180deg, #a35c73, #74435a);
+    radial-gradient(ellipse at 50% 20%, rgba(245,167,192,.32), transparent 45%),
+    linear-gradient(180deg, #733f59 0%, #5c3047 62%, #452638 100%);
   box-shadow:
-    inset 0 2px 8px rgba(34, 15, 23, 0.31),
-    0 0 8px rgba(226, 137, 162, 0.16);
+    inset 0 4px 10px rgba(23,10,17,.42),
+    inset 0 -1px rgba(255,255,255,.06),
+    0 0 9px rgba(225,126,161,.18);
 }
 
 .cabinet-monitor__screen::before {
   content: "";
   position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 11%;
-  height: 22%;
+  left: 8%;
+  right: 8%;
+  top: 9%;
+  height: 25%;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.17), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+}
+
+.cabinet-monitor__screen::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 13%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,205,219,.34), transparent);
 }
 
 .cabinet-monitor__status {
   position: relative;
   z-index: 1;
-  font-size: clamp(5px, 1.45vw, 10px);
-  font-weight: 850;
-  letter-spacing: 0.13em;
-  text-shadow: 0 1px 3px rgba(49, 19, 31, 0.35);
+  font-size: clamp(5px, 1.32vw, 9px);
+  font-weight: 820;
+  letter-spacing: .18em;
+  text-indent: .18em;
+  text-shadow: 0 1px 3px rgba(35,14,24,.5);
 }
 
+/* --- BUTTON HARDWARE --------------------------------------------------- */
 .cabinet-button {
   position: absolute;
-  aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  filter: drop-shadow(0 4px 6px rgba(92, 50, 43, 0.18));
+  filter: drop-shadow(0 5px 6px rgba(84,47,40,.16));
 }
 
 .cabinet-button::before {
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(132, 84, 46, 0.5);
+  border: 1px solid rgba(136, 86, 45, 0.46);
   border-radius: inherit;
   background:
-    radial-gradient(circle at 50% 38%, #fff9ef 0 42%, #e7c598 45% 55%, #a36f42 58% 66%, #f8e5c1 69% 100%);
+    radial-gradient(ellipse at 50% 34%, #fffdf6 0 42%, #f2d9af 45% 54%, #a96f3c 57% 63%, #f5dfb9 67% 78%, #fff9ee 82%);
   box-shadow:
-    0 3px 6px rgba(88, 49, 40, 0.13),
-    inset 0 1px 2px rgba(255, 255, 255, 0.94);
+    0 4px 7px rgba(84,46,38,.13),
+    inset 0 2px 2px rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(106,65,46,.08);
 }
 
 .cabinet-button::after {
   content: "";
   position: absolute;
-  inset: 17%;
-  border: 1px solid rgba(180, 104, 126, 0.39);
-  border-radius: inherit;
+  inset: 17% 14% 19%;
+  border: 1px solid rgba(177, 98, 123, 0.33);
+  border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 27%, rgba(255, 255, 255, 0.96) 0 7%, transparent 8%),
-    radial-gradient(circle at 43% 33%, #ffdce5 0 15%, #efb0c3 38%, #d986a0 72%, #b76882 100%);
+    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.93) 0 8%, transparent 9%),
+    radial-gradient(ellipse at 46% 34%, #ffd7e3 0 18%, #eea8bf 42%, #d17b99 72%, #a55e78 100%);
   box-shadow:
-    inset -4px -6px 9px rgba(115, 55, 74, 0.16),
-    inset 3px 3px 7px rgba(255, 255, 255, 0.4),
-    0 1px 5px rgba(209, 109, 139, 0.22);
+    inset -5px -6px 9px rgba(103,49,67,.17),
+    inset 4px 4px 7px rgba(255,255,255,.35),
+    0 2px 4px rgba(144,72,94,.18);
 }
 
 .cabinet-button__icon {
   position: absolute;
   z-index: 2;
-  inset: 27%;
+  left: 30%;
+  top: 25%;
+  width: 40%;
+  height: 42%;
   display: grid;
   place-items: center;
-  color: #fff9f5;
-  filter: drop-shadow(0 1px 2px rgba(119, 58, 76, 0.38));
+  color: rgba(255,252,249,.96);
+  filter: drop-shadow(0 1px 2px rgba(103,47,67,.42));
 }
 
 .cabinet-button__icon svg {
@@ -212,33 +308,57 @@ body[data-screen="title"] .cabinet-stage__glass {
 }
 
 .cabinet-button--shuffle {
-  left: 60.5%;
-  top: 69.35%;
-  width: 10.5%;
+  left: 60.2%;
+  top: 69.15%;
+  width: 10.0%;
+  height: 4.25%;
+}
+
+.cabinet-button--shuffle::after {
+  background:
+    radial-gradient(ellipse at 34% 20%, rgba(255,255,255,.90) 0 8%, transparent 9%),
+    radial-gradient(ellipse at 46% 34%, #f4d8e9 0 18%, #dcaac9 43%, #bd7fa8 73%, #8f5d83 100%);
 }
 
 .cabinet-button--drop {
-  left: 72.8%;
-  top: 69.35%;
-  width: 12.5%;
+  left: 72.0%;
+  top: 69.10%;
+  width: 11.8%;
+  height: 4.85%;
 }
 
 body[data-screen="title"] .cabinet-monitor__screen {
-  animation: title-monitor-breathe 3.2s ease-in-out infinite alternate;
+  animation: title-monitor-breathe 3.4s ease-in-out infinite alternate;
 }
 
 body[data-screen="title"] .cabinet-button--drop::after {
-  animation: title-drop-breathe 2.6s ease-in-out infinite alternate;
+  animation: title-drop-breathe 2.8s ease-in-out infinite alternate;
+}
+
+/* The language control is utility, not part of the cabinet's visual hierarchy. */
+.screen--title .language-chip {
+  top: calc(var(--safe-top) + 8px);
+  right: calc(var(--safe-right) + 7px);
+  bottom: auto;
+  min-width: 50px;
+  min-height: 42px;
+  padding: 0 10px;
+  border-color: rgba(185,137,78,.34);
+  color: #77564e;
+  background: rgba(255,250,245,.74);
+  box-shadow: 0 6px 18px rgba(72,45,40,.10), inset 0 1px rgba(255,255,255,.88);
+  backdrop-filter: blur(10px) saturate(1.05);
+  font-size: 11px;
 }
 
 @keyframes title-monitor-breathe {
-  from { filter: brightness(0.96); }
-  to { filter: brightness(1.08); }
+  from { filter: brightness(.96); }
+  to { filter: brightness(1.07); }
 }
 
 @keyframes title-drop-breathe {
-  from { box-shadow: inset -4px -6px 9px rgba(115, 55, 74, 0.16), inset 3px 3px 7px rgba(255, 255, 255, 0.4), 0 1px 5px rgba(209, 109, 139, 0.18); }
-  to { box-shadow: inset -4px -6px 9px rgba(115, 55, 74, 0.13), inset 3px 3px 7px rgba(255, 255, 255, 0.46), 0 1px 10px rgba(209, 109, 139, 0.34); }
+  from { filter: brightness(.98); box-shadow: inset -5px -6px 9px rgba(103,49,67,.17), inset 4px 4px 7px rgba(255,255,255,.35), 0 2px 4px rgba(144,72,94,.16); }
+  to { filter: brightness(1.05); box-shadow: inset -5px -6px 9px rgba(103,49,67,.14), inset 4px 4px 7px rgba(255,255,255,.40), 0 2px 9px rgba(201,101,135,.25); }
 }
 
 @media (prefers-reduced-motion: reduce) {
