@@ -1,0 +1,197 @@
+/* Lucky Claw — Build 002 Main Menu */
+
+.title-start-prompt {
+  position: absolute;
+  z-index: 15;
+  left: 50%;
+  bottom: max(118px, calc(env(safe-area-inset-bottom) + 88px));
+  transform: translateX(-50%);
+  min-width: 0;
+  padding: 8px 14px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #fff8f2;
+  text-shadow:
+    0 1px 0 rgba(118, 67, 61, .38),
+    0 0 10px rgba(255, 224, 228, .44),
+    0 0 25px rgba(243, 186, 205, .24);
+  font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", "Noto Sans Thai", system-ui, sans-serif;
+  font-size: clamp(15px, 4.35vw, 21px);
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[lang="th"] .title-start-prompt,
+html[lang="ja"] .title-start-prompt {
+  letter-spacing: .045em;
+  text-transform: none;
+}
+
+body[data-screen="title"] .title-start-prompt {
+  opacity: .95;
+  pointer-events: auto;
+  animation: title-start-breathe 1.9s ease-in-out infinite;
+}
+
+.title-start-prompt:focus-visible {
+  outline: 2px solid rgba(255, 238, 223, .82);
+  outline-offset: 5px;
+  border-radius: 999px;
+}
+
+@keyframes title-start-breathe {
+  0%, 100% { opacity: .34; transform: translateX(-50%) translateY(1px); filter: brightness(.98); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(0); filter: brightness(1.07); }
+}
+
+.screen--menu {
+  align-items: end;
+  justify-items: center;
+  padding: var(--safe-top) max(15px, var(--safe-right)) max(20px, calc(env(safe-area-inset-bottom) + 14px)) max(15px, var(--safe-left));
+  background: linear-gradient(180deg, rgba(53, 34, 32, 0) 20%, rgba(62, 39, 36, .10) 70%, rgba(63, 40, 37, .20) 100%);
+}
+
+.main-menu-shell {
+  width: min(calc(100vw - 30px), 410px);
+  max-height: min(68dvh, 590px);
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, .74);
+  border-radius: 27px;
+  color: #704943;
+  background:
+    linear-gradient(150deg, rgba(255, 253, 249, .87), rgba(255, 235, 235, .74));
+  box-shadow:
+    0 18px 48px rgba(81, 49, 44, .17),
+    0 3px 12px rgba(188, 109, 126, .08),
+    inset 0 1px rgba(255, 255, 255, .96),
+    inset 0 -1px rgba(161, 104, 87, .07);
+  backdrop-filter: blur(15px) saturate(1.1);
+  -webkit-backdrop-filter: blur(15px) saturate(1.1);
+}
+
+.main-menu-shell__header {
+  display: grid;
+  gap: 4px;
+  padding: 0 4px 2px;
+  text-align: center;
+}
+
+.main-menu-shell__eyebrow {
+  color: #b97876;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .20em;
+}
+
+.main-menu-shell__title {
+  margin: 0;
+  color: #7f504b;
+  font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Noto Sans Thai", system-ui, sans-serif;
+  font-size: clamp(25px, 7.1vw, 34px);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -.02em;
+}
+
+.main-menu-shell__sub {
+  margin: 2px 0 4px;
+  color: #966d65;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.main-menu-grid { display: grid; gap: 8px; }
+.main-menu-grid--secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.main-menu-button {
+  position: relative;
+  min-width: 0;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(183, 132, 112, .14);
+  border-radius: 17px;
+  color: #855550;
+  background: linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,244,240,.86));
+  box-shadow: 0 7px 17px rgba(86,49,45,.09), inset 0 1px rgba(255,255,255,.94);
+  cursor: pointer;
+  transition: transform 150ms var(--ease-press), box-shadow 150ms ease;
+}
+
+.main-menu-button:active { transform: translateY(1px) scale(.988); }
+
+.main-menu-button--play {
+  min-height: 61px;
+  padding-inline: 17px;
+  border-color: rgba(163, 73, 96, .22);
+  color: #fffaf8;
+  background:
+    radial-gradient(circle at 30% 4%, rgba(255,255,255,.30), transparent 24%),
+    linear-gradient(180deg, #f8cada 0%, #ed9fba 61%, #e68aa9 100%);
+  box-shadow: 0 11px 24px rgba(181,84,113,.24), inset 0 1px rgba(255,255,255,.55), inset 0 -2px rgba(159,60,89,.10);
+  text-shadow: 0 1px rgba(139,57,78,.25);
+}
+
+.main-menu-button__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Noto Sans Thai", system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 820;
+}
+
+.main-menu-button--play .main-menu-button__label { font-size: 18px; }
+.main-menu-button__arrow { flex: 0 0 auto; font-size: 19px; opacity: .72; }
+
+.main-menu-footer { display: flex; justify-content: center; padding-top: 1px; }
+.menu-mini-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(179,130,111,.14);
+  border-radius: 999px;
+  color: #8e625c;
+  background: rgba(255,255,255,.52);
+  font: 760 12px/1 ui-rounded, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+body[data-screen="menu"] .cabinet-title-claw-system,
+body[data-screen="menu"] .cabinet-title-plush,
+body[data-screen="menu"] .cabinet-controls { opacity: 1; }
+body[data-screen="menu"] .cabinet-title-claw-system { transform: translateY(0); }
+body[data-screen="menu"] .cabinet-title-plush { transform: translateX(-50%) translateY(0) scale(1); }
+body[data-screen="menu"] .cabinet-stage__glass { opacity: .74; }
+body[data-screen="menu"] .cabinet-stage__glass-sheen { opacity: .84; }
+
+@media (max-height: 760px) {
+  .title-start-prompt { bottom: max(104px, calc(env(safe-area-inset-bottom) + 78px)); }
+  .main-menu-shell { max-height: 72dvh; gap: 8px; padding: 13px; border-radius: 23px; }
+  .main-menu-shell__sub { display: none; }
+  .main-menu-button { min-height: 48px; padding: 10px 12px; border-radius: 15px; }
+  .main-menu-button--play { min-height: 55px; }
+}
+
+@media (max-width: 340px) {
+  .main-menu-grid--secondary { grid-template-columns: 1fr; }
+  .main-menu-shell { max-height: 82dvh; overflow-y: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-screen="title"] .title-start-prompt { animation: none; opacity: .92; }
+}

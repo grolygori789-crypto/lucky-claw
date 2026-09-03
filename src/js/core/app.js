@@ -1,21 +1,29 @@
-import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=001.23';
-import { installDisplayMode, requestImmersiveMode } from './display-mode.js?v=001.21';
-import { loadState, saveState } from './storage.js?v=001.23';
+import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=002.01';
+import { installDisplayMode, requestImmersiveMode, isInstalledAppMode } from './display-mode.js?v=002.01';
+import { loadState, saveState, clearGameProgress } from './storage.js?v=002.01';
 import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
 import { createPWAController } from './pwa-install.js?v=001.20';
 import { MusicManager } from '../systems/music-manager.js?v=001.20';
 import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
+import { bindMainMenu } from '../screens/main-menu.js?v=002.01';
+import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.01';
 
+const BUILD_ID = '002.01';
 const screens = new Map(
-  [...document.querySelectorAll('[data-screen]')].map((element) => [element.dataset.screen, element]),
+  [...document.querySelectorAll('.screen[data-screen]')].map((element) => [element.dataset.screen, element]),
 );
 
 let state = loadState();
 let returnScreen = 'title';
+let immersiveGestureAttempted = false;
 
 const music = new MusicManager(state.settings);
+const showToast = createToast();
 installDisplayMode();
+
+document.body.classList.toggle('reduce-effects', Boolean(state.settings.reducedEffects));
+
 const pwa = createPWAController({
   onInstalled: () => document.querySelector('[data-install-gate]')?.setAttribute('hidden', ''),
 });
@@ -28,13 +36,13 @@ music.addEventListener('preferencechange', (event) => {
       ...event.detail,
     },
   });
+  settingsController?.refresh();
 });
 
 const audioLifecycle = bindAudioLifecycle({
   music,
   getScreen: () => document.body.dataset.screen,
 });
-
 
 function showScreen(name) {
   screens.forEach((screen, key) => {
@@ -47,16 +55,17 @@ function showScreen(name) {
 
   if (name === 'title') {
     music.prepareTitle();
-    // If the OS install sheet/backgrounding paused audio, resume the same
-    // unlocked media element. Otherwise try normal playback; the global
-    // trusted-gesture handler remains the fallback for autoplay-restricted browsers.
     if (!audioLifecycle.resumeIfEligible()) void music.play();
+  } else if (name === 'menu') {
+    void music.restorePreferredTrack({ autoplay: music.musicEnabled });
   }
 }
 
 async function applyLanguage(language) {
   try {
-    return await setLanguage(language);
+    const applied = await setLanguage(language);
+    settingsController?.refresh();
+    return applied;
   } catch (error) {
     console.error('[Lucky Claw] Localization failed.', error);
     if (language !== 'en') return setLanguage('en');
@@ -88,9 +97,6 @@ async function waitForCriticalVisuals() {
   ].filter(Boolean);
 
   await Promise.all(criticalImages.map(waitForImageReady));
-
-  // Two frames guarantee decoded images + CSS-built controls are composited
-  // together before the boot cover is removed. This prevents the empty-cabinet flash.
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
@@ -98,30 +104,34 @@ function revealBootSurface() {
   document.body.dataset.bootReady = 'true';
 }
 
+function maybeRequestImmersiveFromGesture() {
+  if (isInstalledAppMode() || immersiveGestureAttempted) return;
+  immersiveGestureAttempted = true;
+  void requestImmersiveMode();
+}
+
 function unlockExperienceFromGesture(event) {
   if (event.target?.closest?.('[data-install-primary]')) return;
+  const screen = document.body.dataset.screen;
+  if (screen !== 'title' && screen !== 'language') return;
 
-  // Audio MUST be requested before fullscreen. Fullscreen can consume the
-  // browser's transient user activation and make a later audio.play() fail.
-  if (document.body.dataset.screen === 'title' && music.musicEnabled && !music.isPlaying) {
+  // Audio first: fullscreen may consume transient user activation.
+  if (screen === 'title' && music.musicEnabled && !music.isPlaying) {
     music.prepareTitle();
     void music.play();
   }
 
-  void requestImmersiveMode();
+  maybeRequestImmersiveFromGesture();
 }
 
 document.addEventListener('pointerdown', unlockExperienceFromGesture, { capture: true });
-document.addEventListener('touchstart', unlockExperienceFromGesture, { capture: true, passive: true });
-document.addEventListener('click', unlockExperienceFromGesture, { capture: true });
 document.addEventListener('keydown', unlockExperienceFromGesture, { capture: true });
 
 const languageScreen = bindLanguageScreen({
   async onSelect(language) {
-    // Preserve the trusted gesture for audio first; fullscreen comes second.
     music.prepareTitle();
     void music.play();
-    void requestImmersiveMode();
+    maybeRequestImmersiveFromGesture();
 
     const applied = await applyLanguage(language);
     state = saveState({
@@ -134,11 +144,10 @@ const languageScreen = bindLanguageScreen({
 });
 
 document.querySelector('[data-open-language]')?.addEventListener('click', () => {
-  returnScreen = 'title';
+  returnScreen = document.body.dataset.screen === 'menu' ? 'menu' : 'title';
   showScreen('language');
   languageScreen.focusPreferred(state.language || detectPreferredLanguage());
 });
-
 
 const installGate = document.querySelector('[data-install-gate]');
 const installPrimary = installGate?.querySelector('[data-install-primary]');
@@ -188,7 +197,6 @@ async function maybeShowInstallGate() {
   const mode = nativeReady ? 'native' : pwa.isIOS() ? 'ios' : 'manual';
   refreshInstallGateCopy(mode);
   installGate.hidden = false;
-
   await new Promise((resolve) => { installGateResolve = resolve; });
 }
 
@@ -201,23 +209,64 @@ installPrimary?.addEventListener('click', async () => {
       closeInstallGate();
       return;
     }
-    // If the native prompt was dismissed, continue in-browser without trapping the user.
-    void requestImmersiveMode();
-    closeInstallGate();
-    return;
   }
 
-  // iOS and browsers without beforeinstallprompt cannot be installed by script.
-  // The card already shows the exact OS/browser action; continue in immersive mode.
-  void requestImmersiveMode();
+  // For a normal browser this may show the browser's own fullscreen education hint.
+  // Installed PWAs skip requestFullscreen entirely in display-mode.js.
+  maybeRequestImmersiveFromGesture();
   closeInstallGate();
 });
 
 installLater?.addEventListener('click', () => {
   sessionStorage.setItem('lucky-claw:install-dismissed', '1');
   unlockTitleAudio();
-  void requestImmersiveMode();
+  maybeRequestImmersiveFromGesture();
   closeInstallGate();
+});
+
+function updateSettings(patch) {
+  state = saveState({
+    ...state,
+    settings: { ...state.settings, ...patch },
+  });
+  document.body.classList.toggle('reduce-effects', Boolean(state.settings.reducedEffects));
+  return state;
+}
+
+async function changeLanguageFromSettings(language) {
+  const applied = await applyLanguage(language);
+  state = saveState({ ...state, language: applied, firstRunComplete: true });
+  return applied;
+}
+
+function resetProgress() {
+  state = clearGameProgress(state);
+  return state;
+}
+
+let settingsController = null;
+settingsController = bindSettingsScreen({
+  music,
+  getState: () => state,
+  updateSettings,
+  onLanguage: changeLanguageFromSettings,
+  onClearProgress: resetProgress,
+  onBack: () => showScreen('menu'),
+  showToast,
+});
+
+bindMainMenu({
+  onEnterMenu: () => showScreen('menu'),
+  onBackToTitle: () => showScreen('title'),
+  onSettings: () => {
+    showScreen('settings');
+    settingsController.refresh();
+  },
+  onHowToPlay: () => settingsController.showHowToPlay(),
+  onFeature: (item) => {
+    const key = item === 'play' ? 'menu.playNext' : 'menu.featureComing';
+    showToast(translate(key));
+  },
 });
 
 async function bootstrap() {
@@ -228,10 +277,6 @@ async function bootstrap() {
   showScreen('splash');
   await runSplash();
 
-  // Put the real title behind the install sheet first. This keeps audio in the
-  // correct screen state if Android temporarily backgrounds the page while the
-  // native installer is open, and it makes the install interaction a valid
-  // gesture for unlocking the title soundtrack.
   showScreen('title');
   await maybeShowInstallGate();
 
@@ -247,10 +292,7 @@ bootstrap().catch((error) => {
   revealBootSurface();
 });
 
-// Reserved production hooks for Build 002/003. Settings owns the visible music controls;
-// gameplay owns round locking and urgency without exposing a player over the cabinet.
-window.LuckyClawBuild = Object.freeze({ id: '001.23' });
-
+window.LuckyClawBuild = Object.freeze({ id: BUILD_ID });
 window.LuckyClawAudio = Object.freeze({
   manager: music,
   lockTrackForRound: () => music.lockTrackForRound(),

@@ -1,21 +1,27 @@
-const CACHE_NAME = 'lucky-claw-shell-v11';
+const CACHE_NAME = 'lucky-claw-shell-v12';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '001.23';
+const BUILD_ID = '002.01';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './src/css/app.css?v=001.20',
   './src/css/title-showcase.css?v=001.20',
-  './src/js/core/app.js?v=001.23',
+  './src/css/menu.css?v=002.01',
+  './src/css/settings.css?v=002.01',
+  './src/js/core/app.js?v=002.01',
   './src/js/core/audio-lifecycle.js?v=001.20',
   './src/js/core/pwa-install.js?v=001.20',
-  './src/js/core/display-mode.js?v=001.21',
-  './src/js/core/i18n.js?v=001.23',
-  './src/js/core/storage.js?v=001.23',
+  './src/js/core/display-mode.js?v=002.01',
+  './src/js/core/i18n.js?v=002.01',
+  './src/js/core/storage.js?v=002.01',
   './src/js/data/soundtrack.js',
+  './src/js/data/support.js?v=002.01',
+  './src/js/data/legal-content.js?v=002.01',
   './src/js/screens/language.js?v=001.20',
   './src/js/screens/splash.js?v=001.20',
+  './src/js/screens/main-menu.js?v=002.01',
+  './src/js/screens/settings.js?v=002.01',
   './src/js/systems/music-manager.js?v=001.20',
   './src/locales/en.json',
   './src/locales/th.json',
@@ -44,8 +50,6 @@ self.addEventListener('activate', (event) => {
     await Promise.all(oldShellCaches.map((key) => caches.delete(key)));
     await self.clients.claim();
 
-    // On an upgrade only, reload each open Lucky Claw client once so an installed
-    // PWA cannot keep running an older JS runtime after the new service worker wins.
     if (oldShellCaches.length > 0) {
       const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
       for (const client of windows) {
@@ -101,19 +105,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // IMPORTANT: media elements commonly issue Range requests and receive 206
-  // Partial Content. Runtime Cache API writes of streamed 206 responses are not
-  // safe and can abort playback. Pass audio through untouched so the server can
-  // honor Range / Content-Range normally. Proper offline media range caching can
-  // be added later with explicit full-file precaching + range slicing.
+  // Media elements issue Range requests and often receive 206 Partial Content.
+  // Never write streamed audio responses into the runtime Cache API.
   if (request.destination === 'audio' || url.pathname.includes('/assets/audio/')) {
     event.respondWith(fetch(request));
     return;
   }
 
-  // Visual production assets are revisioned and precached. Cache-first makes
-  // repeat/PWA launches paint the fully assembled cabinet immediately instead
-  // of waiting on the network for plush/claw/icon layers every time.
   const isRevisionedStatic = url.searchParams.has('v')
     && (request.destination === 'style' || request.destination === 'script' || request.destination === 'image');
 

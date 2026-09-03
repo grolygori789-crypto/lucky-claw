@@ -78,143 +78,11 @@
   <link rel="preload" as="image" href="./assets/machines/classic/title-claw-head.png?v=001.20" fetchpriority="high">
   <link rel="stylesheet" href="./src/css/app.css?v=001.20">
   <link rel="stylesheet" href="./src/css/title-showcase.css?v=001.20">
-  <script type="module" src="./src/js/core/app.js?v=001.24"></script>
-
-  <style id="lc-title-menu-patch">
-    .title-start-prompt {
-      position: absolute;
-      left: 50%;
-      bottom: max(126px, env(safe-area-inset-bottom) + 98px);
-      transform: translateX(-50%);
-      z-index: 15;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: min(76vw, 360px);
-      padding: 12px 24px 13px;
-      border: 0;
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255,250,247,.34), rgba(252,227,233,.22));
-      box-shadow: 0 10px 30px rgba(87,53,49,.18), inset 0 1px rgba(255,255,255,.52), inset 0 0 0 1px rgba(255,255,255,.16);
-      backdrop-filter: blur(10px) saturate(1.1);
-      -webkit-backdrop-filter: blur(10px) saturate(1.1);
-      color: #fff9f5;
-      text-shadow: 0 1px 0 rgba(114,67,64,.38), 0 0 22px rgba(255,214,232,.34);
-      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
-      font-size: clamp(16px, 2.1vw + 10px, 22px);
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 220ms ease, transform 220ms ease;
-      animation: lcTapGlow 1.9s ease-in-out infinite;
-    }
-    .title-start-prompt::before, .title-start-prompt::after {
-      content: '✦';
-      font-size: .82em;
-      color: rgba(255,243,218,.94);
-      margin-inline: 10px;
-      text-shadow: 0 0 16px rgba(255,219,160,.28);
-    }
-    body[data-screen="title"] .title-start-prompt { opacity: 1; pointer-events: auto; }
-    body[data-screen="menu"] .title-start-prompt { opacity: 0; pointer-events: none; }
-    .title-start-prompt__label { white-space: nowrap; }
-    @keyframes lcTapGlow {
-      0%,100% { opacity: .36; filter: brightness(.98); }
-      50% { opacity: 1; filter: brightness(1.06); }
-    }
-    .screen--menu {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: calc(env(safe-area-inset-top) + 18px) 18px calc(env(safe-area-inset-bottom) + 26px);
-      opacity: 0;
-      pointer-events: none;
-    }
-    body[data-screen="menu"] .screen--menu { opacity: 1; pointer-events: auto; }
-    .main-menu-shell {
-      width: min(100%, 420px);
-      display: grid;
-      gap: 12px;
-      padding: 18px 16px 16px;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,251,248,.82), rgba(254,241,236,.68));
-      box-shadow: 0 18px 44px rgba(98,58,52,.18), inset 0 1px rgba(255,255,255,.75), inset 0 0 0 1px rgba(255,255,255,.3);
-      backdrop-filter: blur(14px) saturate(1.12);
-      -webkit-backdrop-filter: blur(14px) saturate(1.12);
-    }
-    .main-menu-shell__header {
-      display: grid;
-      gap: 4px;
-      text-align: center;
-      color: #7b4c46;
-    }
-    .main-menu-shell__eyebrow {
-      font: 700 11px/1.1 ui-rounded, system-ui, sans-serif;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #b86b73;
-    }
-    .main-menu-shell__title {
-      font: 900 clamp(28px, 5.6vw, 34px)/1 ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
-      letter-spacing: .04em;
-      color: #8d4d49;
-      text-shadow: 0 1px 0 rgba(255,255,255,.65);
-    }
-    .main-menu-shell__sub {
-      font: 600 13px/1.35 system-ui, sans-serif;
-      color: #95645d;
-    }
-    .main-menu-grid { display: grid; gap: 10px; }
-    .main-menu-button {
-      appearance: none; border: 0; cursor: pointer; width: 100%;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 15px 16px; border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,242,239,.78));
-      box-shadow: 0 10px 22px rgba(103,64,57,.12), inset 0 1px rgba(255,255,255,.92), inset 0 0 0 1px rgba(236,189,182,.24);
-      color: #8c504d; text-align: left;
-      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
-      font-weight: 800;
-      letter-spacing: .02em;
-    }
-    .main-menu-button--play {
-      padding-block: 17px;
-      background: linear-gradient(180deg, #ffdfe9, #f6b8c8 66%, #ef9bb4);
-      color: #fffaf8;
-      box-shadow: 0 14px 30px rgba(201,110,132,.3), inset 0 1px rgba(255,255,255,.58), inset 0 -1px rgba(171,74,97,.22);
-      text-shadow: 0 1px 0 rgba(148,62,79,.34);
-    }
-    .main-menu-button__label { font-size: 17px; }
-    .main-menu-button__arrow { font-size: 18px; opacity: .72; }
-    .main-menu-grid--secondary { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .main-menu-grid--secondary .main-menu-button__label { font-size: 15px; }
-    .main-menu-footer {
-      display: flex; justify-content: center; gap: 12px; padding-top: 4px;
-    }
-    .menu-mini-button {
-      appearance: none; border: 0; border-radius: 999px; padding: 10px 14px;
-      background: rgba(255,255,255,.58); color: #98605a;
-      box-shadow: inset 0 0 0 1px rgba(240,203,196,.55);
-      font: 800 13px/1 ui-rounded, system-ui, sans-serif; letter-spacing: .03em;
-    }
-    @media (max-height: 760px) {
-      .title-start-prompt { bottom: max(112px, env(safe-area-inset-bottom) + 90px); padding: 11px 20px 12px; }
-      .main-menu-shell { gap: 10px; padding: 16px 14px 14px; border-radius: 24px; }
-      .main-menu-grid { gap: 8px; }
-      .main-menu-button { padding: 13px 14px; border-radius: 16px; }
-      .main-menu-grid--secondary .main-menu-button__label { font-size: 14px; }
-    }
-    @media (max-width: 360px) {
-      .title-start-prompt { min-width: 82vw; font-size: 15px; }
-      .main-menu-grid--secondary { grid-template-columns: 1fr; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .title-start-prompt { animation: none; opacity: .95; }
-    }
-  </style>
+  <link rel="stylesheet" href="./src/css/menu.css?v=002.01">
+  <link rel="stylesheet" href="./src/css/settings.css?v=002.01">
+  <script type="module" src="./src/js/core/app.js?v=002.01"></script>
 </head>
-<body data-build="001.24" data-screen="splash" data-boot-ready="false">
+<body data-build="002.01" data-screen="splash" data-boot-ready="false">
   <div class="lc-boot-cover" data-boot-cover aria-hidden="true">
     <div class="lc-boot-cover__mark">✦</div>
   </div>
@@ -350,7 +218,7 @@
       </button>
 
       <button class="title-start-prompt" type="button" data-title-start aria-label="Tap to start">
-        <span class="title-start-prompt__label">TAP TO START</span>
+        <span class="title-start-prompt__label" data-i18n="title.tapStart">TAP TO START</span>
       </button>
     </section>
 
@@ -358,32 +226,154 @@
       <div class="main-menu-shell">
         <div class="main-menu-shell__header">
           <div class="main-menu-shell__eyebrow">LUCKY CLAW</div>
-          <h2 class="main-menu-shell__title" id="menu-title">Main Menu</h2>
-          <p class="main-menu-shell__sub">Choose what you want to do next.</p>
+          <h2 class="main-menu-shell__title" id="menu-title" data-i18n="menu.title">Main Menu</h2>
+          <p class="main-menu-shell__sub" data-i18n="menu.subtitle">Choose what you want to do next.</p>
         </div>
 
         <div class="main-menu-grid">
           <button class="main-menu-button main-menu-button--play" type="button" data-menu-item="play">
-            <span class="main-menu-button__label">PLAY</span>
+            <span class="main-menu-button__label" data-i18n="menu.play">PLAY</span>
             <span class="main-menu-button__arrow" aria-hidden="true">›</span>
           </button>
         </div>
 
         <div class="main-menu-grid main-menu-grid--secondary">
-          <button class="main-menu-button" type="button" data-menu-item="collection"><span class="main-menu-button__label">Collection</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
-          <button class="main-menu-button" type="button" data-menu-item="missions"><span class="main-menu-button__label">Missions</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
-          <button class="main-menu-button" type="button" data-menu-item="themes"><span class="main-menu-button__label">Themes</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
-          <button class="main-menu-button" type="button" data-menu-item="trophy"><span class="main-menu-button__label">Trophy</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
-          <button class="main-menu-button" type="button" data-menu-item="howto"><span class="main-menu-button__label">How to Play</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
-          <button class="main-menu-button" type="button" data-menu-item="settings"><span class="main-menu-button__label">Settings</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="collection"><span class="main-menu-button__label" data-i18n="menu.collection">Collection</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="missions"><span class="main-menu-button__label" data-i18n="menu.missions">Missions</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="themes"><span class="main-menu-button__label" data-i18n="menu.themes">Themes</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="trophy"><span class="main-menu-button__label" data-i18n="menu.trophy">Trophy</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="howto"><span class="main-menu-button__label" data-i18n="menu.howToPlay">How to Play</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
+          <button class="main-menu-button" type="button" data-menu-item="settings"><span class="main-menu-button__label" data-i18n="menu.settings">Settings</span><span class="main-menu-button__arrow" aria-hidden="true">›</span></button>
         </div>
 
         <div class="main-menu-footer">
-          <button class="menu-mini-button" type="button" data-menu-back>Back</button>
+          <button class="menu-mini-button" type="button" data-menu-back> <span data-i18n="common.back">Back</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen screen--settings" data-screen="settings" aria-labelledby="settings-title" aria-hidden="true">
+      <div class="settings-shell">
+        <header class="settings-topbar">
+          <button class="settings-back" type="button" data-settings-back aria-label="Back">‹</button>
+          <div class="settings-heading">
+            <span class="settings-eyebrow">LUCKY CLAW</span>
+            <h2 id="settings-title" data-i18n="settings.title">Settings</h2>
+          </div>
+          <span class="settings-build" data-build-label>BUILD 002.01</span>
+        </header>
+
+        <div class="settings-scroll" data-settings-scroll>
+          <section class="settings-group">
+            <h3 data-i18n="settings.game">Game Settings</h3>
+            <div class="setting-row">
+              <div><strong data-i18n="settings.music">Music</strong><small data-i18n="settings.musicSub">Background soundtrack</small></div>
+              <label class="lc-switch"><input type="checkbox" data-setting="music"><span></span></label>
+            </div>
+            <div class="music-player" data-music-player>
+              <div class="music-player__meta"><small data-i18n="settings.nowPlaying">Now Playing</small><strong data-music-title>Main Title Theme</strong></div>
+              <div class="music-player__controls">
+                <button type="button" data-music-previous aria-label="Previous track">‹</button>
+                <button class="music-player__play" type="button" data-music-play aria-label="Play music">▶</button>
+                <button type="button" data-music-next aria-label="Next track">›</button>
+              </div>
+              <label class="music-volume"><span data-i18n="settings.volume">Volume</span><input type="range" min="0" max="100" step="1" data-music-volume></label>
+              <div class="music-options">
+                <button type="button" data-music-shuffle><span data-i18n="settings.shuffle">Shuffle</span><b data-shuffle-state>OFF</b></button>
+                <button type="button" data-music-repeat><span data-i18n="settings.repeat">Repeat</span><b data-repeat-state>ALL</b></button>
+              </div>
+              <label class="track-select"><span data-i18n="settings.track">Track</span><select data-music-track aria-label="Track"></select></label>
+            </div>
+            <div class="setting-row">
+              <div><strong data-i18n="settings.sfx">Sound Effects</strong><small data-i18n="settings.sfxSub">Buttons, claw and reward sounds</small></div>
+              <label class="lc-switch"><input type="checkbox" data-setting="sfx"><span></span></label>
+            </div>
+            <div class="setting-row">
+              <div><strong data-i18n="settings.haptics">Haptics</strong><small data-i18n="settings.hapticsSub">Small vibration feedback where supported</small></div>
+              <label class="lc-switch"><input type="checkbox" data-setting="haptics"><span></span></label>
+            </div>
+            <div class="setting-row">
+              <div><strong data-i18n="settings.reducedEffects">Reduced Effects</strong><small data-i18n="settings.reducedEffectsSub">Reduce decorative motion and flashes</small></div>
+              <label class="lc-switch"><input type="checkbox" data-setting="reducedEffects"><span></span></label>
+            </div>
+            <div class="setting-row setting-row--language">
+              <div><strong data-i18n="settings.language">Language</strong><small data-i18n="settings.languageSub">Choose your game language</small></div>
+              <div class="settings-language" role="group" aria-label="Language">
+                <button type="button" data-settings-language="th">ไทย</button>
+                <button type="button" data-settings-language="en">EN</button>
+                <button type="button" data-settings-language="ja">日本語</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-group">
+            <h3 data-i18n="settings.data">Game Data</h3>
+            <div class="data-stats">
+              <div><span data-i18n="settings.clawPoints">Claw Points</span><strong data-stat="points">0</strong></div>
+              <div><span data-i18n="settings.bestStage">Highest Stage</span><strong data-stat="stage">1</strong></div>
+              <div><span data-i18n="settings.trophies">Trophies</span><strong data-stat="trophies">0</strong></div>
+              <div><span data-i18n="settings.highScores">High Scores</span><strong data-stat="highscores">0</strong></div>
+            </div>
+            <p class="settings-note" data-i18n="settings.dataNote">Progress and high scores are stored on this device.</p>
+            <button class="setting-link setting-link--danger" type="button" data-clear-data><span><strong data-i18n="settings.clearData">Clear Game Data</strong><small data-i18n="settings.clearDataSub">Reset scores, progress, trophies, collection and unlocked themes</small></span><span>›</span></button>
+          </section>
+
+          <section class="settings-group">
+            <h3 data-i18n="settings.help">Help & Feedback</h3>
+            <button class="setting-link" type="button" data-how-to-play><span><strong data-i18n="menu.howToPlay">How to Play</strong><small data-i18n="settings.howToPlaySub">Learn the basic claw controls</small></span><span>›</span></button>
+            <button class="setting-link" type="button" data-report-problem><span><strong data-i18n="settings.reportProblem">Report a Problem</strong><small data-i18n="settings.reportProblemSub">Tell Benedict Interactive what went wrong</small></span><span>›</span></button>
+            <button class="setting-link" type="button" data-send-feedback><span><strong data-i18n="settings.sendFeedback">Send Feedback</strong><small data-i18n="settings.sendFeedbackSub">Share an idea or tell us about your experience</small></span><span>›</span></button>
+            <button class="setting-link" type="button" data-copy-diagnostics><span><strong data-i18n="settings.diagnostics">Copy Diagnostic Info</strong><small data-i18n="settings.diagnosticsSub">Copy build and device-safe troubleshooting details</small></span><span>›</span></button>
+          </section>
+
+          <section class="settings-group settings-group--support">
+            <h3 data-i18n="settings.support">Support Lucky Claw</h3>
+            <p class="support-note" data-i18n="support.note">Support is optional and never changes gameplay, odds, rewards or progression.</p>
+            <article class="support-card support-card--kofi">
+              <div><span class="support-badge" data-i18n="support.worldwide">WORLDWIDE</span><strong data-i18n="support.kofiTitle">Support on Ko-fi</strong><small data-i18n="support.kofiSub">Support Benedict Interactive internationally</small></div>
+              <button type="button" data-support-kofi data-i18n="support.openKofi">Open Ko-fi</button>
+            </article>
+            <article class="support-card support-card--promptpay">
+              <div><span class="support-badge" data-i18n="support.thailand">THAILAND</span><strong data-i18n="support.promptPayTitle">Support with PromptPay</strong><small data-i18n="support.promptPaySub">Scan the same PromptPay QR used across Benedict Interactive apps</small></div>
+              <button type="button" data-support-promptpay data-i18n="support.openQr">Open QR</button>
+            </article>
+          </section>
+
+          <section class="settings-group">
+            <h3 data-i18n="settings.legal">Legal & Privacy</h3>
+            <div class="trust-grid">
+              <p><span>⌂</span><strong data-i18n="trust.localTitle">Local-first data</strong><small data-i18n="trust.localBody">Your game data stays on this device.</small></p>
+              <p><span>♡</span><strong data-i18n="trust.supportTitle">Optional support</strong><small data-i18n="trust.supportBody">Supporting Lucky Claw never changes gameplay.</small></p>
+              <p><span>◇</span><strong data-i18n="trust.noGamblingTitle">No gambling</strong><small data-i18n="trust.noGamblingBody">No real-money prizes or cash-value game items.</small></p>
+              <p><span>↺</span><strong data-i18n="trust.clearTitle">You control resets</strong><small data-i18n="trust.clearBody">Clearing game data permanently resets local progress.</small></p>
+            </div>
+            <button class="setting-link" type="button" data-legal-center><span><strong data-i18n="settings.legalCenter">Legal Center</strong><small data-i18n="settings.legalCenterSub">Terms, privacy, copyright and third-party notices</small></span><span>›</span></button>
+          </section>
+
+          <section class="settings-group settings-about">
+            <h3 data-i18n="settings.about">About</h3>
+            <div class="about-lockup"><strong>LUCKY CLAW</strong><span>BENEDICT GAMES</span><small>by Benedict Interactive</small></div>
+            <dl>
+              <div><dt data-i18n="about.version">Version</dt><dd>BUILD 002.01</dd></div>
+              <div><dt data-i18n="about.publisher">Publisher</dt><dd>Benedict Interactive</dd></div>
+              <div><dt data-i18n="about.location">Location</dt><dd>Bangkok, Thailand</dd></div>
+            </dl>
+            <p class="legal-footer">© 2026 Benedict Interactive<br>Bangkok, Thailand</p>
+          </section>
         </div>
       </div>
     </section>
   </main>
+
+
+  <div class="lc-modal" data-app-modal hidden role="dialog" aria-modal="true" aria-labelledby="app-modal-title">
+    <div class="lc-modal__veil" data-modal-close aria-hidden="true"></div>
+    <div class="lc-modal__card">
+      <header class="lc-modal__header"><div><span class="settings-eyebrow">LUCKY CLAW</span><h2 id="app-modal-title" data-modal-title>Lucky Claw</h2></div><button type="button" data-modal-close aria-label="Close">×</button></header>
+      <div class="lc-modal__body" data-modal-body></div>
+      <div class="lc-modal__actions" data-modal-actions></div>
+    </div>
+  </div>
 
   <section class="install-gate" data-install-gate hidden aria-modal="true" role="dialog" aria-labelledby="install-title">
     <div class="install-gate__veil" aria-hidden="true"></div>
@@ -410,102 +400,5 @@
   <noscript>
     <div class="noscript">Lucky Claw needs JavaScript enabled to run.</div>
   </noscript>
-
-  <script>
-    (() => {
-      const copy = {
-        th: {
-          tap: 'แตะเพื่อเริ่ม',
-          menuTitle: 'เมนูหลัก',
-          menuSub: 'เลือกสิ่งที่ต้องการทำต่อ',
-          play: 'เล่น', collection: 'คอลเลกชัน', missions: 'ภารกิจ', themes: 'ธีมตู้', trophy: 'ถ้วยรางวัล', howto: 'วิธีเล่น', settings: 'ตั้งค่า', back: 'ย้อนกลับ'
-        },
-        en: {
-          tap: 'TAP TO START',
-          menuTitle: 'Main Menu',
-          menuSub: 'Choose what you want to do next.',
-          play: 'PLAY', collection: 'Collection', missions: 'Missions', themes: 'Themes', trophy: 'Trophy', howto: 'How to Play', settings: 'Settings', back: 'Back'
-        },
-        ja: {
-          tap: 'タップしてスタート',
-          menuTitle: 'メインメニュー',
-          menuSub: '次に進みたい項目を選んでください。',
-          play: 'プレイ', collection: 'コレクション', missions: 'ミッション', themes: 'テーマ', trophy: 'トロフィー', howto: '遊び方', settings: '設定', back: 'もどる'
-        }
-      };
-
-      const sections = new Map([...document.querySelectorAll('.screen[data-screen]')].map((node) => [node.dataset.screen, node]));
-      const startPrompt = document.querySelector('[data-title-start]');
-      const startLabel = startPrompt?.querySelector('.title-start-prompt__label');
-      const menuTitle = document.getElementById('menu-title');
-      const menuSub = document.querySelector('.main-menu-shell__sub');
-      const backButton = document.querySelector('[data-menu-back]');
-      const menuLabels = new Map([...document.querySelectorAll('[data-menu-item]')].map((button) => [button.dataset.menuItem, button.querySelector('.main-menu-button__label')]));
-      const languageChip = document.querySelector('[data-language-code]');
-      const titleScreen = sections.get('title');
-      const openLanguageButton = document.querySelector('[data-open-language]');
-
-      const normalizedLang = () => {
-        const raw = (languageChip?.textContent || document.documentElement.lang || 'en').trim().toLowerCase();
-        if (raw.startsWith('th')) return 'th';
-        if (raw.startsWith('ja')) return 'ja';
-        return 'en';
-      };
-
-      function localizeTitleMenu() {
-        const lang = normalizedLang();
-        const t = copy[lang] || copy.en;
-        if (startLabel) startLabel.textContent = t.tap;
-        if (menuTitle) menuTitle.textContent = t.menuTitle;
-        if (menuSub) menuSub.textContent = t.menuSub;
-        const map = { play:'play', collection:'collection', missions:'missions', themes:'themes', trophy:'trophy', howto:'howto', settings:'settings' };
-        Object.entries(map).forEach(([key, id]) => {
-          const node = menuLabels.get(key);
-          if (node) node.textContent = t[id];
-        });
-        if (backButton) backButton.textContent = t.back;
-        if (startPrompt) startPrompt.setAttribute('aria-label', t.tap);
-      }
-
-      function setScreen(name) {
-        document.body.dataset.screen = name;
-        sections.forEach((node, key) => {
-          const active = key === name;
-          node.classList.toggle('is-active', active);
-          node.setAttribute('aria-hidden', String(!active));
-        });
-      }
-
-      function goMenu() {
-        if (document.body.dataset.screen !== 'title') return;
-        setScreen('menu');
-      }
-
-      startPrompt?.addEventListener('click', goMenu);
-      titleScreen?.addEventListener('click', (event) => {
-        if (document.body.dataset.screen !== 'title') return;
-        if (event.target.closest('[data-open-language]')) return;
-        if (event.target.closest('[data-title-start]')) return;
-        goMenu();
-      });
-
-      titleScreen?.addEventListener('keydown', (event) => {
-        if (document.body.dataset.screen !== 'title') return;
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          goMenu();
-        }
-      });
-
-      backButton?.addEventListener('click', () => setScreen('title'));
-
-      const sync = () => { localizeTitleMenu(); };
-      sync();
-      new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['data-screen'] });
-      if (languageChip) new MutationObserver(sync).observe(languageChip, { childList: true, characterData: true, subtree: true });
-      document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
-      window.addEventListener('load', sync, { once: true });
-    })();
-  </script>
 </body>
 </html>
