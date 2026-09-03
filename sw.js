@@ -1,27 +1,27 @@
-const CACHE_NAME = 'lucky-claw-shell-v13';
+const CACHE_NAME = 'lucky-claw-shell-v14';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '002.02';
+const BUILD_ID = '002.03';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './src/css/app.css?v=001.20',
   './src/css/title-showcase.css?v=001.20',
-  './src/css/menu.css?v=002.02',
-  './src/css/settings.css?v=002.02',
-  './src/js/core/app.js?v=002.02',
+  './src/css/menu.css?v=002.03',
+  './src/css/settings.css?v=002.03',
+  './src/js/core/app.js?v=002.03',
   './src/js/core/audio-lifecycle.js?v=001.20',
   './src/js/core/pwa-install.js?v=001.20',
-  './src/js/core/display-mode.js?v=002.02',
-  './src/js/core/i18n.js?v=002.02',
+  './src/js/core/display-mode.js?v=002.03',
+  './src/js/core/i18n.js?v=002.03',
   './src/js/core/storage.js?v=002.01',
   './src/js/data/soundtrack.js',
   './src/js/data/support.js?v=002.01',
   './src/js/data/legal-content.js?v=002.01',
   './src/js/screens/language.js?v=001.20',
   './src/js/screens/splash.js?v=001.20',
-  './src/js/screens/main-menu.js?v=002.02',
-  './src/js/screens/settings.js?v=002.02',
+  './src/js/screens/main-menu.js?v=002.03',
+  './src/js/screens/settings.js?v=002.03',
   './src/js/systems/music-manager.js?v=001.20',
   './src/locales/en.json',
   './src/locales/th.json',

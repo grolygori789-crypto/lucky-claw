@@ -1,15 +1,15 @@
-import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=002.02';
-import { installDisplayMode, requestImmersiveMode, exitImmersiveMode, isInstalledAppMode } from './display-mode.js?v=002.02';
+import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=002.03';
+import { installDisplayMode, requestImmersiveMode, exitImmersiveMode, isInstalledAppMode } from './display-mode.js?v=002.03';
 import { loadState, saveState, clearGameProgress } from './storage.js?v=002.01';
 import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
 import { createPWAController } from './pwa-install.js?v=001.20';
 import { MusicManager } from '../systems/music-manager.js?v=001.20';
 import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
-import { bindMainMenu } from '../screens/main-menu.js?v=002.02';
-import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.02';
+import { bindMainMenu } from '../screens/main-menu.js?v=002.03';
+import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.03';
 
-const BUILD_ID = '002.02';
+const BUILD_ID = '002.03';
 const screens = new Map(
   [...document.querySelectorAll('.screen[data-screen]')].map((element) => [element.dataset.screen, element]),
 );

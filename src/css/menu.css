@@ -1,5 +1,17 @@
-/* Lucky Claw — Build 002.02 Main Menu / Title actions */
+/* Lucky Claw — Build 002.03 Main Menu / Title actions */
 
+
+
+/* Title utility actions are deliberately split across opposite corners.
+   Language stays top-left; Exit stays top-right. This explicit override prevents
+   theme/base CSS or safe-area changes from ever stacking the two controls. */
+.screen--title .language-chip {
+  z-index: 16;
+  top: calc(var(--safe-top) + 4px);
+  left: calc(var(--safe-left) + 4px);
+  right: auto;
+  bottom: auto;
+}
 
 .title-exit-button {
   position: absolute;
