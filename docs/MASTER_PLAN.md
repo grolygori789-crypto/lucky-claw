@@ -1,1453 +1,1069 @@
 # LUCKY CLAW — MASTER PLAN
 
-**Document status:** AUTHORITATIVE  
-**Product stage:** Pre-production / Foundation  
-**Platform:** Mobile web / installable PWA target  
-**Orientation:** Portrait  
-**Languages:** Thai + English  
-**Publisher identity:** Benedict Interactive  
-**Working title:** Lucky Claw  
-**Technical ceiling:** Medium implementation complexity  
-**Primary principle:** Premium through art direction, feedback, and restraint—not engineering excess.
+**Revision:** 3.0  
+**Date:** 4 September 2026  
+**Status:** AUTHORITATIVE  
+**Repository:** `grolygori789-crypto/lucky-claw`  
+**Production source of truth:** current `main` branch on GitHub  
+**Current released production baseline at this revision:** Build `002.04`  
+**Current development focus:** Build `003` — Core Claw Loop / Stage 1  
+**Platform:** portrait-first mobile web + installable PWA  
+**Languages:** Thai / English / Japanese  
+**Publisher:** Benedict Interactive  
+**Game-facing brand:** BENEDICT GAMES  
+**Brand location:** Bangkok, Thailand  
+**Technical ceiling:** medium implementation complexity  
+**Primary product principle:** premium through art direction, feel, feedback, clarity, and disciplined engineering—not engineering excess.
 
 ---
 
-## 0. Executive Summary
+## 0. Authority, Roles, and Operating Model
 
-Lucky Claw is a portrait-first premium casual claw-machine game for mobile browsers and eventual PWA installation. It must feel like a polished mobile game rather than a web demo while remaining fully achievable with HTML, CSS, vanilla JavaScript, Canvas 2D where useful, lightweight media assets, and local persistence.
+Lucky Claw uses a **Full Authorized DEV 100%** operating model.
 
-The emotional product is not “operating a crane.” It is the tension between **precision, uncertainty, near-miss, reward, collection, and progression**.
+The assistant/dev is the project's primary:
+- Product Owner;
+- Game Director;
+- UX/UI Lead;
+- Art/Visual Systems Lead;
+- Technical Lead / CTO;
+- Systems Designer;
+- Progression & Economy Designer;
+- QA Owner;
+- Release Gatekeeper.
 
-The game intentionally avoids expensive technical spectacle. No realtime 3D is required. No heavyweight rigid-body plush simulation is required. No backend is required for the initial product. The illusion of physicality should come from high-quality 2D art, controlled animation, hit zones, tuned probabilities, layered sprites, sound, haptics where supported, and believable motion timing.
+The user acts as **Founder/Advisor and reviewer** who gives feedback, taste direction, priorities, approvals, and corrections. The assistant/dev is expected to make the principal product and implementation decisions autonomously inside this Master Plan and the user's latest explicit instruction.
 
-### Thai product intent
+Do not ask the user to make micro-decisions that the dev can reasonably decide.
 
-เป้าหมายคือทำให้ผู้เล่นรู้สึกว่าเป็นเกมมือถือพรีเมียมจริงตั้งแต่วินาทีแรก ทั้งที่เบื้องหลังใช้ระบบเว็บที่เรียบง่ายและควบคุมได้ ความสนุกต้องมาจาก “เล็ง–คีบ–ลุ้น–เกือบได้–ได้รางวัล–สะสม–ปลดล็อก” ไม่ใช่จากความซับซ้อนของระบบฟิสิกส์
+### Conflict order
 
-ทุกฟีเจอร์ต้องผ่าน 2 คำถาม:
-1. ทำให้เกมน่าเล่นขึ้น วางยากขึ้น หรืออยากกลับมาเล่นต่อขึ้นจริงหรือไม่
-2. ทำได้โดยไม่ผลัก implementation ให้เกินระดับปานกลางหรือไม่
+When instructions or artifacts conflict, resolve in this order:
 
-ถ้าไม่ผ่านข้อใดข้อหนึ่ง ต้องลดรูป เปลี่ยนวิธี หรือตัดออก
+1. latest explicit user instruction;
+2. current production files on GitHub `main`;
+3. this Master Plan;
+4. `docs/BUILD_PROTOCOL.md`;
+5. approved production assets and current runtime behavior;
+6. repository history;
+7. older conversation context or old drafts.
 
----
-
-## 1. Product Authority & Decision Framework
-
-The project is operated under a full-authority development model. Product, UX, game design, visual direction, progression, economy, architecture, scope, and implementation decisions optimize for the agreed North Star without requiring approval for every micro-decision.
-
-### Decision priority
-
-When trade-offs exist, decide in this order:
-
-1. Player delight and clarity
-2. Core-loop fun and replay pull
-3. Premium perception
-4. Mobile responsiveness and smoothness
-5. Implementation reliability
-6. Medium-or-lower complexity ceiling
-7. Maintainability
-8. Content scalability
-9. Nice-to-have spectacle
-
-### Feature acceptance test
-
-A proposed feature should normally satisfy at least two:
-- improves the first 30 seconds;
-- strengthens claw tension;
-- strengthens collection desire;
-- creates meaningful progression;
-- improves return motivation;
-- creates satisfying feedback;
-- improves identity/premium feel;
-- enables future content at low engineering cost.
-
-A feature that mainly adds engineering work without noticeable player value should be rejected.
+Never let an old local copy override current GitHub production.
 
 ---
 
-## 2. Product North Star
+## 1. Repository-Only Production Rule
 
-### Desired player reaction
+For all project work, **production files must be read/fetched from the GitHub repository**.
 
+Mandatory:
+- inspect current GitHub `main` before modifying an existing production area;
+- fetch the actual current file from GitHub before editing it;
+- treat repository paths and current GitHub content as authoritative;
+- generate new files in a working environment only after reading their dependencies from GitHub.
+
+Forbidden as production authority:
+- stale `/mnt/data` worktrees from an older room;
+- remembered code;
+- old ZIPs;
+- screenshots as a substitute for source inspection;
+- reconstructed files when GitHub has the real file;
+- hidden local caches from previous sessions.
+
+Uncommitted experiments may inform reasoning, but **they are not production** until rebuilt against and delivered from the current repository baseline.
+
+Default workflow is manual upload by the user. Do not push or write remotely to GitHub unless the user explicitly instructs that in the current turn.
+
+---
+
+## 2. No-Wasted-Wait Contract
+
+The user must never be left waiting through a long tool run only to receive no usable result.
+
+Mandatory behavior:
+- front-load repository inspection and feasibility checks;
+- run a fast smoke test early before spending a long time polishing;
+- if a blocking test fails, fix it before continuing expensive downstream work;
+- do not silently disappear into an extended tool loop;
+- give concise progress checkpoints during unusually long work;
+- never tell the user to wait, come back later, or imply background work;
+- every substantial development turn should end with either:
+  1. an upload-ready tested artifact, or
+  2. a prompt, actionable blocker reported promptly—never after a long silent wait.
+
+If final QA fails, do not send a broken production ZIP. Fix it in the same turn when realistically possible. If the environment itself prevents completion, state the exact blocker immediately rather than consuming the user's time.
+
+“Work completed” and “ready to upload” are not the same thing. Only tested outgoing files are upload-ready.
+
+---
+
+## 3. Mandatory Delivery Contract
+
+Every delivery containing files must include:
+
+1. a direct download link;
+2. exact changed/new file paths;
+3. explicit `DELETE: none` or exact delete paths;
+4. tests actually run and their results;
+5. any known limitation that was not testable;
+6. a SHA-256 checksum for the final ZIP when practical;
+7. a **Commit name no longer than 50 characters**, always shown in a code block.
+
+Example:
+
+```text
+Build 003: add core claw gameplay
+```
+
+The ZIP must begin at repository root and be immediately mergeable into the repository without renaming or reorganizing files.
+
+Do not put build ZIPs, screenshots, QA images, or temporary files in the repository.
+
+---
+
+## 4. Product North Star
+
+Lucky Claw is a premium casual arcade collectible game built around the emotional loop:
+
+**aim → commit → tension → near miss / success → reward → collection → progression → one more try**
+
+Desired reactions:
 - “This is cute.”
-- “This feels surprisingly polished.”
-- “I get it immediately.”
-- “One more try.”
+- “This looks expensive.”
+- “This feels like a real mobile game.”
 - “I nearly had it.”
+- “One more try.”
 - “I want that plush.”
-- “I’m almost at the next cabinet.”
-- “I’ll come back and finish the collection.”
+- “I want to beat my high score.”
+- “I want the next cabinet theme.”
+- “I want the next trophy.”
 
-### Experience pillars
-
-**Instant readability**  
-The player understands what to do without a manual.
-
-**Tactile anticipation**  
-Movement, sound, button response, claw descent, grip, lift, wobble, slip, and prize drop feel physical despite 2D implementation.
-
-**Collectibility**  
-Plushies feel like desirable objects, not score markers.
-
-**Visible progression**  
-The player always has a nearby goal: another plush, a mission, a milestone, or a cabinet unlock.
-
-**Premium restraint**  
-The UI is glossy, charming, clean, motion-rich, and controlled rather than noisy.
+The game must never feel like:
+- a generic HTML demo;
+- a cheap web form placed over a cabinet image;
+- a rigged gambling machine;
+- a physics sandbox;
+- a children-only toy;
+- a technically impressive but visually incoherent prototype.
 
 ---
 
-## 3. Audience & Positioning
+## 5. Visual Identity
 
-### Core audience
-
-Broad casual mobile players who enjoy:
-- claw machines;
-- cute collectibles;
-- cozy/premium casual games;
-- short sessions;
-- light progression;
-- satisfying rewards.
-
-Cute enough to invite, refined enough not to feel children-only.
-
-### Positioning
-
-**Premium casual arcade collectible.**
-
-Not:
-- gambling simulator;
-- hardcore crane simulator;
-- physics sandbox;
-- hyper-casual ad shell;
-- children-only toy app.
-
-### Session shapes
-
-- Micro: 1–2 plays
-- Normal: 3–8 plays
-- Goal session: “Only 300 points until Sakura.”
-
----
-
-## 4. Core Gameplay Loop
-
-```text
-Choose target
-↓
-Move claw horizontally
-↓
-DROP
-↓
-Claw descends
-↓
-Grip attempt
-↓
-Lift + tension
-↓
-Success / slip / near miss
-↓
-Prize delivery or reset
-↓
-Points + collection + mission progress
-↓
-Next attempt
-```
-
-This loop is sacred. Meta systems support it; they never bury it.
-
----
-
-## 5. Core Mechanical Model
-
-### Controls
-
-Initial production control:
-- horizontal joystick — the player drags/holds left or right to position the claw;
-- SHUFFLE — optional hold control that stirs/repositions the plush pile for up to approximately 15 seconds per attempt;
-- DROP — the primary action that commits the attempt.
-
-SHUFFLE is a low-complexity agency feature: presentation may imply a physical mixing mechanism, while implementation uses controlled plush repositioning and motion rather than full rigid-body simulation.
-
-After DROP:
-- automatic descent;
-- automatic close/grip;
-- automatic lift;
-- automatic travel to prize chute on successful carry;
-- automatic release;
-- reset.
-
-This is intentionally simpler and better for portrait mobile than full crane-simulator control.
-
-### Plush data model
-
-Each plush should be data-driven:
-
-```text
-id
-rarity
-displayNameKey
-sprite
-x / y
-renderDepth
-grabZone
-weight
-gripDifficulty
-value
-collectionSet
-```
-
-### Grab evaluation
-
-A claw attempt can evaluate:
-- overlap with grab zone;
-- distance from ideal grab point;
-- plush difficulty;
-- controlled variability;
-- context that does not violate fairness.
-
-The result drives animation states rather than heavyweight physics.
-
-### Useful outcomes
-
-1. Clean miss
-2. Weak grab / early slip
-3. Late slip
-4. Successful carry
-
-Near misses must feel plausible, not rigged.
-
-### Fairness rule
-
-Probability may model imperfect grip, but player precision must matter materially.
-
-Strong aim must be observably better than poor aim. Never build an opaque “the game decided you lose” system.
-
----
-
-## 6. Prize Delivery
-
-The visible prize chute is a permanent part of the machine fantasy.
-
-Successful sequence:
-
-```text
-grip
-→ rise
-→ travel to chute
-→ release
-→ visible drop/ramp
-→ reward reveal
-```
-
-The chute uses controlled animation paths rather than full physics.
-
-The physical payoff should happen before the reward card whenever possible.
-
----
-
-## 7. Collection System
-
-### Purpose
-
-Collection is the strongest low-complexity long-term retention system.
-
-A won plush becomes permanently visible in the collection.
-
-### Initial rarity model
-
-- Common
-- Uncommon
-- Rare
-- Epic
-- Secret / Special
-
-Avoid excessive rarity tiers.
-
-### Collection sets
-
-Examples:
-- Cozy Friends
-- Tiny Paws
-- Forest Party
-- Lucky Stars
-
-Sets should be data-driven so new content rarely changes engine code.
-
-### Duplicates
-
-Preferred initial behavior:
-- first copy unlocks the collectible;
-- duplicates award bonus Claw Points;
-- duplicate milestones may feed missions.
-
-No crafting system in the initial product.
-
----
-
-## 8. Progression & Economy
-
-### Primary earnable currency
-
-Working name: **Claw Points**
-
-Purpose:
-- reward play;
-- create forward progress;
-- unlock cosmetic cabinet themes;
-- power missions and milestones.
-
-### Economy philosophy
-
-Create pleasant “almost there” pull without grind.
-
-The player should see:
-- short goals;
-- medium goals;
-- aspirational goals.
-
-### Earn sources
-
-- successful captures;
-- rarity bonus;
-- first-time collection bonus;
-- missions;
-- collection milestones;
-- optional session reward only if it improves flow.
-
-### Cosmetic fairness
-
-Cabinet themes never improve grip strength or capture probability.
-
----
-
-## 9. Cabinet Theme System
-
-### Product role
-
-Themes provide:
-- aspiration;
-- personalization;
-- status;
-- visual freshness;
-- cheap future content expansion.
-
-### Architecture
-
-Themes are config-driven skins, not separate gameplay implementations.
-
-A theme may define:
-
-```text
-frame asset
-interior background
-floor asset
-LED/accent tokens
-button treatment
-ambient effect
-reward effect
-optional audio cue
-localized display name
-unlock cost
-```
-
-The claw engine remains shared.
-
-### Recommended ladder
-
-1. Classic Pink — free
-2. Midnight Arcade
-3. Sakura Dream
-4. Ocean Pop
-5. Galaxy Claw
-6. Royal Gold
-7. Neon Tokyo
-8. Secret Cabinet — milestone unlock
-
-Exact prices require playtesting.
-
-### Preview-before-unlock
-
-Locked themes must be previewable at full cabinet scale with:
-- locked state;
-- current points;
-- required points;
-- UNLOCK when affordable.
-
-### Rule
-
-Cosmetic theme choice must never change win odds.
-
----
-
-## 10. Missions
-
-### Purpose
-
-Turn ordinary play into short-term goals.
-
-### Initial mission types
-
-- Win 2 plushies
-- Collect a new plush
-- Win Rare or higher
-- Play 5 rounds
-- Earn 500 Claw Points
-
-### Complexity rule
-
-Missions derive from events already tracked by the game.
-
-Do not build bespoke mechanics only to satisfy a mission.
-
----
-
-## 11. Screen Architecture
-
-### First launch
-
-```text
-Publisher / game-brand splash
-→ Lucky Claw logo reveal
-→ Welcome + language selection
-→ Main Menu
-```
-
-### Returning launch
-
-```text
-Short splash / asset warm-up
-→ Main Menu
-```
-
-### Splash
-
-Preferred:
-- Benedict Interactive remains the parent identity;
-- optional playful game-label treatment may appear visually;
-- no long cinematic;
-- approx. 2.6–3.0 seconds for the approved Benedict Games intro; reduced-motion mode may shorten nonessential presentation.
-
-Possible motion:
-- cabinet lights activate;
-- logo fades/scales;
-- tiny claw idle movement.
-
-### Language selection
-
-First-run only.
-
-Options:
-- ไทย
-- English
-
-Browser language may preselect, but player can override.
-
-### Title cabinet presentation
-
-The approved Classic Pink cabinet base is the tall-phone production plate at **841×1870 (~9:20)**. Runtime framing preserves this aspect ratio and scales the stage to cover the viewport; it must never stretch the cabinet. On non-target phone ratios, only a small amount of the outer cabinet frame may crop so the game still reads as full-screen rather than a centered poster with empty bands.
-
-The cabinet base remains a clean physical plate. Title presentation adds production layers rather than baking controls or effects into the cabinet image:
-- curated Title Plush Layer when its final transparent asset is approved;
-- separate claw layer when its final transparent asset is approved;
-- restrained front-glass overlay;
-- DOM/CSS 2.5D joystick, monitor, SHUFFLE button, and DROP button anchored to the cabinet deck.
-
-On Title, the control set is a powered-on showcase state: visually complete, premium, and non-interactive. It must not look greyed-out or broken. Gameplay later reuses the same control geometry and changes it to an interactive state, avoiding a visual jump between Title and play.
-
-The front glass is a foreground visual layer, not an input surface. It uses restrained laminated-glass edge highlights, a soft directional reflection, and low-opacity sheen; reflection must stay subtle enough that plush targets and the claw remain easy to read.
-
-The control deck follows one coherent hardware-console language: pearl enamel, champagne-gold trim, smoked rose display glass, shallow perspective, and shared lighting. Joystick, monitor, SHUFFLE, and DROP must read as mounted hardware from the same machine—not independent web widgets placed over an image.
-
-
----
-
-## 12. Main Menu
-
-The Main Menu must answer:
-- How do I play?
-- What am I collecting?
-- What can I unlock?
-- What should I do next?
-
-### Hierarchy
-
-Primary:
-- PLAY
-
-Secondary:
-- Collection
-- Themes
-- Missions
-
-Utility:
-- Settings
-- points display
-
-The selected cabinet should act as the hero visual so theme ownership matters continuously.
-
----
-
-## 13. Gameplay Screen
-
-### Portrait hierarchy
-
-Approximate:
-- top HUD: 7–10%
-- cabinet/gameplay: 62–70%
-- controls: 18–22%
-- secondary status/nav only if it does not steal useful gameplay area.
-
-### HUD
-
-Keep minimal:
-- points;
-- plays/tickets only if retained;
-- timer only if it creates useful tension;
-- pause/settings.
-
-Avoid currency bloat.
-
-### Controls
-
-The approved physical cabinet art keeps the control deck visually clean. Interactive controls are DOM/CSS 2.5D overlays anchored to the cabinet coordinate system so visual size and touch-target size can be tuned independently.
-
-Large touch targets:
-- horizontal joystick;
-- SHUFFLE;
-- DROP.
-
-DROP is the emotional primary action and receives the strongest tactile treatment. SHUFFLE is secondary and must never compete visually with DROP. Touch hit areas may extend invisibly beyond the rendered control artwork where needed for comfortable one-handed play.
-
----
-
-## 14. Premium UI Design Language
-
-### Target identity
-
+### Core identity
 - cute-premium;
 - luxury arcade;
-- glossy but clean;
-- warm;
-- collectible;
-- polished mobile-game finish.
+- warm ivory / blush pink / champagne gold;
+- tactile acrylic, pearl enamel, glass, chrome, satin, plush;
+- polished mobile-game finish;
+- charming but not childish;
+- glossy but restrained.
 
-Avoid:
-- cheap casino chrome;
-- excessive neon;
-- generic web-app styling;
-- toddler-only visual language.
-
-### Material vocabulary
-
-Use CSS + lightweight raster/SVG art to imply:
-- pearl enamel;
-- soft acrylic;
-- subtle chrome;
-- clean glass;
-- warm LEDs;
-- plush/satin softness.
-
-### Premium through restraint
-
+### Premium rules
 Premium perception comes from:
-- spacing;
-- typography;
-- motion timing;
+- coherent geometry;
+- excellent spacing;
+- deliberate hierarchy;
+- consistent material language;
+- believable mechanical connections;
 - controlled highlights;
-- visual hierarchy;
-- responsive feedback;
-- coherent audio;
+- excellent typography;
+- smooth motion;
+- immediate input response;
 - clean assets.
 
-Not blur/glow everywhere.
-
----
-
-## 15. Approved UI Effects
-
-Low-to-medium complexity:
-- soft acrylic/glass panels;
-- controlled backdrop blur where performant;
-- restrained LED glow;
-- press compression;
-- subtle specular sweep;
-- reward sparkle burst;
-- animated number gain;
-- card reveal;
-- tab motion;
-- gentle cabinet idle lighting;
-- limited plush idle motion;
-- limited parallax;
-- smooth dialogs.
-
-### Performance rule
-
-If an effect causes visible jank on ordinary modern mobile hardware, simplify or remove it.
-
-Smoothness is premium.
-
-### Reduced motion
-
-Respect `prefers-reduced-motion` for nonessential animation.
-
----
-
-## 16. Audio & Haptics
-
-### SFX should reinforce
-
-- button press;
-- rail movement;
-- claw descent;
-- claw close;
-- grip tension;
-- slip;
-- prize chute;
-- reward reveal;
-- theme unlock.
-
-Short, crisp, not noisy.
-
-### Music
-
-Lucky Claw uses a fixed launch soundtrack of five production tracks:
-- Main Title Theme
-- Cozy Claw
-- Toy Boutique
-- Lucky Rush
-- Dreamy Arcade
-
-Player-facing track names display only the song title; no “Lucky Claw” suffix is shown in the media player.
-
-Music UX is intentionally unobtrusive:
-- Title plays Main Title Theme with no visible media player; the soundtrack supports the title rather than competing with it.
-- The full minimal player lives inside Settings only: Previous/Next, Play/Pause, Shuffle, Repeat Off/Playlist/Track, volume decrease/increase, and direct track selection.
-- Gameplay has no persistent media-player overlay. The track active when a round begins is locked for that round; track-change requests made through Settings may be queued for the next round.
-- The final 30 seconds enter Dynamic Urgency Mode. Playback rate rises progressively and smoothly, reaching a restrained maximum near the final seconds, then always resets to 1.00× when the round ends.
-- User mute/volume choices always win; urgency never forces music back on.
-
-Music preferences persist locally. Audio must remain subordinate to gameplay SFX and retain enough headroom for claw, shuffle, drop, chute, and reward sounds.
-
-### Haptics
-
-Where supported:
-- subtle press feedback;
-- stronger reward pulse;
-- optional near-miss cue.
-
-Graceful fallback when unsupported.
-
----
-
-## 17. Localization: Thai + English
-
-Localization is a first-class system, not a late translation pass.
-
-### Quality bar
-
-Both languages must feel written natively for a premium mobile game.
-
 Avoid:
-- literal translation;
-- textbook phrasing;
-- unnatural formality;
-- Thai copied into English structure;
-- English copied into Thai structure.
-
-### Architecture
-
-Semantic localization keys:
-
-```json
-{
-  "menu.play": "PLAY",
-  "menu.collection": "COLLECTION",
-  "reward.new": "NEW!",
-  "theme.unlock": "UNLOCK"
-}
-```
-
-Thai and English dictionaries remain separate from screen logic.
-
-### Layout rule
-
-Every changed screen is tested in both languages.
-
-Never solve overflow by shrinking one language until it becomes unpleasant to read.
+- generic web cards;
+- oversized flat panels;
+- UI floating without physical logic;
+- uncontrolled glow;
+- cheap casino styling;
+- parts that look pasted together;
+- mechanically impossible geometry;
+- tiny plushes that destroy the claw-machine fantasy.
 
 ---
 
-## 18. Technical Architecture
+## 6. Approved Production Baseline — Build 002.04
 
-### Approved stack
+The following areas are considered stable production and must be protected from regression.
 
-- semantic HTML5;
-- modern CSS;
-- vanilla ES modules;
-- Canvas 2D for continuous gameplay where useful;
-- DOM for UI/text/menus;
-- localStorage initially;
-- Web Audio / HTML audio;
-- PWA after core stability;
-- GitHub Pages.
+### Boot / first-load behavior
+- boot cover hides the cabinet until critical visual assets are ready;
+- the user must not see an empty cabinet first and then watch claw/plush/buttons pop in later;
+- long-press image saving/callout must remain disabled on the game surface;
+- pinch zoom / multi-touch zoom / double-tap zoom must remain blocked for gameplay presentation.
 
-### DOM + Canvas hybrid
+### Splash / Title
+- Benedict Games publisher splash;
+- premium Classic Pink cabinet;
+- title plush showcase;
+- title claw showcase;
+- title hardware controls are presentation-only;
+- `Tap to Start` is text-forward arcade prompting, not a generic oversized web button;
+- language action stays separate from the exit action;
+- exit `×` is available from Title and uses a localized confirmation flow.
 
-Use DOM/CSS for:
-- menus;
-- HUD;
-- buttons;
-- dialogs;
-- text;
-- settings;
-- collection cards.
+### Languages
+Production languages:
+- Thai (`th`);
+- English (`en`);
+- Japanese (`ja`).
 
-Use Canvas 2D for:
-- claw motion;
-- layered plush rendering;
-- controlled gameplay animation;
-- lightweight particles.
+All visible copy must be native-quality, natural game language. Raw localization keys must never appear.
 
-Do not render the whole app in Canvas merely because it is a game.
+### Main Menu
+Current menu foundation includes:
+- PLAY;
+- Collection;
+- Missions;
+- Themes;
+- Trophy;
+- How to Play;
+- Settings.
 
-### No framework by default
+PLAY remains the dominant primary action.
 
-A framework is introduced only if vanilla architecture becomes measurably harder to maintain.
+### Settings
+Settings foundation includes:
+- Music;
+- SFX;
+- Haptics;
+- Language;
+- Reduced Effects;
+- Game Data;
+- How to Play;
+- Feedback/support utilities;
+- Support;
+- Legal & Privacy;
+- About;
+- Exit Game.
 
-### No backend by default
+### Support
+Canonical data belongs in `src/js/data/support.js`.
 
-Initial product does not require:
-- accounts;
-- cloud save;
-- multiplayer;
-- remote economy;
-- payments;
-- server authority.
+Current product model:
+- International support: **Ko-fi**;
+- Thailand support: **PromptPay**;
+- support is optional;
+- support must never change gameplay odds, rewards, progression, or access.
 
-Backend scope, if ever needed, is a separate deliberate decision.
+### Legal / Trust
+Lucky Claw is:
+- entertainment only;
+- not gambling;
+- no cash prizes;
+- local-first;
+- no account/backend required in the current product;
+- progress can be lost if local browser/app storage is cleared.
+
+Brand presentation:
+- `BENEDICT GAMES`
+- `by Benedict Interactive`
+- `Bangkok, Thailand`
 
 ---
 
-## 19. Planned Module Responsibilities
+## 7. Audio / PWA Non-Regression Contract
+
+This is a critical historical failure area. Do not casually rewrite it.
+
+### Audio
+Media elements may make HTTP Range requests and receive `206 Partial Content`.
+
+Mandatory:
+- audio requests must pass through to network;
+- never runtime-cache streamed partial audio responses with the Cache API;
+- do not reintroduce the old media `cacheFirst()` behavior;
+- preserve music preference state;
+- audio unlock should happen on a trusted interaction when browser policy requires it;
+- background/hidden page lifecycle must pause correctly.
+
+### Service Worker
+Current architecture:
+- explicitly versioned shell cache;
+- old Lucky Claw shell caches removed on upgrade;
+- normal 200 static responses may be cached;
+- media Range behavior remains untouched;
+- installed clients may be refreshed coherently on real build upgrade.
+
+### Fullscreen / PWA
+- installed PWA uses its manifest display mode;
+- do not request browser fullscreen repeatedly when already installed/standalone/fullscreen;
+- ordinary browser fullscreen may show Chrome/OS security education UI; the page cannot suppress browser chrome that the browser owns;
+- portrait is the product orientation;
+- landscape gets a graceful fallback rather than broken layout.
+
+Any Build 003 work must pass audio/PWA regression checks before delivery.
+
+---
+
+## 8. Core Gameplay — Locked Direction
+
+### Round model
+Stage-based timed arcade play.
+
+**Stage 1 baseline:**
+- duration: **3:00**;
+- target score: **600**;
+- player must meet or exceed target before round ends to clear the stage;
+- each plush has its own score value;
+- stage score is separate from persistent Claw Points;
+- High Score is stored per stage and persists locally;
+- high scores remain until game data is cleared.
+
+Stage targets, time, and plush values are data-driven and may be tuned through playtesting without rewriting engine code.
+
+### Loop
 
 ```text
-src/js/core/
-  app bootstrap
-  state
-  storage
-  localization
-  lightweight app events if justified
-
-src/js/gameplay/
-  claw controller
-  target/grab evaluation
-  plush placement
-  gameplay state machine
-  reward handoff
-
-src/js/screens/
-  splash
-  language
-  main menu
-  gameplay
-  collection
-  themes
-  missions
-  settings
-
-src/js/systems/
-  economy
-  collection
-  themes
-  missions
-  audio
-  haptics
-
-src/js/data/
-  plush catalog
-  theme catalog
-  mission definitions
-  balance constants
-
-src/locales/
-  th
-  en
+Start stage
+→ Move claw
+→ optional SHUFFLE
+→ aim
+→ DROP
+→ claw extends
+→ closes
+→ evaluates grip
+→ lifts
+→ swing / secure carry / slip
+→ travel to prize chute if secured
+→ release
+→ visible delivery
+→ score + collection/progression updates
+→ reset claw
+→ next attempt until timer ends
 ```
 
-Files are split by durable responsibility, not mechanically.
+---
+
+## 9. Gameplay Claw — Mechanical Standard
+
+The claw must look mechanically continuous, not composited from unrelated parts.
+
+Required physical chain:
+
+```text
+rail/carriage
+→ telescoping chrome shaft
+→ champagne-gold collar / bearing
+→ swivel / claw hub
+→ three articulated arms
+```
+
+### Idle state
+- claw stays high near the rail;
+- shaft is substantially retracted;
+- playable chamber remains visually open;
+- claw does not hang halfway down the cabinet during ordinary aiming.
+
+### DROP state
+- shaft extends only after DROP;
+- arm movement follows controlled easing;
+- claw reaches the target height;
+- arms close;
+- shaft retracts while carrying or slipping.
+
+### Size relationship
+The claw must be sized **against the medium gameplay plush**, not against Title artwork.
+
+The open claw span should visually cover a meaningful part of a medium plush body:
+- not so small that a grab looks impossible;
+- not so large that it captures whole clusters;
+- enough clearance for believable edge grabs and slips.
+
+Grab radius and rendered claw opening must be tuned together. Never enlarge only the art while leaving logic too small, or vice versa.
+
+### Movement feel
+Use controlled game-feel physics:
+- horizontal inertia;
+- gentle pendulum/swing;
+- damping;
+- plausible weight response;
+- no full rope/rigid-body simulation required.
+
+---
+
+## 10. Gameplay Plush Test Roster
+
+The first gameplay validation roster is intentionally small:
+
+1. Signature Shih Tzu — tan/white;
+2. Black Shih Tzu;
+3. Red Bear;
+4. Yellow Chick;
+5. White Bunny.
+
+These five define the art language before expanding the launch roster.
+
+### Shape coverage
+They intentionally test:
+- medium standard body;
+- dark medium body;
+- large/round plush;
+- small/light plush;
+- long-ear / awkward silhouette.
+
+### Stage 1 pile
+Recommended initial visible population:
+- approximately **11–12 plush instances** from the five types;
+- dense enough to look like a real prize machine;
+- layered front/middle/back;
+- not arranged like icons;
+- no plush may cross outside the physical chamber;
+- no plush may visually penetrate cabinet walls or front boundaries;
+- the left prize-chute opening and its physical edges must remain clearly readable.
+
+### Chute exclusion
+Define an explicit chute exclusion region in normalized cabinet coordinates. Plush placement and SHUFFLE must respect it at all times.
+
+The test is not “looks okay before shuffle.” It must remain physically plausible after repeated shuffle actions.
+
+---
+
+## 11. SHUFFLE / Agitator System
+
+SHUFFLE is available for a bounded amount of time per round/attempt, initially **up to about 15 seconds**.
+
+The machine must visually explain how the pile can move.
+
+Required:
+- visible floor agitator / shuffle mechanism inside the chamber;
+- mechanism styled as part of the premium cabinet;
+- located away from the prize chute;
+- activated state with subtle rotation/vibration/light response;
+- plushes move within bounded, believable limits;
+- no teleporting;
+- no plush may clip walls, controls, chute, or chamber boundary.
+
+Implementation can use controlled repositioning rather than full physics.
+
+The physical floor mechanism + controlled plush motion is the illusion. Do not build heavyweight simulation.
+
+---
+
+## 12. Prize Chute
+
+The prize chute is sacred visual logic.
+
+Requirements:
+- permanently readable on the left side of the chamber;
+- plush pile must not obscure its key rim/entry edges;
+- successful carry travels visibly above the chute;
+- release is visibly connected to the chute;
+- reward UI follows the physical drop, not before it.
+
+Never treat the chute as decorative art unrelated to the capture path.
+
+---
+
+## 13. Gameplay UI Architecture
+
+Gameplay UI is dynamic DOM/CSS, not baked text inside a static mockup.
+
+### Dynamic UI
+- Score;
+- Target;
+- Stage;
+- countdown Timer;
+- joystick;
+- SHUFFLE;
+- DROP;
+- shuffle remaining time;
+- round result;
+- score gain / reward feedback.
+
+### Static / cabinet art
+- cabinet frame;
+- chamber;
+- prize chute;
+- fixed material surfaces;
+- non-interactive decorative hardware.
+
+### Gameplay objects
+- moving carriage/claw;
+- telescoping shaft;
+- claw arms;
+- plush instances;
+- controlled prize travel;
+- particles/effects.
+
+### UI visual standard
+Score / Target / Stage / Timer must read as **cabinet hardware**, not web-dashboard cards.
+
+Use:
+- pearl/ivory enamel;
+- blush acrylic;
+- champagne-gold trim;
+- inset display treatment;
+- restrained shadows;
+- excellent typographic hierarchy.
+
+HUD labels must remain readable at phone scale and never overwhelm the cabinet.
+
+---
+
+## 14. Controls
+
+### Joystick
+- controls horizontal movement;
+- touch target may be larger than visible hardware;
+- visible stick response should match input direction;
+- input must not be blocked by decorative overlays.
+
+### DROP
+- emotional primary action;
+- strongest tactile response;
+- commits the attempt;
+- disabled during active descent/lift/reset states.
+
+### SHUFFLE
+- secondary action;
+- clearly less dominant than DROP;
+- hold interaction;
+- bounded time budget;
+- button visually communicates remaining availability;
+- no floating generic pill over the prize pile.
+
+---
+
+## 15. Grab / Slip Model
+
+No full plush physics is required.
+
+Evaluate:
+- distance from plush grab point;
+- overlap;
+- contact quality;
+- plush size;
+- plush weight;
+- grip difficulty;
+- balance;
+- controlled variability;
+- current swing.
+
+Outcomes:
+1. clean miss;
+2. unstable contact / early slip;
+3. late slip;
+4. secure carry.
+
+Player precision must materially improve probability.
+
+Never make the result feel predetermined or rigged.
+
+---
+
+## 16. Score, Progression, High Score, Trophy
+
+### Stage Score
+Used for:
+- stage pass/fail;
+- High Score;
+- score milestones.
+
+### Claw Points
+Persistent earnable currency used for:
+- cabinet theme unlocks;
+- future progression;
+- mission/milestone rewards.
+
+### High Score
+- stored per stage;
+- local device/browser persistence;
+- survives normal reload/relaunch;
+- cleared only through explicit Game Data reset or external storage clearing.
+
+### Trophy
+Trophy shelf is a persistent achievement display.
+
+Initial trophy triggers may include:
+- stage-score thresholds;
+- flawless/low-miss milestones;
+- rare capture milestones;
+- stage completion milestones.
+
+Trophy design must use tracked game events; avoid bespoke expensive mechanics solely for trophies.
+
+---
+
+## 17. Collection & Launch Plush Expansion
+
+Do **not** create the full launch roster before the five-plush core gameplay test proves fun.
+
+Workflow:
+1. five plush test roster;
+2. validate scale, grip, slip, pile density, score pacing;
+3. adjust silhouette rules;
+4. expand toward the launch catalog.
+
+Current recommended launch target remains approximately **15 plush designs**, but this is a content target, not a prerequisite for Build 003.
+
+Content must be data-driven.
+
+---
+
+## 18. Themes
+
+Cabinet themes are cosmetic.
+
+They may change:
+- cabinet frame;
+- interior;
+- floor;
+- light accents;
+- controls;
+- ambient effect;
+- reward accent;
+- optional audio sting.
+
+They never change:
+- claw power;
+- capture probability;
+- hidden odds;
+- scoring fairness.
+
+Theme unlocks use gameplay-earned Claw Points.
+
+---
+
+## 19. Localization
+
+Supported at production level:
+- Thai;
+- English;
+- Japanese.
+
+Rules:
+- native, natural copy;
+- no literal translation smell;
+- no raw i18n keys;
+- no mixed languages;
+- every changed UI screen is tested in all affected languages;
+- Japanese should use natural concise game copy;
+- Thai should feel written for Thai players, not translated from English;
+- English should read like native mobile-game UI.
+
+Do not fix overflow by making text uncomfortably tiny.
 
 ---
 
 ## 20. Persistent State
 
-Initial state may include:
+Current production schema already protects these major areas:
+- language;
+- Claw Points;
+- selected/owned themes;
+- collection;
+- missions;
+- stage progress;
+- high scores by stage;
+- trophies;
+- music/settings;
+- first-run completion.
 
-```text
-schemaVersion
-language
-points
-selectedTheme
-ownedThemes[]
-collection{}
-missionProgress{}
-settings{
-  music
-  sfx
-  haptics
-  reducedEffects
-}
-firstRunComplete
-```
-
-### Save schema
-
-Use `schemaVersion` from the beginning.
-
-Future state changes migrate old saves deliberately rather than silently breaking progress.
-
-### Save timing
-
-Persist after meaningful changes:
-- prize won;
-- points changed;
-- theme unlocked;
-- setting changed;
-- language changed.
-
-Never write storage every animation frame.
-
----
-
-## 21. Data-driven Content
-
-Future plushies, themes, and missions should mostly be content additions, not engine edits.
-
-Ideal future task:
-
-> Add art + one data record + localized name.
-
-Bad future task:
-
-> Edit five gameplay files to add one plush.
-
-Architecture must keep moving toward the first pattern.
-
----
-
-## 22. Performance Budget
-
-Premium means smooth.
-
-### Runtime goals
-
-- responsive on ordinary contemporary mobile hardware;
-- no uncontrolled animation loops;
-- no unnecessary layout thrashing;
-- fast return navigation;
-- graceful degradation.
-
-### Assets
-
-Prefer:
-- WebP/AVIF where appropriate;
-- SVG for simple vectors;
-- PNG only when needed;
-- compressed audio;
-- no oversized source images shown tiny.
-
-### Loading priority
-
-1. splash essentials
-2. main menu essentials
-3. selected cabinet + core plush set
-4. secondary screens lazily
-
-Do not preload the entire future content library before the player sees the menu.
-
----
-
-## 23. PWA Strategy
-
-PWA is a target, not the first priority.
-
-Implement after the core shell stabilizes.
-
-Later desired behavior:
-- installable from supported browsers;
-- standalone display;
-- portrait-first;
-- offline shell where practical;
-- predictable cache behavior;
-- explicit service-worker versioning.
-
-During active development, caching must never hide new builds unexpectedly.
-
----
-
-## 24. Accessibility & Mobile UX
-
-Required baseline:
-- large touch targets;
-- semantic buttons;
-- visible focus;
-- readable contrast;
-- no essential information only by color;
-- reduced-motion support;
-- audio controls;
-- resilient narrow-screen layout.
-
----
-
-## 25. Orientation
-
-Primary: portrait.
-
-The runtime should aggressively prefer an immersive portrait presentation:
-- disable page pinch-zoom/double-tap zoom for the game surface;
-- request fullscreen on the first trusted user gesture where the browser permits it;
-- request portrait orientation lock once fullscreen is available;
-- detect landscape and keep a tasteful rotate-device overlay as the guaranteed fallback;
-- remain safe when fullscreen or orientation locking is denied by the browser or host webview.
-
-Web security rules do not permit guaranteed audible autoplay, fullscreen entry, or orientation locking before a trusted user gesture on every browser. The installable PWA later strengthens the standalone portrait experience, but the web build must never falsely claim platform behavior it cannot enforce.
-
----
-
-## 26. Reward Design
-
-Successful grab sequence:
-
-1. prize visibly reaches chute;
-2. short anticipation beat;
-3. reward card;
-4. plush becomes hero;
-5. rarity/new status;
-6. point gain;
-7. collection progress;
-8. concise next action.
-
-Common rewards stay fast. Higher rarity earns stronger presentation.
-
----
-
-## 27. Near-Miss Design
-
-Near misses are powerful only when credible.
+Build 003 must extend state deliberately, not replace it.
 
 Rules:
-- not every loss is a late slip;
-- poor aim can simply miss;
-- strong aim produces better outcomes;
-- visual outcome reflects result logic;
-- do not create a rigged feeling.
-
-Trust is retention.
+- preserve `schemaVersion`;
+- migrate when shape changes;
+- save meaningful events, not animation frames;
+- never wipe existing user settings when introducing gameplay;
+- Clear Game Data remains explicitly destructive to game progress while preserving intended preferences as defined by current production behavior.
 
 ---
 
-## 28. Retention Loop
+## 21. Settings / Support / Legal
+
+These are part of the product, not optional cleanup.
+
+Settings must continue to expose:
+- audio preferences;
+- haptics;
+- language;
+- reduced effects;
+- game data;
+- support;
+- legal;
+- about;
+- exit.
+
+Support:
+- Thailand → PromptPay;
+- International → Ko-fi;
+- no effect on odds/rewards/progression.
+
+Legal center:
+- Terms of Use;
+- Privacy Policy;
+- Copyright & Intellectual Property;
+- Third-Party Notices.
+
+Brand footer:
+- Benedict Interactive;
+- Bangkok, Thailand.
+
+Future analytics/cloud/account changes require corresponding privacy updates before release.
+
+---
+
+## 22. Technical Architecture
+
+Approved stack:
+- semantic HTML;
+- modern CSS;
+- vanilla ES modules;
+- DOM/CSS for UI and hardware-style controls;
+- Canvas 2D only where continuous rendering materially benefits gameplay;
+- localStorage;
+- HTML Audio / Web Audio as appropriate;
+- PWA;
+- GitHub Pages.
+
+Do not introduce a framework without a measurable maintainability reason.
+
+Do not introduce full realtime 3D.
+
+### Recommended Build 003 responsibilities
 
 ```text
-PLAY
-↓
-WIN / NEAR MISS
-↓
-COLLECTION PROGRESS
-↓
-CLAW POINTS
-↓
-MISSIONS / MILESTONES
-↓
-THEME UNLOCK
-↓
-NEW VISUAL EXPERIENCE
-↓
-PLAY AGAIN
+src/css/gameplay.css
+
+src/js/gameplay/
+  gameplay-controller.js
+  claw-controller.js
+  plush-controller.js
+  grab-evaluator.js
+
+src/js/screens/
+  gameplay.js
+
+src/js/data/
+  plush-catalog.js
+  stage-catalog.js
+  balance.js
+
+assets/machines/classic/
+  gameplay-specific machine assets only when actually needed
+
+assets/plushies/gameplay/
+  canonical five-plush production assets
 ```
 
-Strong loop, low infrastructure cost.
+File splitting is by durable responsibility, not arbitrary line count.
 
 ---
 
-## 29. First-session UX
+## 23. Build 003 Integration Strategy
+
+Build 003 must be added with minimal intrusion into Build 002.04.
 
 Preferred:
-- splash;
-- language;
-- main menu;
-- Play;
-- micro tutorial layered on real controls;
-- first real attempt.
+- add gameplay-specific CSS rather than heavily editing Title CSS;
+- add gameplay modules rather than expanding `app.js` into a monolith;
+- wire PLAY into a dedicated gameplay screen/controller;
+- reuse existing state/music/i18n foundations;
+- leave Settings and Title behavior untouched except for the smallest necessary integration points;
+- add only necessary app-shell precache entries;
+- preserve service-worker audio logic.
 
-No multi-page tutorial.
-
-Teach by doing:
-- “Move the claw”
-- optionally introduce SHUFFLE without blocking the first attempt
-- highlight DROP
-- “Drop it!”
-- let the real attempt happen.
-
-Tutorial disappears after completion and may be replayed from help/settings later.
+Do not redesign unrelated stable screens while implementing gameplay.
 
 ---
 
-## 30. Monetization Boundary — Future Only
+## 24. Build 003 Acceptance Gate
 
-No monetization is required for the initial product.
+Do not send Build 003 until the **exact outgoing package** passes all applicable checks.
 
-If explored later:
-- do not sell hidden better grip odds as cosmetics;
-- avoid predatory energy frustration;
-- avoid misleading scarcity or odds;
-- preserve satisfying free play.
+### Repository / structure
+- built from current GitHub `main`;
+- canonical paths;
+- no stale version imports;
+- no duplicate assets;
+- no temporary QA files;
+- no wrapper folder in ZIP.
 
-Monetization must not damage product trust.
+### Gameplay function
+- PLAY enters Stage 1;
+- timer starts at 3:00;
+- Score starts at 0;
+- Target displays 600;
+- joystick moves claw reliably;
+- claw idle position is high/retracted;
+- DROP extends, closes, lifts, resolves, resets;
+- SHUFFLE works while held and respects its budget;
+- agitator visibly activates;
+- plushes remain inside physical bounds;
+- prize chute remains readable;
+- successful prize reaches chute;
+- score updates exactly once;
+- misses/slips do not incorrectly score;
+- round end cannot double-trigger;
+- High Score persistence works;
+- stage clear/fail logic works.
 
----
+### Visual
+Test exact outgoing build at minimum:
+- 320×640;
+- 390×844;
+- 690×1536.
 
-## 31. Privacy & Security
+Also inspect at least one common modern tall-phone ratio.
 
-- Public repo contains no secrets.
-- Initial game avoids collecting personal data.
-- Future analytics, if any, must be minimal and documented.
-- No invasive tracking by default.
-
----
-
-## 32. Canonical Repository Architecture
-
-```text
-/
-├── README.md
-├── .editorconfig
-├── .gitignore
-├── docs/
-│   ├── MASTER_PLAN.md
-│   └── BUILD_PROTOCOL.md
-├── src/
-│   ├── css/
-│   ├── js/
-│   │   ├── core/
-│   │   ├── gameplay/
-│   │   ├── screens/
-│   │   ├── systems/
-│   │   └── data/
-│   └── locales/
-└── assets/
-    ├── brand/
-    ├── ui/
-    ├── machines/
-    ├── plushies/
-    ├── effects/
-    ├── audio/
-    └── fonts/
-```
-
-Runtime files such as `index.html`, web manifest and service worker are added only when implementation reaches them.
-
-Do not create speculative directories without real use.
-
----
-
-## 33. Repository Cleanliness Contract
-
-Mandatory:
-- one canonical path per production responsibility;
-- overwrite existing files instead of creating versioned copies;
-- no `final`, `new`, `fixed`, `copy`, date suffixes or export counters;
-- no arbitrary root files;
-- no build ZIPs committed;
-- no raw experiments committed as production;
-- no unused dependencies;
-- no duplicate active assets;
-- no secrets.
-
-Git history is the historical archive.
-
----
-
-## 34. Production Roadmap
-
-This defines order, not dates.
-
-### Foundation Pack — current
-
-Deliver:
-- repository taxonomy;
-- Master Plan;
-- Build Protocol;
-- repo hygiene baseline.
-
-No production build number consumed.
-
-### Build 001 — Pre-main-menu Foundation
-
-Deliver:
-- Benedict Interactive / game-brand splash;
-- Lucky Claw logo treatment;
-- first-run language selection;
-- language persistence;
-- app shell;
-- premium motion tokens;
-- responsive portrait baseline.
-
-Acceptance:
-- mobile browser works;
-- Thai/English layouts work;
-- returning user skips language selection;
-- no normal-path console errors.
-
-### Build 002 — Main Menu Shell
-
-Deliver:
-- hero cabinet;
-- PLAY;
-- Collection / Themes / Missions entry;
-- Settings;
-- points display;
-- selected-theme presence;
-- Settings containing the full minimal soundtrack player using the approved five-track set.
-
-Do not expose dead controls.
-
-### Build 003 — Core Claw Loop
-
-Deliver:
-- horizontal joystick movement;
-- SHUFFLE hold mechanic with a bounded per-attempt duration;
-- DROP sequence;
-- basic plush targets;
-- grab evaluation;
-- miss / grip / lift / success;
-- prize chute;
-- reset loop;
-- per-round soundtrack track lock and final-30-second Dynamic Urgency integration.
-
-Goal: repeatable claw attempt that is already fun.
-
-### Build 004 — Feel & Feedback
-
-Deliver:
-- motion timing;
-- SFX;
-- haptic hooks;
-- near-miss tuning;
-- premium press states;
-- reward reveal;
-- HUD cleanup.
-
-### Build 005 — Collection
-
-Deliver:
-- persistence;
-- catalog;
-- new/owned state;
-- rarity;
-- duplicates;
-- collection screen.
-
-### Build 006 — Economy & Missions
-
-Deliver:
-- Claw Points;
-- reward values;
-- mission event tracking;
-- mission UI;
-- rewards;
-- balancing.
-
-### Build 007 — Cabinet Themes
-
-Deliver:
-- config architecture;
-- Classic + at least two unlockable themes;
-- full preview;
-- unlock/equip;
-- persistence;
-- theme-specific tokens/effects.
-
-### Build 008 — Content & Progression
-
-Deliver:
-- expanded plush catalog;
-- collection sets;
-- progression pacing;
-- more themes where assets are ready;
-- milestones;
-- balance pass.
-
-### Build 009 — PWA & Deployment Hardening
-
-Deliver:
-- manifest;
-- installability;
-- icons;
-- service worker;
-- cache/version strategy;
-- GitHub Pages verification.
-
-### Build 010 — Release Candidate
-
-Deliver:
-- complete QA;
-- mobile sweep;
-- bilingual copy audit;
-- save migration verification;
-- performance optimization;
-- accessibility pass;
-- onboarding polish.
-
----
-
-## 35. Explicit Out-of-Scope for Initial Product
-
-Unless strategy deliberately changes:
-- realtime 3D;
-- Three.js environment;
-- full rigid-body plush simulation;
-- multiplayer/PvP;
-- accounts;
-- cloud save;
-- chat;
-- server economy;
-- complex crafting;
-- marketplace;
-- gacha-style paid randomness;
-- live-ops backend;
-- native Android/iOS codebase.
-
----
-
-## 36. Risk Register
-
-**Web game looks cheap**  
-Mitigation: art direction, micro-motion, tactile feedback, sound, spacing, premium assets.
-
-**Probability feels rigged**  
-Mitigation: aim quality materially matters; near misses used conservatively.
-
-**Weak long-term pull**  
-Mitigation: collection + points + themes + missions + milestones.
-
-**Too much menu/meta complexity**  
-Mitigation: PLAY stays visually dominant.
-
-**Asset explosion**  
-Mitigation: canonical taxonomy, reusable components, config-driven content.
-
-**Performance falls as polish increases**  
-Mitigation: effects budget, compressed assets, bounded particles.
-
-**Thai/English layout drift**  
-Mitigation: both languages QA’d every affected build.
-
-**PWA serves stale builds**  
-Mitigation: service worker delayed until stable and versioned explicitly.
-
----
-
-## 37. QA Matrix
-
-### Functionality
-- controls respond;
-- transitions cannot double-trigger;
-- rewards apply once;
-- persistence works;
-- returning flow works.
-
-### Mobile
-- narrow portrait;
-- tall portrait;
-- landscape fallback;
-- touch hold;
-- no accidental gameplay page scroll;
-- no critical clipping.
+Reject release if:
+- claw connector looks pasted;
+- shaft visually collides with top emblem/star;
+- claw is implausibly small or huge relative to plush;
+- plushes are tiny;
+- plushes cross walls/chute/front boundary;
+- pile is unnaturally sparse;
+- HUD resembles generic web cards;
+- timer/control labels are illegible;
+- physical machine logic is unclear.
 
 ### Localization
 - Thai;
 - English;
-- switching;
+- Japanese;
 - no raw keys;
 - no overflow.
 
-### Visual
-- hierarchy;
-- spacing;
-- legibility;
-- no stretched assets;
-- animation continuity.
+### Regression
+- Title loads correctly;
+- no empty-cabinet flash;
+- title language/exit actions do not overlap;
+- Tap to Start works;
+- Main Menu works;
+- Settings works;
+- Exit confirmation works in TH/EN/JA;
+- support/legal still opens;
+- music still works;
+- audio Range 206 passthrough remains correct;
+- image long-press save remains disabled;
+- pinch/double-tap zoom remains disabled;
+- install/PWA flow is not broken.
 
-### Performance
-- no runaway animation loops;
-- no excessive DOM updates;
-- no huge uncompressed assets;
-- no audio leaks.
-
-### Persistence
-- fresh state;
-- existing save;
-- malformed save fallback;
-- schema migration when needed.
-
----
-
-## 38. Definition of Done — Product
-
-Release-ready only when:
-
-1. first-time player understands play without external explanation;
-2. returning player reaches gameplay quickly;
-3. claw movement and DROP feel responsive;
-4. capture outcomes feel plausible and fair;
-5. prize delivery is visibly satisfying;
-6. collection creates a real goal;
-7. progression visibly leads toward desirable unlocks;
-8. themes feel meaningfully different without changing win odds;
-9. Thai and English both sound natural;
-10. every visible control works;
-11. no major dead-end screens exist;
-12. no normal-path uncaught errors;
-13. persistent state survives reload safely;
-14. performance feels smooth on realistic mobile hardware;
-15. repository remains clean and understandable;
-16. complexity remains medium or lower;
-17. overall presentation feels like a deliberate premium mobile game—not a demo.
+### Console / runtime
+- no uncaught errors in tested paths;
+- no broken asset requests;
+- no uncontrolled loops;
+- no input-blocking overlay.
 
 ---
 
-## 39. Definition of Done — Every Build
+## 25. Visual QA Is Mandatory
 
-A batch is done only when:
-- scope works end-to-end;
-- canonical paths are respected;
-- no duplicate version files were introduced;
-- both languages were tested for affected UI;
-- visible controls are functional;
-- console errors were checked;
-- mobile layout was checked;
-- save compatibility was considered;
-- performance impact was considered;
-- assets are appropriate for current production stage;
-- upload package contains only required additions/replacements.
+Never claim “10/10”, “perfect”, “premium”, or “passed” from code inspection alone.
+
+For visual changes:
+- render the exact outgoing build;
+- inspect screenshots visually;
+- compare against the approved design intent;
+- fix obvious design failures before delivery.
+
+A mechanically working build can still fail release because it looks cheap, physically impossible, or visually incoherent.
+
+The user’s visual rejection is a release-blocking signal, not a cosmetic backlog item.
 
 ---
 
-## 40. Product Heuristics
+## 26. Testing Truthfulness
+
+Only claim tests that actually ran.
+
+Use precise language:
+- “syntax check passed”;
+- “deterministic service-worker regression passed”;
+- “Chromium screenshot QA passed”;
+- “actual device audio playback not tested here” when true.
+
+Never turn a failed tool invocation into a claimed pass.
+
+If local browser restrictions prevent a specific test, say so explicitly and compensate with the strongest valid deterministic test available—without pretending it is the same test.
+
+---
+
+## 27. Performance
+
+Targets:
+- responsive on ordinary modern Android/iPhone-class hardware;
+- no massive source images rendered tiny;
+- no unnecessary layout thrashing;
+- no runaway requestAnimationFrame loops;
+- bounded particles;
+- compressed WebP/PNG assets;
+- UI motion should remain smooth under gameplay.
+
+Smoothness is part of premium perception.
+
+---
+
+## 28. Accessibility / Mobile UX
+
+Maintain:
+- large touch targets;
+- semantic buttons;
+- focus support where relevant;
+- reduced-motion support;
+- readable contrast;
+- no essential info by color alone;
+- portrait-first responsive layout;
+- no accidental page scroll;
+- no pinch zoom on game surface;
+- safe-area awareness.
+
+---
+
+## 29. Build Roadmap — Updated
+
+### Build 001 — Foundation / Title / PWA
+Completed family:
+- splash;
+- title cabinet;
+- language foundation;
+- title music;
+- install flow;
+- boot cover;
+- PWA/audio hardening;
+- long-press/zoom protection.
+
+### Build 002 — Main Menu / Settings / Trust
+Completed family through production Build `002.04`:
+- Tap to Start;
+- Main Menu;
+- TH/EN/JA;
+- Settings foundation;
+- soundtrack controls;
+- support;
+- legal/privacy/about;
+- exit flow;
+- exit localization fix.
+
+### Build 003 — Core Claw Loop
+**Current priority.**
+Deliver:
+- production Stage 1;
+- five-plush test roster;
+- dense realistic pile;
+- retracted/extendable claw;
+- joystick;
+- SHUFFLE + floor agitator;
+- DROP;
+- grip/slip;
+- prize chute;
+- score/target/timer;
+- High Score;
+- Stage 1 clear/fail;
+- persistence;
+- regression-safe integration.
+
+### Build 004 — Feel & Feedback
+After Build 003 is genuinely fun:
+- SFX;
+- haptics;
+- rail/grip/slip tuning;
+- near-miss feel;
+- reward choreography;
+- particles;
+- HUD polish.
+
+### Build 005 — Collection
+- full collection screen;
+- rarity;
+- duplicates;
+- new/owned states;
+- expanded catalog foundation.
+
+### Build 006 — Economy / Missions / Trophy
+- Claw Point pacing;
+- missions;
+- Trophy shelf;
+- milestone tuning.
+
+### Build 007 — Cabinet Themes
+- unlock/equip;
+- preview;
+- multiple premium themes;
+- cosmetic-only behavior.
+
+### Build 008 — Content / Stage Progression
+- more plushes;
+- approximately 15 launch designs;
+- stage ladder;
+- difficulty/score tuning;
+- milestones.
+
+### Build 009 — Deployment / PWA Hardening
+PWA already exists in production, so this phase means final hardening rather than first introduction:
+- cache strategy audit;
+- install behavior sweep;
+- offline shell validation;
+- update behavior;
+- deployment verification.
+
+### Build 010 — Release Candidate
+- full regression;
+- device sweep;
+- TH/EN/JA copy audit;
+- persistence migration;
+- performance;
+- accessibility;
+- onboarding;
+- final legal/support consistency.
+
+---
+
+## 30. Explicit Out of Scope Unless Strategy Changes
+
+- realtime 3D;
+- Three.js gameplay;
+- full deformable plush physics;
+- multiplayer;
+- accounts;
+- cloud save;
+- server economy;
+- paid random odds;
+- marketplace;
+- chat;
+- live-ops backend;
+- native rewrite.
+
+Use a simpler illusion when it creates the same player experience.
+
+---
+
+## 31. Release Heuristics
 
 Prefer:
-- one excellent primary CTA over three equal ones;
-- one strong reward reveal over constant fireworks;
-- reusable systems over bespoke cases;
-- visible agency over opaque randomness;
-- content-driven scalability over code duplication;
-- short natural copy;
-- polished 2D over mediocre 3D;
-- smooth motion over unnecessary spectacle;
-- a smaller set of excellent plushies over many weak ones;
-- genuinely distinct themes over recolors marketed as new.
+- one excellent control over three clever controls;
+- believable claw motion over simulated complexity;
+- five excellent test plushes over fifteen unvalidated plushes;
+- dense but readable piles;
+- visible player agency;
+- local-first reliability;
+- strong visual logic;
+- reusable data-driven systems;
+- native-quality localization;
+- stable old screens over needless redesign.
 
-Avoid:
-- feature bloat;
-- currency bloat;
-- notification-dot spam;
-- dark patterns;
-- fake urgency;
+Reject:
+- fake physics that visibly break;
+- floating UI with no cabinet logic;
+- unexplained mechanical actions;
+- rigged-feeling randomness;
+- tiny unreadable rewards;
+- hidden regression;
 - dead buttons;
-- long onboarding;
-- meaningless rarity;
-- excessive dialogs;
-- effects that obscure gameplay.
+- raw localization keys;
+- duplicated canonical files;
+- untested delivery claims.
 
 ---
 
-## 41. Brand Direction
+## 32. Final Principle
 
-`Benedict Interactive` remains the stable publisher identity.
+> **Lucky Claw must feel simpler to play than it was to polish.**
 
-A playful game-facing label may be explored visually without fragmenting the parent brand.
+The player should never see the engineering compromises. They should see a coherent premium arcade machine, understand it immediately, feel that their aim matters, enjoy the tension, and want another attempt.
 
-The game logo should be:
-- readable at mobile size;
-- distinctive;
-- charming;
-- premium;
-- not dependent on tiny details;
-- suitable for subtle animation.
-
-Brand assets live in `assets/brand/`.
-
----
-
-## 42. Art Direction
-
-### Plushies
-- soft and tactile;
-- distinct silhouettes;
-- readable faces at gameplay scale;
-- enough personality to create favorites;
-- coherent art universe.
-
-Avoid:
-- detail that disappears on mobile;
-- near-identical silhouettes;
-- accessories that make grab zones visually confusing.
-
-### Cabinets
-- strong framing;
-- visible depth;
-- clear prize chute;
-- readable claw rail;
-- premium materials;
-- strong theme identity.
-
-### UI
-- crisp;
-- soft;
-- tactile;
-- legible;
-- controlled highlights;
-- coherent icon language.
-
----
-
-## 43. Theme Expansion Rule
-
-A future theme is worthwhile when it changes several high-perception surfaces:
-- frame;
-- interior;
-- floor;
-- lights;
-- control accent;
-- ambient effect;
-- reward accent;
-- optional audio sting.
-
-A simple hue rotation is not a full theme.
-
----
-
-## 44. Final Principle
-
-> **We are not trying to prove how complicated a browser game can be. We are trying to make a simple browser game feel irresistible, polished, and expensive.**
-
-Whenever a difficult implementation and a simpler illusion create nearly the same player experience, choose the simpler illusion—then execute it beautifully.
-
-
-## Build 001 update — Title cabinet presentation and PWA foundation
-- Approved tall 9:20 cabinet base remains the canonical title stage plate.
-- Title now uses separate runtime layers for cabinet base, plush showcase, claw/rail showcase, control-deck UI, and front-glass reflections.
-- The title claw is currently a presentation asset and is intentionally positioned to match the approved title composition. Gameplay may later split this into rail + moving head without changing the visual language.
-- PWA install foundation is introduced in Build 001: production icons, manifest, service worker registration, portrait standalone mode, and install prompt plumbing for future Settings UI.
-
-
-## Build 001.16 — Install gate and claw-layer correction
-- Title ornament line/star under the logo is removed.
-- Title claw presentation is split into three production layers: static rail/carriage, CSS telescopic shaft, and transparent claw-head sprite. This removes the pasted-shaft artifact and creates cleaner motion anchors for Build 003.
-- Title claw scale is increased to match the approved visual reference while preserving a clear gap above the foreground plush showcase.
-- First-open mobile flow now presents a dedicated install gate after the Benedict Games intro. Chromium/Android uses the native `beforeinstallprompt` flow when available; iOS and unsupported in-app browsers receive explicit Add to Home Screen / browser-install guidance.
-- Installed PWA launches with `display: fullscreen` and portrait orientation. Browser fullscreen is still requested on trusted user interaction because browsers do not permit unconditional fullscreen on page load.
-- Music lifecycle handling is isolated and tested: background/page hide/freeze pauses music and eligible return resumes it.
-- Service worker cache is `lucky-claw-shell-v4`, network-first for app code/assets, with audio runtime caching and no forced client navigation on activation.
+Whenever a technically elaborate implementation and a controlled illusion produce the same player experience, choose the controlled illusion—and execute it beautifully.
