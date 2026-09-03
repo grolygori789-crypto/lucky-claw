@@ -52,6 +52,22 @@ export async function requestImmersiveMode() {
   }
 }
 
+export async function exitImmersiveMode() {
+  const active = fullscreenElement();
+  if (!active) return false;
+
+  const exit = document.exitFullscreen || document.webkitExitFullscreen;
+  if (!exit) return false;
+
+  try {
+    const result = exit.call(document);
+    if (result?.then) await result;
+    return !fullscreenElement();
+  } catch {
+    return false;
+  }
+}
+
 function blockGestureZoom(event) { event.preventDefault(); }
 function blockMultiTouchZoom(event) { if (event.touches?.length > 1) event.preventDefault(); }
 function blockCtrlWheelZoom(event) { if (event.ctrlKey) event.preventDefault(); }

@@ -135,5 +135,15 @@
   "feedback.privacy": "Please do not include passwords, payment details or other sensitive personal information.",
   "feedback.mailNote": "Your email app will open. Nothing is sent until you choose Send there.",
   "feedback.openEmail": "Open email",
-  "feedback.messageRequired": "Please write a short message first."
+  "feedback.messageRequired": "Please write a short message first.",
+  "settings.exitGame": "Exit Game",
+  "settings.exitGameSub": "Save your progress and leave Lucky Claw",
+  "exit.aria": "Exit game",
+  "exit.title": "Exit Game?",
+  "exit.body": "Your progress will be saved before you leave.",
+  "exit.savedNote": "Nothing will be deleted.",
+  "exit.cancel": "Keep Playing",
+  "exit.confirm": "Exit Game",
+  "exit.savedTitle": "Game saved",
+  "exit.savedBody": "Your progress has been saved. If Lucky Claw does not close automatically, you can safely close this window or app."
 }

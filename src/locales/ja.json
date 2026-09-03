@@ -135,5 +135,15 @@
   "feedback.privacy": "パスワード、決済情報、その他の機密性の高い個人情報は入力しないでください。",
   "feedback.mailNote": "メールアプリが開きます。そこで送信を選ぶまで何も送信されません。",
   "feedback.openEmail": "メールを開く",
-  "feedback.messageRequired": "短いメッセージを入力してください。"
+  "feedback.messageRequired": "短いメッセージを入力してください。",
+  "settings.exitGame": "ゲームを終了",
+  "settings.exitGameSub": "進行状況を保存してLucky Clawを終了します",
+  "exit.aria": "ゲームを終了",
+  "exit.title": "ゲームを終了しますか？",
+  "exit.body": "終了する前に進行状況を保存します。",
+  "exit.savedNote": "ゲームデータは削除されません。",
+  "exit.cancel": "ゲームに戻る",
+  "exit.confirm": "終了する",
+  "exit.savedTitle": "保存しました",
+  "exit.savedBody": "進行状況を保存しました。Lucky Clawが自動で閉じない場合は、この画面またはアプリを閉じてください。"
 }

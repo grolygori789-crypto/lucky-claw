@@ -78,11 +78,11 @@
   <link rel="preload" as="image" href="./assets/machines/classic/title-claw-head.png?v=001.20" fetchpriority="high">
   <link rel="stylesheet" href="./src/css/app.css?v=001.20">
   <link rel="stylesheet" href="./src/css/title-showcase.css?v=001.20">
-  <link rel="stylesheet" href="./src/css/menu.css?v=002.01">
-  <link rel="stylesheet" href="./src/css/settings.css?v=002.01">
-  <script type="module" src="./src/js/core/app.js?v=002.01"></script>
+  <link rel="stylesheet" href="./src/css/menu.css?v=002.02">
+  <link rel="stylesheet" href="./src/css/settings.css?v=002.02">
+  <script type="module" src="./src/js/core/app.js?v=002.02"></script>
 </head>
-<body data-build="002.01" data-screen="splash" data-boot-ready="false">
+<body data-build="002.02" data-screen="splash" data-boot-ready="false">
   <div class="lc-boot-cover" data-boot-cover aria-hidden="true">
     <div class="lc-boot-cover__mark">✦</div>
   </div>
@@ -217,6 +217,10 @@
         <span data-language-code>EN</span>
       </button>
 
+      <button class="title-exit-button" type="button" data-title-exit data-i18n-aria-label="exit.aria" aria-label="Exit game">
+        <span aria-hidden="true">×</span>
+      </button>
+
       <button class="title-start-prompt" type="button" data-title-start aria-label="Tap to start">
         <span class="title-start-prompt__label" data-i18n="title.tapStart">TAP TO START</span>
       </button>
@@ -260,7 +264,7 @@
             <span class="settings-eyebrow">LUCKY CLAW</span>
             <h2 id="settings-title" data-i18n="settings.title">Settings</h2>
           </div>
-          <span class="settings-build" data-build-label>BUILD 002.01</span>
+          <span class="settings-build" data-build-label>BUILD 002.02</span>
         </header>
 
         <div class="settings-scroll" data-settings-scroll>
@@ -354,11 +358,21 @@
             <h3 data-i18n="settings.about">About</h3>
             <div class="about-lockup"><strong>LUCKY CLAW</strong><span>BENEDICT GAMES</span><small>by Benedict Interactive</small></div>
             <dl>
-              <div><dt data-i18n="about.version">Version</dt><dd>BUILD 002.01</dd></div>
+              <div><dt data-i18n="about.version">Version</dt><dd>BUILD 002.02</dd></div>
               <div><dt data-i18n="about.publisher">Publisher</dt><dd>Benedict Interactive</dd></div>
               <div><dt data-i18n="about.location">Location</dt><dd>Bangkok, Thailand</dd></div>
             </dl>
             <p class="legal-footer">© 2026 Benedict Interactive<br>Bangkok, Thailand</p>
+          </section>
+
+          <section class="settings-group settings-group--exit">
+            <button class="setting-link setting-link--exit" type="button" data-exit-game>
+              <span>
+                <strong data-i18n="settings.exitGame">Exit Game</strong>
+                <small data-i18n="settings.exitGameSub">Save your progress and leave Lucky Claw</small>
+              </span>
+              <span class="setting-link__exit-icon" aria-hidden="true">×</span>
+            </button>
           </section>
         </div>
       </div>

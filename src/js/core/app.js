@@ -1,15 +1,15 @@
-import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=002.01';
-import { installDisplayMode, requestImmersiveMode, isInstalledAppMode } from './display-mode.js?v=002.01';
+import { detectPreferredLanguage, setLanguage, translate } from './i18n.js?v=002.02';
+import { installDisplayMode, requestImmersiveMode, exitImmersiveMode, isInstalledAppMode } from './display-mode.js?v=002.02';
 import { loadState, saveState, clearGameProgress } from './storage.js?v=002.01';
 import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
 import { createPWAController } from './pwa-install.js?v=001.20';
 import { MusicManager } from '../systems/music-manager.js?v=001.20';
 import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
-import { bindMainMenu } from '../screens/main-menu.js?v=002.01';
-import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.01';
+import { bindMainMenu } from '../screens/main-menu.js?v=002.02';
+import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.02';
 
-const BUILD_ID = '002.01';
+const BUILD_ID = '002.02';
 const screens = new Map(
   [...document.querySelectorAll('.screen[data-screen]')].map((element) => [element.dataset.screen, element]),
 );
@@ -111,7 +111,7 @@ function maybeRequestImmersiveFromGesture() {
 }
 
 function unlockExperienceFromGesture(event) {
-  if (event.target?.closest?.('[data-install-primary]')) return;
+  if (event.target?.closest?.('[data-install-primary], [data-title-exit]')) return;
   const screen = document.body.dataset.screen;
   if (screen !== 'title' && screen !== 'language') return;
 
@@ -244,6 +244,21 @@ function resetProgress() {
   return state;
 }
 
+async function exitGame() {
+  // Save synchronously before leaving. Gameplay will write into the same state object
+  // as later builds add stage/high-score updates.
+  state = saveState(state);
+  music.pause();
+
+  // Try to close while the confirmation button still owns the trusted user gesture.
+  // Browsers only honor this for contexts they permit scripts to close.
+  try { window.close(); } catch {}
+
+  // If the environment stays open, leave browser fullscreen and show a safe-to-close fallback.
+  // Installed PWAs have no standard script-controlled app-close API.
+  await exitImmersiveMode();
+}
+
 let settingsController = null;
 settingsController = bindSettingsScreen({
   music,
@@ -251,6 +266,7 @@ settingsController = bindSettingsScreen({
   updateSettings,
   onLanguage: changeLanguageFromSettings,
   onClearProgress: resetProgress,
+  onExit: exitGame,
   onBack: () => showScreen('menu'),
   showToast,
 });
@@ -263,6 +279,7 @@ bindMainMenu({
     settingsController.refresh();
   },
   onHowToPlay: () => settingsController.showHowToPlay(),
+  onExit: () => settingsController.showExitConfirm(),
   onFeature: (item) => {
     const key = item === 'play' ? 'menu.playNext' : 'menu.featureComing';
     showToast(translate(key));

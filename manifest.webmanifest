@@ -2,18 +2,39 @@
   "name": "Lucky Claw",
   "short_name": "Lucky Claw",
   "description": "Lucky Claw — a premium claw-machine game by Benedict Interactive.",
-  "start_url": "./?v=002.01",
+  "start_url": "./?v=002.02",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "portrait",
   "theme_color": "#f8e9df",
   "background_color": "#f3dfd5",
   "icons": [
-    { "src": "./assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "./assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "./assets/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "./assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
-  "display_override": ["fullscreen", "standalone"],
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
   "id": "./"
 }

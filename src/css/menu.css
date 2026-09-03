@@ -1,4 +1,47 @@
-/* Lucky Claw — Build 002 Main Menu */
+/* Lucky Claw — Build 002.02 Main Menu / Title actions */
+
+
+.title-exit-button {
+  position: absolute;
+  z-index: 16;
+  top: calc(var(--safe-top) + 4px);
+  right: calc(var(--safe-right) + 4px);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.76);
+  border-radius: 50%;
+  color: #8d5c57;
+  background:
+    radial-gradient(circle at 34% 25%, rgba(255,255,255,.96) 0 8%, transparent 9%),
+    linear-gradient(155deg, rgba(255,253,249,.88), rgba(250,224,230,.76));
+  box-shadow:
+    0 8px 24px rgba(75,44,40,.13),
+    inset 0 1px rgba(255,255,255,.96),
+    inset 0 0 0 1px rgba(222,180,152,.13);
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+  font: 500 25px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform 150ms var(--ease-press), box-shadow 150ms ease, background 150ms ease;
+}
+
+.title-exit-button span {
+  transform: translateY(-1px);
+  text-shadow: 0 1px rgba(255,255,255,.8);
+}
+
+.title-exit-button:active {
+  transform: scale(.94);
+  box-shadow: 0 4px 12px rgba(75,44,40,.10), inset 0 1px rgba(255,255,255,.9);
+}
+
+.title-exit-button:focus-visible {
+  outline: 2px solid rgba(210,132,144,.46);
+  outline-offset: 3px;
+}
 
 .title-start-prompt {
   position: absolute;

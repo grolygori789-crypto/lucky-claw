@@ -1,4 +1,4 @@
-import { getLanguage, translate } from '../core/i18n.js?v=002.01';
+import { getLanguage, translate } from '../core/i18n.js?v=002.02';
 import { SOUNDTRACK } from '../data/soundtrack.js';
 import { SUPPORT } from '../data/support.js?v=002.01';
 import { getLegalDocument, getLegalMeta } from '../data/legal-content.js?v=002.01';
@@ -37,6 +37,7 @@ export function bindSettingsScreen({
   updateSettings,
   onLanguage,
   onClearProgress,
+  onExit,
   onBack,
   showToast,
 }) {
@@ -64,6 +65,7 @@ export function bindSettingsScreen({
     modal.hidden = true;
     modalBody.innerHTML = '';
     modalActions.replaceChildren();
+    modal.classList.remove('is-exit-confirm');
   }
 
   function addModalAction(label, className, handler, { href = null } = {}) {
@@ -81,8 +83,9 @@ export function bindSettingsScreen({
     return element;
   }
 
-  function openModal({ title, html, actions = [] }) {
+  function openModal({ title, html, actions = [], variant = null }) {
     if (!modal) return;
+    modal.classList.toggle('is-exit-confirm', variant === 'exit');
     modalTitle.textContent = title;
     modalBody.innerHTML = html;
     modalActions.replaceChildren();
@@ -173,7 +176,7 @@ export function bindSettingsScreen({
     const state = getState();
     return [
       'Lucky Claw diagnostic info',
-      'Build: 002.01',
+      'Build: 002.02',
       `Language: ${state.language || 'unset'}`,
       `Mode: ${window.matchMedia?.('(display-mode: standalone)').matches ? 'standalone' : 'browser'}`,
       `Viewport: ${window.innerWidth}x${window.innerHeight}`,
@@ -318,6 +321,47 @@ export function bindSettingsScreen({
 
   screen.querySelector('[data-legal-center]')?.addEventListener('click', showLegalCenter);
 
+  screen.querySelector('[data-exit-game]')?.addEventListener('click', showExitConfirm);
+
+  function showExitComplete() {
+    openModal({
+      title: translate('exit.savedTitle'),
+      variant: 'exit',
+      html: `
+        <div class="exit-confirm">
+          <div class="exit-confirm__icon" aria-hidden="true">✓</div>
+          <p>${escapeHtml(translate('exit.savedBody'))}</p>
+        </div>`,
+      actions: [{ label: translate('common.close'), className: 'is-primary', handler: closeModal }],
+    });
+  }
+
+  function showExitConfirm() {
+    openModal({
+      title: translate('exit.title'),
+      variant: 'exit',
+      html: `
+        <div class="exit-confirm">
+          <div class="exit-confirm__icon" aria-hidden="true">×</div>
+          <p>${escapeHtml(translate('exit.body'))}</p>
+          <span class="exit-confirm__saved">${escapeHtml(translate('exit.savedNote'))}</span>
+        </div>`,
+      actions: [
+        { label: translate('exit.cancel'), handler: closeModal },
+        {
+          label: translate('exit.confirm'),
+          className: 'is-primary',
+          handler: async () => {
+            await onExit?.();
+            window.setTimeout(() => {
+              if (document.visibilityState !== 'hidden') showExitComplete();
+            }, 260);
+          },
+        },
+      ],
+    });
+  }
+
   function showHowToPlay() {
     openModal({
       title: translate('menu.howToPlay'),
@@ -375,5 +419,6 @@ export function bindSettingsScreen({
     refresh: syncState,
     showHowToPlay,
     showLegalCenter,
+    showExitConfirm,
   });
 }

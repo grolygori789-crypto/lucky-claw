@@ -1,4 +1,4 @@
-/* Lucky Claw — Build 002 Settings / Trust / Support */
+/* Lucky Claw — Build 002.02 Settings / Trust / Support / Exit */
 
 .screen--settings {
   z-index: 30;
@@ -260,3 +260,43 @@ body.reduce-effects * { transition-duration:80ms !important; }
 }
 
 .settings-screen button, .settings-screen select, .settings-screen input, .lc-modal button, .lc-modal a { touch-action: manipulation; }
+
+
+/* Exit flow --------------------------------------------------------------- */
+.settings-group--exit { padding: 7px 14px; }
+.settings-group--exit .setting-link { border-top: 0; }
+.setting-link--exit strong { color: #9f5b61; }
+.setting-link--exit small { color: #9a7770; }
+.setting-link__exit-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(177,111,115,.15);
+  border-radius: 50%;
+  color: #a25d63 !important;
+  background: rgba(255,244,244,.72);
+  box-shadow: inset 0 1px rgba(255,255,255,.9);
+  font: 500 21px/1 ui-rounded,system-ui,sans-serif !important;
+}
+
+.lc-modal.is-exit-confirm { place-items: center; }
+.lc-modal.is-exit-confirm .lc-modal__card { width: min(100%, 390px); }
+.exit-confirm { display: grid; justify-items: center; gap: 10px; padding: 4px 2px 1px; text-align: center; }
+.exit-confirm__icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(187,126,121,.18);
+  border-radius: 50%;
+  color: #9a5a5c;
+  background:
+    radial-gradient(circle at 34% 25%, rgba(255,255,255,.96) 0 8%, transparent 9%),
+    linear-gradient(155deg, #fffaf7, #f8dce2);
+  box-shadow: 0 9px 24px rgba(91,52,50,.10), inset 0 1px #fff;
+  font: 500 29px/1 ui-rounded,system-ui,sans-serif;
+}
+.exit-confirm p { max-width: 31ch; margin: 0 !important; color: #795751 !important; font-size: 12.5px; line-height: 1.55; }
+.exit-confirm__saved { color: #a27e74; font-size: 10.5px; }
