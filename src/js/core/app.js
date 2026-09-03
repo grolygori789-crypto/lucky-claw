@@ -9,7 +9,13 @@ import { runSplash } from '../screens/splash.js?v=001.20';
 import { bindMainMenu } from '../screens/main-menu.js?v=002.03';
 import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.03';
 
-const BUILD_ID = '002.03';
+const BUILD_ID = '002.04';
+
+// Keep runtime build metadata coherent even when the static HTML shell is reused.
+document.body.dataset.build = BUILD_ID;
+document.querySelectorAll('[data-build-label]').forEach((node) => {
+  node.textContent = `BUILD ${BUILD_ID}`;
+});
 const screens = new Map(
   [...document.querySelectorAll('.screen[data-screen]')].map((element) => [element.dataset.screen, element]),
 );

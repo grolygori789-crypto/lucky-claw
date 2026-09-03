@@ -2,7 +2,7 @@
   "name": "Lucky Claw",
   "short_name": "Lucky Claw",
   "description": "Lucky Claw — a premium claw-machine game by Benedict Interactive.",
-  "start_url": "./?v=002.03",
+  "start_url": "./?v=002.04",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "portrait",

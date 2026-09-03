@@ -1,6 +1,6 @@
-const CACHE_NAME = 'lucky-claw-shell-v14';
+const CACHE_NAME = 'lucky-claw-shell-v15';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '002.03';
+const BUILD_ID = '002.04';
 const APP_SHELL = [
   './',
   './index.html',
@@ -38,7 +38,17 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // Force a network revalidation for the app shell so hotfixes that keep an
+    // existing revisioned module URL cannot be satisfied by stale HTTP cache.
+    for (const url of APP_SHELL) {
+      const request = new Request(url, { cache: 'reload' });
+      const response = await fetch(request);
+      if (!response || !response.ok) throw new Error(`Precache failed: ${url}`);
+      await cache.put(request, response.clone());
+    }
+  })());
   self.skipWaiting();
 });
 

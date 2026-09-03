@@ -1,4 +1,4 @@
-import { getLanguage, translate } from '../core/i18n.js?v=002.02';
+import { getLanguage, translate } from '../core/i18n.js?v=002.03';
 import { SOUNDTRACK } from '../data/soundtrack.js';
 import { SUPPORT } from '../data/support.js?v=002.01';
 import { getLegalDocument, getLegalMeta } from '../data/legal-content.js?v=002.01';
@@ -176,7 +176,7 @@ export function bindSettingsScreen({
     const state = getState();
     return [
       'Lucky Claw diagnostic info',
-      'Build: 002.02',
+      'Build: 002.04',
       `Language: ${state.language || 'unset'}`,
       `Mode: ${window.matchMedia?.('(display-mode: standalone)').matches ? 'standalone' : 'browser'}`,
       `Viewport: ${window.innerWidth}x${window.innerHeight}`,
