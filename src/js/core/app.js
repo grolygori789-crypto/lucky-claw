@@ -8,14 +8,21 @@ import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
 import { bindMainMenu } from '../screens/main-menu.js?v=002.03';
 import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.03';
+import { createGameplayController, ensureGameplayScreen } from '../gameplay/claw-game.js?v=003';
 
-const BUILD_ID = '002.04';
+const BUILD_ID = '003';
+
+// Gameplay is appended before the screen registry is captured. Existing HTML stays untouched.
+ensureGameplayScreen();
 
 // Keep runtime build metadata coherent even when the static HTML shell is reused.
 document.body.dataset.build = BUILD_ID;
 document.querySelectorAll('[data-build-label]').forEach((node) => {
   node.textContent = `BUILD ${BUILD_ID}`;
 });
+const aboutVersion = document.querySelector('[data-i18n="about.version"]')?.nextElementSibling;
+if (aboutVersion) aboutVersion.textContent = `BUILD ${BUILD_ID}`;
+
 const screens = new Map(
   [...document.querySelectorAll('.screen[data-screen]')].map((element) => [element.dataset.screen, element]),
 );
@@ -71,6 +78,7 @@ async function applyLanguage(language) {
   try {
     const applied = await setLanguage(language);
     settingsController?.refresh();
+    gameplayController?.refreshLanguage();
     return applied;
   } catch (error) {
     console.error('[Lucky Claw] Localization failed.', error);
@@ -251,8 +259,7 @@ function resetProgress() {
 }
 
 async function exitGame() {
-  // Save synchronously before leaving. Gameplay will write into the same state object
-  // as later builds add stage/high-score updates.
+  // Save synchronously before leaving. Gameplay writes into the same normalized state.
   state = saveState(state);
   music.pause();
 
@@ -277,6 +284,25 @@ settingsController = bindSettingsScreen({
   showToast,
 });
 
+let gameplayController = null;
+gameplayController = createGameplayController({
+  getState: () => state,
+  persistState(nextState) {
+    state = saveState(nextState);
+    settingsController?.refresh();
+    return state;
+  },
+  onMenu() {
+    showScreen('menu');
+  },
+  music: {
+    lockTrackForRound: () => music.lockTrackForRound(),
+    unlockTrackAfterRound: (options) => music.unlockTrackAfterRound(options),
+    setUrgency: (secondsRemaining) => music.setUrgency(secondsRemaining),
+    resetUrgency: () => music.resetUrgency(),
+  },
+});
+
 bindMainMenu({
   onEnterMenu: () => showScreen('menu'),
   onBackToTitle: () => showScreen('title'),
@@ -287,8 +313,12 @@ bindMainMenu({
   onHowToPlay: () => settingsController.showHowToPlay(),
   onExit: () => settingsController.showExitConfirm(),
   onFeature: (item) => {
-    const key = item === 'play' ? 'menu.playNext' : 'menu.featureComing';
-    showToast(translate(key));
+    if (item === 'play') {
+      showScreen('gameplay');
+      gameplayController.startStage(1);
+      return;
+    }
+    showToast(translate('menu.featureComing'));
   },
 });
 

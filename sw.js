@@ -1,6 +1,6 @@
-const CACHE_NAME = 'lucky-claw-shell-v15';
+const CACHE_NAME = 'lucky-claw-shell-v16';
 const CACHE_PREFIX = 'lucky-claw-shell-';
-const BUILD_ID = '002.04';
+const BUILD_ID = '003';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL = [
   './src/css/title-showcase.css?v=001.20',
   './src/css/menu.css?v=002.03',
   './src/css/settings.css?v=002.03',
+  './src/css/gameplay.css?v=003',
   './src/js/core/app.js?v=002.03',
   './src/js/core/audio-lifecycle.js?v=001.20',
   './src/js/core/pwa-install.js?v=001.20',
@@ -23,6 +24,10 @@ const APP_SHELL = [
   './src/js/screens/main-menu.js?v=002.03',
   './src/js/screens/settings.js?v=002.03',
   './src/js/systems/music-manager.js?v=001.20',
+  './src/js/gameplay/stage-data.js?v=003',
+  './src/js/gameplay/gameplay-model.js?v=003',
+  './src/js/gameplay/sfx.js?v=003',
+  './src/js/gameplay/claw-game.js?v=003',
   './src/locales/en.json',
   './src/locales/th.json',
   './src/locales/ja.json',
