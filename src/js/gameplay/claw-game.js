@@ -1,6 +1,6 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.02';
-import { ArcadeSfx } from './sfx.js?v=003.02';
-import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.02';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.03';
+import { ArcadeSfx } from './sfx.js?v=003.03';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.03';
 
 const COPY=Object.freeze({
   en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'GREAT GRIP!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
@@ -11,7 +11,7 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
 function c(){return COPY[lang()]||COPY.en;}
 function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.02`;}
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.03`;}
 
 function markup(){const t=c();return `
 <div class="lc-gameplay-stage" data-game-stage data-claw-state="idle">
@@ -23,9 +23,9 @@ function markup(){const t=c();return `
   <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
   <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
   <div class="lc-claw-rig" data-game-claw aria-hidden="true">
-    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.02" alt="" draggable="false"></div>
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.03" alt="" draggable="false"></div>
     <div class="lc-claw-shaft"></div>
-    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.02" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.02" alt="" draggable="false"></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.03" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.03" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
   </div>
   <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="lc-plush-field" data-plush-field></div>
@@ -44,14 +44,14 @@ function markup(){const t=c();return `
 export function ensureGameplayScreen(){
   let screen=document.querySelector('.screen--gameplay');
   if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
-  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.02';l.dataset.lcGameplayStyle='true';document.head.append(l);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.03';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
 export function createGameplayController({getState,persistState,onMenu,music}){
   const screen=ensureGameplayScreen(), stageNode=screen.querySelector('[data-game-stage]'), field=screen.querySelector('[data-plush-field]'), clawNode=screen.querySelector('[data-game-claw]');
   const joystick=screen.querySelector('[data-game-joystick]'), knob=screen.querySelector('.lc-joystick__knob'), stem=screen.querySelector('.lc-joystick__stem'), shuffleBtn=screen.querySelector('[data-game-shuffle]'), dropBtn=screen.querySelector('[data-game-drop]');
-  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
+  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), payload=screen.querySelector('[data-claw-payload]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
   const sfx=new ArcadeSfx(()=>getState()?.settings||{});
   const nodes={score:screen.querySelector('[data-game-score]'),target:screen.querySelector('[data-game-target]'),best:screen.querySelector('[data-game-best]'),timer:screen.querySelector('[data-game-timer]'),shuffleLeft:screen.querySelector('[data-shuffle-left]'),resultTitle:screen.querySelector('[data-result-title]'),resultScore:screen.querySelector('[data-result-score]'),resultBest:screen.querySelector('[data-result-best]'),resultPoints:screen.querySelector('[data-result-points]')};
   let stage=getStage(1), plushes=[], score=0, claw={x:stage.claw.homeX,z:stage.claw.homeZ}, stateName='idle', roundToken=0, startedAt=0, remaining=180, shuffleRemaining=15, timerHandle=0, completed=false, expiring=false;
@@ -61,12 +61,37 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   function hud(){nodes.score.textContent=String(score);nodes.target.textContent=String(stage.targetScore);nodes.best.textContent=String(Math.max(Number(getState()?.highScoresByStage?.[stage.id])||0,score));nodes.timer.textContent=fmt(remaining);nodes.shuffleLeft.textContent=String(Math.ceil(shuffleRemaining));stageNode.classList.toggle('is-urgent',remaining<=30&&remaining>0);const locked=stateName!=='idle'||expiring;dropBtn.disabled=locked;shuffleBtn.disabled=locked||shuffleRemaining<=0;}
   function setFeedback(text){feedback.textContent=text;feedback.classList.remove('is-showing');void feedback.offsetWidth;feedback.classList.add('is-showing');}
   function setShaft(v){stageNode.style.setProperty('--shaft-len',`${v}%`);}
-  function syncClaw(){const p=projectClaw(claw.x,claw.z);stageNode.style.setProperty('--claw-left',`${p.left}%`);stageNode.style.setProperty('--claw-top',`${p.top}%`);stageNode.style.setProperty('--claw-scale',String(p.scale));stageNode.style.setProperty('--claw-bright',String(.965+claw.z*.055));clawNode.style.zIndex=String(p.zIndex);if(attached)syncCarried();}
+  function syncClaw(){const p=projectClaw(claw.x,claw.z);stageNode.style.setProperty('--claw-left',`${p.left}%`);stageNode.style.setProperty('--claw-top',`${p.top}%`);stageNode.style.setProperty('--claw-scale',String(p.scale));stageNode.style.setProperty('--claw-bright',String(.965+claw.z*.055));clawNode.style.zIndex=String(p.zIndex);}
   function renderOne(plush){const p=projectWorld(plush.x,plush.z),type=PLUSH_TYPES[plush.type];plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top-(plush.elevation||0)*100}%`;plush.node.style.zIndex=String(p.zIndex);plush.node.style.setProperty('--rot',`${plush.rotation}deg`);plush.node.style.setProperty('--scale',String(type.scale*p.scale));plush.node.style.setProperty('--bright',String(.95+plush.z*.065));}
   function renderPlushes(){field.replaceChildren();plushes.forEach(plush=>{const n=document.createElement('div');n.className='lc-plush';n.dataset.plushId=plush.instanceId;const img=document.createElement('img');img.src=plushSrc(plush);img.alt='';img.draggable=false;n.append(img);plush.node=n;field.append(n);renderOne(plush);});}
-  function syncCarried(){if(!attached?.node)return;const p=projectClaw(claw.x,claw.z),type=PLUSH_TYPES[attached.type];attached.node.style.left=`${p.left}%`;attached.node.style.top=`${p.top+28.5*p.scale}%`;attached.node.style.zIndex='160';attached.node.style.setProperty('--scale',String(type.scale*(.71+.18*claw.z)));}
+  function mountPayload(plush){
+    if(!plush?.node||!payload)return;
+    attached=plush;
+    plush.node.classList.remove('is-airborne','is-falling');
+    plush.node.classList.add('is-carried');
+    plush.node.style.left='50%'; plush.node.style.top='50%';
+    plush.node.style.width=`${158*PLUSH_TYPES[plush.type].scale}%`;
+    plush.node.style.setProperty('--scale','1');
+    plush.node.style.setProperty('--rot',`${(plush.rotation||0)*.16}deg`);
+    payload.append(plush.node);
+  }
+  function unmountPayloadToField(plush){
+    if(!plush?.node)return null;
+    const nr=plush.node.getBoundingClientRect(), sr=stageNode.getBoundingClientRect();
+    const left=((nr.left+nr.width/2-sr.left)/sr.width)*100;
+    const top=((nr.top+nr.height*.80-sr.top)/sr.height)*100;
+    const width=(nr.width/sr.width)*100;
+    field.append(plush.node);
+    plush.node.classList.remove('is-carried');
+    plush.node.classList.add('is-airborne');
+    plush.node.style.left=`${left}%`; plush.node.style.top=`${top}%`; plush.node.style.width=`${width}%`;
+    plush.node.style.setProperty('--scale','1');
+    plush.node.style.setProperty('--rot','0deg');
+    attached=null;
+    return {left,top,width};
+  }
 
-  function setJoystickVisual(dx,dy){knob.style.transform=`translate(-50%,-50%) translate(${dx*13}px,${dy*11}px)`;stem.style.transform=`translate(-50%,-22%) rotateZ(${dx*13}deg) rotateX(${8-dy*17}deg)`;}
+  function setJoystickVisual(dx,dy){joystick.style.setProperty('--joy-x',String(dx));joystick.style.setProperty('--joy-z',String(dy));}
   function updateVectorFromEvent(e){const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=(e.clientX-cx)/(r.width*.35),dy=(e.clientY-cy)/(r.height*.34),m=Math.hypot(dx,dy);if(m<.14){vector={x:0,z:0};setJoystickVisual(0,0);return;}const q=Math.min(1,m);vector={x:dx/m*q,z:dy/m*q};setJoystickVisual(vector.x,vector.z);}
   function movementLoop(now){if((Math.abs(vector.x)+Math.abs(vector.z))<.03||stateName!=='idle'||expiring){sfx.moveStop();movementRaf=0;lastMoveAt=0;return;}if(!lastMoveAt)lastMoveAt=now;const dt=Math.min(.035,(now-lastMoveAt)/1000);lastMoveAt=now;sfx.moveStart(claw.z);sfx.movePitch(claw.z,Math.hypot(vector.x,vector.z));const old={...claw};claw.x=clamp(claw.x+vector.x*stage.claw.speedX*dt,stage.claw.minX,stage.claw.maxX);claw.z=clamp(claw.z+vector.z*stage.claw.speedZ*dt,stage.claw.minZ,stage.claw.maxZ);let hit='';if(claw.x===stage.claw.minX&&vector.x<0)hit='l';if(claw.x===stage.claw.maxX&&vector.x>0)hit='r';if(claw.z===stage.claw.minZ&&vector.z<0)hit='b';if(claw.z===stage.claw.maxZ&&vector.z>0)hit='f';if(hit&&hit!==boundaryLatch)sfx.endStop();boundaryLatch=hit||'';if(old.x!==claw.x||old.z!==claw.z)syncClaw();movementRaf=requestAnimationFrame(movementLoop);}
   function ensureMoveLoop(){if(!movementRaf)movementRaf=requestAnimationFrame(movementLoop);}
@@ -79,27 +104,40 @@ export function createGameplayController({getState,persistState,onMenu,music}){
 
   function nearest(){let best=null,d=Infinity;for(const p of plushes){if(p.captured)continue;const q=worldDistance(p,claw);if(q<d){best=p;d=q;}}return {plush:best,distance:d};}
   function contactPlush(plush,distance){if(!plush)return;plush.node.classList.add('is-contacted');setTimeout(()=>plush.node?.classList.remove('is-contacted'),220);const strength=clamp(1-distance/stage.claw.grabRadius,.25,1);sfx.contact(strength);}
-  function attach(plush){attached=plush;plush.node.classList.add('is-carried');syncCarried();}
-  function detach(plush){plush.node.classList.remove('is-carried');attached=null;renderOne(plush);}
+  function attach(plush){mountPayload(plush);}
+  function detach(plush){if(plush?.node?.parentElement===payload)field.append(plush.node);plush.node.classList.remove('is-carried','is-airborne');plush.node.style.width='';attached=null;renderOne(plush);}
   async function animateClawTo(x,z,duration,token){const sx=claw.x,sz=claw.z,start=performance.now();return new Promise(resolve=>{const step=now=>{if(token!==roundToken){resolve();return;}const t=clamp((now-start)/duration,0,1),e=1-Math.pow(1-t,3);claw.x=sx+(x-sx)*e;claw.z=sz+(z-sz)*e;syncClaw();sfx.movePitch(claw.z,.75);if(t<1)requestAnimationFrame(step);else resolve();};sfx.moveStart(claw.z);requestAnimationFrame(step);});}
-  async function fallBack(plush,token,late=false){if(!plush)return;plush.node.classList.remove('is-carried');attached=null;plush.node.classList.add('is-falling');const p=projectWorld(plush.x,plush.z);plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top}%`;plush.node.style.setProperty('--scale',String(PLUSH_TYPES[plush.type].scale*p.scale));await sleep(late?410:300);if(token!==roundToken)return;sfx.plushImpact(late?.75:.45);plush.node.classList.remove('is-falling');renderOne(plush);}
+  async function fallBack(plush,token,late=false){
+    if(!plush)return;
+    unmountPayloadToField(plush);
+    const p=projectWorld(plush.x,plush.z), type=PLUSH_TYPES[plush.type];
+    const targetWidth=25.4*type.scale*p.scale;
+    await new Promise(r=>requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      plush.node.classList.add('is-falling');
+      plush.node.style.left=`${p.left}%`; plush.node.style.top=`${p.top}%`; plush.node.style.width=`${targetWidth}%`;
+      plush.node.style.setProperty('--rot',`${plush.rotation}deg`); r();
+    });}));
+    await sleep(late?560:450); if(token!==roundToken)return;
+    sfx.plushImpact(late?.75:.45);
+    plush.node.classList.remove('is-falling','is-airborne'); plush.node.style.width=''; renderOne(plush);
+  }
 
-  async function dropSequence(token){if(stateName!=='idle'||expiring)return;releaseJoystick();stateName='dropping';hud();sfx.dropRelay();stageNode.dataset.clawState='dropping';const aim=nearest();const targetElevation=aim.plush&&aim.distance<stage.claw.grabRadius*1.18?(aim.plush.elevation||0):0;const shaftTarget=40+claw.z*10.5-targetElevation*72;setShaft(shaftTarget);sfx.shaft(true,.78);await sleep(790);if(token!==roundToken)return;
+  async function dropSequence(token){if(stateName!=='idle'||expiring)return;releaseJoystick();stateName='dropping';hud();sfx.dropRelay();stageNode.dataset.clawState='dropping';const aim=nearest();const targetElevation=aim.plush&&aim.distance<stage.claw.grabRadius*1.18?(aim.plush.elevation||0):0;const shaftTarget=clamp(55+claw.z*15-targetElevation*78,46,70);setShaft(shaftTarget);sfx.shaft(true,.78);await sleep(790);if(token!==roundToken)return;
     const {plush,distance}=aim;stageNode.dataset.clawState='contact';if(plush&&distance<stage.claw.grabRadius*1.08)contactPlush(plush,distance);else{sfx.contact(.3);}await sleep(150);if(token!==roundToken)return;
     stageNode.dataset.clawState='closing';sfx.clawClose();await sleep(270);if(token!==roundToken)return;
-    const outcome=chooseGrabOutcome({plush,claw,grabRadius:stage.claw.grabRadius});stageNode.dataset.clawState='lifting';setShaft(3.0);sfx.shaft(false,.83,outcome!=='miss');if(outcome!=='miss'&&plush){attach(plush);sfx.catch();}await sleep(outcome==='early-slip'?440:840);if(token!==roundToken)return;
+    const outcome=chooseGrabOutcome({plush,claw,grabRadius:stage.claw.grabRadius});stageNode.dataset.clawState='lifting';setShaft(.6);sfx.shaft(false,.83,outcome!=='miss');if(outcome!=='miss'&&plush){attach(plush);sfx.catch();}await sleep(outcome==='early-slip'?440:840);if(token!==roundToken)return;
     if(outcome==='miss'||!plush){setFeedback(c().miss);await resetClaw(token);return;}
     if(outcome==='early-slip'){sfx.slip(false);setFeedback(c().earlySlip);await fallBack(plush,token,false);await resetClaw(token);return;}
     stageNode.dataset.clawState='carrying';if(outcome==='late-slip'){
       const tx=clamp((claw.x+stage.chute.x)/2,stage.claw.minX,stage.claw.maxX),tz=clamp(claw.z+.12,stage.claw.minZ,stage.claw.maxZ);await animateClawTo(tx,tz,620,token);sfx.moveStop();if(token!==roundToken)return;sfx.slip(true);setFeedback(c().lateSlip);await fallBack(plush,token,true);await resetClaw(token);return;
     }
     setFeedback(c().grip);await animateClawTo(stage.chute.x,stage.chute.z,880,token);sfx.moveStop();if(token!==roundToken)return;stageNode.dataset.clawState='releasing';chuteGlow.classList.add('is-active');setShaft(22);sfx.shaft(true,.34);await sleep(350);if(token!==roundToken)return;
-    plush.node.classList.remove('is-carried');attached=null;plush.node.classList.add('is-falling');const cp=projectClaw(claw.x,claw.z);plush.node.style.left='15.4%';plush.node.style.top='61.0%';plush.node.style.setProperty('--scale',String(PLUSH_TYPES[plush.type].scale*.82));sfx.chuteTravel();await sleep(520);if(token!==roundToken)return;plush.node.classList.add('is-captured');plush.captured=true;chuteGlow.classList.remove('is-active');
-    const di=delivery.querySelector('img');di.src=plushSrc(plush);delivery.classList.remove('is-drop');void delivery.offsetWidth;delivery.classList.add('is-drop');sfx.prizeBay();await sleep(380);if(token!==roundToken)return;
+    unmountPayloadToField(plush);plush.node.classList.add('is-falling','is-chute-fall');void plush.node.offsetWidth;plush.node.style.left='14.8%';plush.node.style.top='62.2%';plush.node.style.width=`${22.5*PLUSH_TYPES[plush.type].scale}%`;plush.node.style.setProperty('--rot','6deg');sfx.chuteTravel();await sleep(620);if(token!==roundToken)return;plush.node.classList.add('is-captured');plush.captured=true;chuteGlow.classList.remove('is-active');
+    const di=delivery.querySelector('img');di.src=plushSrc(plush);delivery.classList.remove('is-drop');void delivery.offsetWidth;delivery.classList.add('is-drop');sfx.prizeBay();await sleep(520);if(token!==roundToken)return;
     const value=PLUSH_TYPES[plush.type].value;score+=value;persistState(applyCaptureProgress(getState(),plush.type));sfx.score();setFeedback(`+${value}`);hud();await sleep(420);delivery.classList.remove('is-drop');await resetClaw(token);
   }
 
-  async function resetClaw(token){stageNode.dataset.clawState='resetting';setShaft(3.0);await sleep(360);if(token!==roundToken)return;await animateClawTo(stage.claw.homeX,stage.claw.homeZ,520,token);sfx.moveStop();if(token!==roundToken)return;stageNode.dataset.clawState='idle';stateName='idle';hud();if(expiring)finishRound();}
+  async function resetClaw(token){stageNode.dataset.clawState='resetting';setShaft(.6);await sleep(360);if(token!==roundToken)return;await animateClawTo(stage.claw.homeX,stage.claw.homeZ,520,token);sfx.moveStop();if(token!==roundToken)return;stageNode.dataset.clawState='idle';stateName='idle';hud();if(expiring)finishRound();}
 
   function shuffleFrame(now){if(!shuffleHolding||stateName!=='idle'||shuffleRemaining<=0||expiring){stopShuffle();return;}if(!shuffleLast)shuffleLast=now;const dt=Math.min(.05,(now-shuffleLast)/1000);shuffleLast=now;shuffleRemaining=Math.max(0,shuffleRemaining-dt);agitator.classList.add('is-active');shuffleBtn.classList.add('is-active');if(!shuffleStepAt||now-shuffleStepAt>90){shuffleStepAt=now;plushes.filter(p=>!p.captured).forEach((p,i)=>{Object.assign(p,shufflePlush(p,{now,index:i,bounds:stage.pileBounds,intensity:.95}));renderOne(p);});}hud();shuffleRaf=requestAnimationFrame(shuffleFrame);}
   function startShuffle(e){if(stateName!=='idle'||expiring||shuffleRemaining<=0)return;e?.preventDefault?.();shuffleHolding=true;shuffleLast=0;shuffleStepAt=0;sfx.button(false);sfx.shuffleStart();shuffleRaf=requestAnimationFrame(shuffleFrame);}
@@ -110,9 +148,9 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   function tick(token){if(token!==roundToken||completed)return;const prev=Math.ceil(remaining);remaining=Math.max(0,stage.durationSeconds-(performance.now()-startedAt)/1000);const cur=Math.ceil(remaining);if(cur!==prev&&cur<=5&&cur>0)sfx.countdown();music?.setUrgency?.(remaining);hud();if(remaining<=0){clearInterval(timerHandle);timerHandle=0;expiring=true;stopShuffle();releaseJoystick();hud();if(stateName==='idle')finishRound();}}
   function finishRound(){if(completed)return;completed=true;stateName='finished';stopShuffle();releaseJoystick();clearInterval(timerHandle);timerHandle=0;const rr=applyRoundResult(getState(),{stageId:stage.id,score,targetScore:stage.targetScore});persistState(rr.state);music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();nodes.resultTitle.textContent=`${rr.clear?c().clear:c().fail}${rr.newBest>rr.oldBest?` · ${c().newBest}`:''}`;nodes.resultScore.textContent=String(score);nodes.resultBest.textContent=String(rr.newBest);nodes.resultPoints.textContent=String(Number(getState()?.points)||0);result.hidden=false;rr.clear?sfx.clear():sfx.fail();}
 
-  function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';setShaft(3.0);renderPlushes();setCopy();syncClaw();hud();}
+  function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';payload?.replaceChildren();setShaft(.6);renderPlushes();setCopy();syncClaw();hud();}
   function startStage(stageId=1,options={}){stop(false);resetRound(stageId,options.durationSeconds||null);music?.lockTrackForRound?.();startedAt=performance.now();timerHandle=setInterval(()=>tick(roundToken),200);tick(roundToken);}
-  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();attached=null;if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
+  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();payload?.replaceChildren();attached=null;if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
   function refreshLanguage(){setCopy();}
   screen.querySelector('[data-game-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-replay]').addEventListener('click',()=>startStage(stage.id));
   return {startStage,stop,refreshLanguage};

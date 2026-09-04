@@ -1,4 +1,4 @@
-export const BUILD_TAG = '003.02';
+export const BUILD_TAG = '003.03';
 
 export const PLUSH_TYPES = Object.freeze({
   signature: Object.freeze({ id:'signature', value:120, clawPoints:12, scale:1.00, weight:1.00, difficulty:0.08, balance:0.84, asset:'shih-tzu-brown' }),
@@ -11,19 +11,22 @@ export const PLUSH_TYPES = Object.freeze({
 // Dense real-machine pile: four depth layers compressed into 12 visible prizes.
 // z: 0 = rear glass, 1 = front glass.  Left chute exclusion remains x < .22.
 const pile = [
-  // organic mound: continuous depth, irregular overlap, no icon-like rows
-  ['bear',      .47,.19,-8,'tilt', .086],
-  ['bunny',     .69,.24, 7,'rest', .082],
-  ['signature', .82,.31,-10,'tilt',.064],
-  ['black',     .56,.36, 9,'front',.060],
-  ['chick',     .33,.43,-8,'tilt', .042],
-  ['bear',      .73,.49,10,'front',.038],
-  ['bunny',     .47,.55,-9,'front',.046],
-  ['black',     .84,.60,-6,'tilt', .028],
-  ['signature', .30,.69, 8,'front',.008],
-  ['black',     .53,.76,-7,'front',.016],
-  ['signature', .70,.80, 5,'tilt', .004],
-  ['chick',     .85,.86,-5,'front',.000],
+  // Dense organic mound: overlapping depth, varied elevation and poses. Chute x < .22 stays clear.
+  ['bear',      .44,.18,-9,'tilt', .132],
+  ['black',     .59,.22, 7,'rest', .148],
+  ['bunny',     .75,.27,-6,'tilt', .118],
+  ['signature', .86,.34, 9,'rest', .086],
+  ['chick',     .31,.39,-8,'tilt', .092],
+  ['signature', .47,.43, 6,'front',.106],
+  ['bear',      .64,.46,-7,'front',.122],
+  ['black',     .80,.51, 8,'tilt', .082],
+  ['bunny',     .29,.60, 7,'front',.058],
+  ['black',     .43,.65,-6,'front',.074],
+  ['signature', .59,.69, 5,'tilt', .088],
+  ['bear',      .75,.73,-7,'front',.052],
+  ['chick',     .34,.81, 6,'front',.010],
+  ['bunny',     .54,.84,-6,'rest', .018],
+  ['signature', .78,.87, 4,'front',.000],
 ];
 
 export const STAGE_ONE = Object.freeze({
@@ -31,7 +34,7 @@ export const STAGE_ONE = Object.freeze({
   durationSeconds:180,
   targetScore:600,
   shuffleSeconds:15,
-  claw:Object.freeze({ minX:.10, maxX:.90, minZ:.07, maxZ:.91, homeX:.55, homeZ:.28, speedX:.27, speedZ:.25, grabRadius:.118 }),
+  claw:Object.freeze({ minX:.10, maxX:.90, minZ:.07, maxZ:.91, homeX:.55, homeZ:.28, speedX:.27, speedZ:.25, grabRadius:.122 }),
   chute:Object.freeze({ x:.105, z:.80, radius:.12 }),
   pileBounds:Object.freeze({ minX:.245, maxX:.90, minZ:.12, maxZ:.91 }),
   plushes:Object.freeze(pile.map(([type,x,z,rotation,pose,elevation],i)=>Object.freeze({instanceId:`s1-${i+1}`,type,x,z,rotation,pose,elevation}))),

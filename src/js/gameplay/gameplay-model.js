@@ -1,19 +1,19 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.02';
+import { PLUSH_TYPES } from './stage-data.js?v=003.03';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.92); }
-export function depthScale(z){ return 0.73 + clamp(z,0,1)*0.39; }
+export function depthScale(z){ return 0.82 + clamp(z,0,1)*0.30; }
 export function projectWorld(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
   // Perspective converges toward rear wall; front prizes are larger and sit lower.
   const width=76.5 + zz*5.0;
   const left=50 + (xx-.5)*width;
-  return { left, top: 49.7 + zz*13.15, scale: depthScale(zz), zIndex: 42 + Math.round(zz*68) };
+  return { left, top: 49.2 + zz*13.65, scale: depthScale(zz), zIndex: 42 + Math.round(zz*68) };
 }
 export function projectClaw(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
   const width=75.8 + zz*4.8;
   const left=50 + (xx-.5)*width;
-  return { left, top: 12.75 + zz*5.55, scale: 0.74 + zz*0.24, zIndex: 126 + Math.round(zz*14) };
+  return { left, top: 12.55 + zz*5.15, scale: 0.84 + zz*0.16, zIndex: 126 + Math.round(zz*14) };
 }
 export function chooseGrabOutcome({plush,claw,grabRadius,random=Math.random}){
   if(!plush) return 'miss';
