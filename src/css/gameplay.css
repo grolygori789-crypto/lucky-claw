@@ -359,3 +359,81 @@ html[lang^="ja"] .lc-hud-label{letter-spacing:.025em}
   .lc-mission-item b{font-size:clamp(5px,1.15vw,7.2px);}
   .lc-howto-guide{gap:9px}.lc-howto-guide section{padding:8px 10px}
 }
+
+/* ========================================================================== */
+/* Build 003.10 — premium physical cabinet / mission relocation pass          */
+/* ========================================================================== */
+
+/* Mission is now a real lower-cabinet instrument panel beside the prize bay. */
+.lc-mission-strip{
+  position:absolute;z-index:191;
+  left:56.2%;right:5.2%;top:75.1%;height:15.7%;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+  gap:4.2%;padding:5.2% 5.2% 5.5%;overflow:hidden;pointer-events:none;
+  border-radius:15px;border:1px solid rgba(125,75,43,.62);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.26),transparent 17%),
+    linear-gradient(145deg,rgba(255,244,230,.985),rgba(237,203,180,.975) 55%,rgba(248,225,207,.98));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.98),inset 0 -3px 8px rgba(116,67,48,.10),
+    0 5px 11px rgba(66,39,32,.14),0 0 0 2px rgba(255,235,207,.70),0 0 0 3px rgba(138,83,46,.30);
+}
+.lc-mission-strip::before{content:"";position:absolute;inset:3.4%;border-radius:11px;border:1px solid rgba(151,93,55,.23);box-shadow:inset 0 0 0 1px rgba(255,255,255,.48);pointer-events:none;}
+.lc-mission-strip::after{content:"";position:absolute;left:10%;right:10%;top:4%;height:12%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.36),transparent);pointer-events:none;}
+.lc-mission-title{position:relative;z-index:2;display:block;text-align:center;font-size:clamp(6.8px,1.55vw,10.8px);font-weight:950;letter-spacing:.12em;line-height:1;text-transform:uppercase;color:#8b4650;text-shadow:0 1px rgba(255,255,255,.78);white-space:nowrap;}
+.lc-mission-grid{position:relative;z-index:2;flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:5% 6%;align-items:stretch;}
+.lc-mission-item{
+  position:relative;min-width:0;min-height:0;height:auto;display:grid;grid-template-columns:1.28fr .82fr;align-items:center;justify-items:center;gap:0;
+  padding:2% 6% 2% 3%;border-radius:9px;border:1px solid rgba(110,48,44,.74);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.13),transparent 21%),
+    radial-gradient(ellipse at 50% 110%,rgba(217,46,68,.38),transparent 55%),
+    linear-gradient(180deg,#8e1a27,#a92131 50%,#65121d);
+  box-shadow:inset 0 0 12px rgba(255,88,103,.20),inset 0 1px rgba(255,235,221,.28),0 2px 4px rgba(76,39,34,.15),0 0 0 1px rgba(247,211,155,.45);
+  transition:filter 170ms ease,transform 170ms ease,box-shadow 170ms ease;
+}
+.lc-mission-item:last-child:nth-child(odd){grid-column:1 / -1;width:47%;justify-self:center;}
+.lc-mission-item img{height:112%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(49,22,20,.28));transform:translateY(-1%);}
+.lc-mission-item b{font-size:clamp(7px,1.65vw,11.5px);font-weight:950;color:#fff5df;text-shadow:0 1px 2px rgba(54,12,18,.62),0 0 4px rgba(255,224,184,.15);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.lc-mission-item.is-complete{filter:saturate(1.05) brightness(1.08);box-shadow:inset 0 1px rgba(255,248,221,.38),inset 0 0 10px rgba(255,211,113,.27),0 0 7px rgba(255,202,102,.36),0 0 0 1px rgba(255,226,146,.58);}
+.lc-mission-item.is-complete::after{content:'✓';position:absolute;right:-3%;top:-10%;width:21%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:clamp(5.5px,1.2vw,8px);font-weight:1000;color:#6d421e;background:linear-gradient(180deg,#fff4c3,#dca34b);border:1px solid rgba(116,67,28,.45);box-shadow:0 1px 3px rgba(76,42,28,.20);}
+.lc-mission-strip.is-complete{box-shadow:inset 0 1px rgba(255,255,255,.98),inset 0 -3px 8px rgba(116,67,48,.08),0 5px 11px rgba(66,39,32,.14),0 0 0 2px rgba(255,231,193,.72),0 0 16px rgba(255,205,111,.30);}
+
+/* The chamber itself is intentionally text-free in 003.10. */
+.lc-chamber-copy,.lc-prize-out-label{display:none!important;}
+
+/* Fuller foreground with tactile contact shadows. */
+.lc-plush{width:31.5%;transition:left 180ms linear,top 180ms linear,transform 190ms ease-out,filter 150ms ease,opacity 220ms ease;}
+.lc-plush::after{content:"";position:absolute;z-index:0;left:17%;right:17%;bottom:8%;height:9%;border-radius:50%;background:radial-gradient(ellipse,rgba(77,46,39,var(--contact-alpha,.26)) 0%,rgba(83,49,41,.11) 45%,transparent 73%);filter:blur(var(--contact-soft,2.4px));transform:scaleX(.92);pointer-events:none;}
+.lc-plush img{z-index:2;}
+.lc-plush__target{z-index:1;}
+.lc-agitator{z-index:68;left:33.0%;width:51.5%;top:58.55%;height:1.92%;opacity:.12;}
+.lc-agitator.is-active{opacity:.42;}
+
+/* Front glass: unmistakably present, still nearly invisible over the prizes. */
+.lc-glass-overlay{
+  z-index:174;left:3.72%;right:3.65%;top:12.58%;height:52.25%;
+  border-radius:2.1%/1.15%;overflow:hidden;pointer-events:none;
+  background:
+    linear-gradient(105deg,transparent 0 7%,rgba(255,255,255,.045) 10%,transparent 16% 46%,rgba(255,245,248,.030) 52%,transparent 59% 83%,rgba(255,255,255,.035) 88%,transparent 93%),
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 30% 75%,rgba(255,224,232,.018));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),inset 7px 0 13px rgba(255,255,255,.025),inset -7px 0 13px rgba(255,255,255,.025);
+  backdrop-filter:saturate(1.008) contrast(1.004);
+}
+.lc-glass-overlay::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.012) 10%,transparent 28% 84%,rgba(255,230,236,.025));box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);}
+.lc-glass-overlay::after{content:"";position:absolute;left:-22%;top:-6%;width:54%;height:118%;transform:skewX(-16deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.018) 34%,rgba(255,255,255,.070) 49%,rgba(255,255,255,.018) 63%,transparent);opacity:.72;pointer-events:none;}
+.lc-glass-overlay__top{position:absolute;z-index:3;left:1.2%;right:1.2%;top:.3%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.66) 12%,rgba(255,255,255,.25) 50%,rgba(255,255,255,.58) 88%,transparent);box-shadow:0 1px 4px rgba(255,255,255,.16);}
+.lc-glass-overlay__edge{width:1.05%;opacity:.70;background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.035) 18%,rgba(255,255,255,.075) 55%,rgba(255,255,255,.20));}
+.lc-glass-overlay__shine{top:3%;bottom:5%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),rgba(255,255,255,.015));filter:blur(.45px);}
+.lc-glass-overlay__shine--l{left:4.3%;width:7.5%;opacity:.62}.lc-glass-overlay__shine--r{right:6.2%;width:5.6%;opacity:.36}
+
+/* Mission panel lives below gameplay, so it must never steal touch input. */
+@media(max-width:340px){
+  .lc-mission-strip{left:56.0%;right:4.8%;top:75.0%;height:15.9%;padding:5.3% 4.8% 5.4%;gap:3.8%;}
+  .lc-mission-title{font-size:clamp(6px,1.45vw,9px)}
+  .lc-mission-grid{gap:4.2% 5%;}
+  .lc-mission-item{padding-inline:2%;}
+  .lc-mission-item b{font-size:clamp(6.2px,1.5vw,9.5px)}
+}
+
+body.reduce-effects .lc-glass-overlay::after{display:none;}
