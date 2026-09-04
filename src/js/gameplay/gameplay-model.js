@@ -1,4 +1,4 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.08';
+import { PLUSH_TYPES } from './stage-data.js?v=003.09';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
 export function depthScale(z){ return 0.83 + clamp(z,0,1)*0.34; }
@@ -84,8 +84,8 @@ export function applyCaptureProgress(current,plushType,now=Date.now()){
   collection[plushType]={count:count+1,firstCaughtAt:record?.firstCaughtAt||now};
   return {...current,points:(Number(current.points)||0)+type.clawPoints,collection};
 }
-export function applyRoundResult(current,{stageId,score,targetScore}){
-  const oldBest=Number(current.highScoresByStage?.[stageId])||0; const newBest=Math.max(oldBest,score); const clear=score>=targetScore;
+export function applyRoundResult(current,{stageId,score,targetScore,objectivesMet=true}){
+  const oldBest=Number(current.highScoresByStage?.[stageId])||0; const newBest=Math.max(oldBest,score); const clear=score>=targetScore&&Boolean(objectivesMet);
   const stageProgress={...(current.stageProgress||{highestUnlocked:1,highestCompleted:0})};
   if(clear){stageProgress.highestCompleted=Math.max(Number(stageProgress.highestCompleted)||0,stageId);stageProgress.highestUnlocked=Math.max(Number(stageProgress.highestUnlocked)||1,stageId+1);}
   return {state:{...current,highScoresByStage:{...(current.highScoresByStage||{}),[stageId]:newBest},stageProgress},clear,oldBest,newBest};

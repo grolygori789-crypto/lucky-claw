@@ -3,14 +3,15 @@ import { installDisplayMode, requestImmersiveMode, exitImmersiveMode, isInstalle
 import { loadState, saveState, clearGameProgress } from './storage.js?v=002.01';
 import { bindAudioLifecycle } from './audio-lifecycle.js?v=001.20';
 import { createPWAController } from './pwa-install.js?v=001.20';
-import { MusicManager } from '../systems/music-manager.js?v=001.20';
+import { MusicManager } from '../systems/music-manager.js?v=003.09';
 import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
 import { bindMainMenu } from '../screens/main-menu.js?v=002.03';
 import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.03';
-import { createGameplayController, ensureGameplayScreen } from '../gameplay/claw-game.js?v=003.08';
+import { createGameplayController, ensureGameplayScreen } from '../gameplay/claw-game.js?v=003.09';
+import { createHowToGuide } from '../gameplay/howto-guide.js?v=003.09';
 
-const BUILD_ID = '003.08';
+const BUILD_ID = '003.09';
 
 // Gameplay is appended before the screen registry is captured. Existing HTML stays untouched.
 ensureGameplayScreen();
@@ -33,6 +34,7 @@ let immersiveGestureAttempted = false;
 
 const music = new MusicManager(state.settings);
 const showToast = createToast();
+const howToGuide = createHowToGuide();
 installDisplayMode();
 
 document.body.classList.toggle('reduce-effects', Boolean(state.settings.reducedEffects));
@@ -70,7 +72,9 @@ function showScreen(name) {
     music.prepareTitle();
     if (!audioLifecycle.resumeIfEligible()) void music.play();
   } else if (name === 'menu') {
-    void music.restorePreferredTrack({ autoplay: music.musicEnabled });
+    // Keep the current song continuous across Title → Menu → Stage.
+    // Track changes happen naturally when the song ends, or explicitly in Settings.
+    if (music.musicEnabled && !music.isPlaying) void music.play();
   }
 }
 
@@ -310,7 +314,7 @@ bindMainMenu({
     showScreen('settings');
     settingsController.refresh();
   },
-  onHowToPlay: () => settingsController.showHowToPlay(),
+  onHowToPlay: () => howToGuide.show(),
   onExit: () => settingsController.showExitConfirm(),
   onFeature: (item) => {
     if (item === 'play') {

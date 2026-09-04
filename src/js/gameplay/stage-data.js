@@ -1,4 +1,4 @@
-export const BUILD_TAG = '003.08';
+export const BUILD_TAG = '003.09';
 
 export const PLUSH_TYPES = Object.freeze({
   signature: Object.freeze({ id:'signature', value:120, clawPoints:12, scale:1.03, weight:1.00, difficulty:0.08, balance:0.84, asset:'shih-tzu-brown' }),
@@ -8,8 +8,8 @@ export const PLUSH_TYPES = Object.freeze({
   bunny: Object.freeze({ id:'bunny', value:110, clawPoints:11, scale:1.02, weight:0.94, difficulty:0.09, balance:0.78, asset:'white-bunny' }),
 });
 
-// Stage 1 — premium benchmark composition.
-// Curated mound: wide base, dense middle, crowned rear. No front plush crosses chute footprint.
+// Stage 1 — curated premium mound. Rear prizes fill the cabinet visually; front prizes
+// stay clear of the real chute footprint and cover the mixing hardware naturally.
 const pile = [
   // back crown / partial heads
   ['bear',      .22,.18,-9,'rest',  .050],
@@ -38,7 +38,7 @@ const pile = [
   ['black',     .76,.45,-4,'front', .028],
   ['signature', .87,.46, 5,'front', .024],
 
-  // low mid shelf, starts to cover agitator
+  // low middle — buries the agitator under plush weight
   ['bear',      .25,.58,-5,'front', .014],
   ['signature', .36,.60, 4,'front', .016],
   ['black',     .48,.61,-4,'front', .018],
@@ -52,7 +52,14 @@ const pile = [
   ['bear',      .54,.77,-3,'front', .002],
   ['black',     .66,.77, 2,'front', .002],
   ['signature', .78,.76,-2,'front', .000],
-  ['bunny',     .855,.77, 2,'rest',  .000],
+  ['bunny',     .855,.77, 2,'rest', .000],
+
+  // foreground fill — removes the empty shelf band without blocking the chute
+  ['black',     .43,.875,-2,'front', .000],
+  ['signature', .535,.89, 2,'front', .000],
+  ['chick',     .635,.88,-2,'front', .000],
+  ['bear',      .745,.89, 2,'front', .000],
+  ['bunny',     .845,.875,-2,'front', .000],
 ];
 
 export const STAGE_ONE = Object.freeze({
@@ -60,6 +67,8 @@ export const STAGE_ONE = Object.freeze({
   durationSeconds:180,
   targetScore:600,
   shuffleSeconds:15,
+  mission:Object.freeze({ signature:1, black:1, bear:1, chick:1, bunny:1 }),
+  missionOrder:Object.freeze(['signature','black','bear','chick','bunny']),
   claw:Object.freeze({ minX:.10, maxX:.91, minZ:.08, maxZ:.91, homeX:.55, homeZ:.24, speedX:.27, speedZ:.25, grabRadius:.132 }),
   chute:Object.freeze({ x:.107, z:.80, radius:.12 }),
   pileBounds:Object.freeze({ minX:.175, maxX:.905, minZ:.16, maxZ:.90 }),

@@ -48,13 +48,8 @@ export class MusicManager extends EventTarget {
     this.loadCurrentTrack();
   }
 
-  get currentTrack() {
-    return SOUNDTRACK[this.index];
-  }
-
-  get isPlaying() {
-    return !this.audio.paused && !this.audio.ended;
-  }
+  get currentTrack() { return SOUNDTRACK[this.index]; }
+  get isPlaying() { return !this.audio.paused && !this.audio.ended; }
 
   get snapshot() {
     return {
@@ -100,6 +95,9 @@ export class MusicManager extends EventTarget {
     });
   }
 
+  // Used only when the player explicitly wants to return to their saved track.
+  // Normal Title -> Menu -> Stage navigation deliberately does NOT call this;
+  // the current song continues seamlessly until it naturally ends.
   restorePreferredTrack({ autoplay = this.isPlaying } = {}) {
     return this.selectTrack(this.preferredTrackId, { force: true, autoplay, remember: false });
   }
@@ -122,13 +120,8 @@ export class MusicManager extends EventTarget {
     }
   }
 
-  pause() {
-    this.audio.pause();
-  }
-
-  togglePlayback() {
-    return this.isPlaying ? (this.pause(), Promise.resolve(false)) : this.play();
-  }
+  pause() { this.audio.pause(); }
+  togglePlayback() { return this.isPlaying ? (this.pause(), Promise.resolve(false)) : this.play(); }
 
   toggleMute() {
     this.musicEnabled = !this.musicEnabled;
@@ -143,10 +136,7 @@ export class MusicManager extends EventTarget {
     this.emitPreferences();
   }
 
-  setShuffle(enabled) {
-    this.shuffle = Boolean(enabled);
-    this.emitPreferences();
-  }
+  setShuffle(enabled) { this.shuffle = Boolean(enabled); this.emitPreferences(); }
 
   cycleRepeat() {
     this.repeat = this.repeat === 'off' ? 'all' : this.repeat === 'all' ? 'one' : 'off';
@@ -184,17 +174,16 @@ export class MusicManager extends EventTarget {
     return true;
   }
 
-  next() {
-    let nextIndex;
+  chooseNextIndex() {
     if (this.shuffle && SOUNDTRACK.length > 1) {
-      do {
-        nextIndex = Math.floor(Math.random() * SOUNDTRACK.length);
-      } while (nextIndex === this.index);
-    } else {
-      nextIndex = (this.index + 1) % SOUNDTRACK.length;
+      let nextIndex;
+      do { nextIndex = Math.floor(Math.random() * SOUNDTRACK.length); } while (nextIndex === this.index);
+      return nextIndex;
     }
-    return this.selectTrack(SOUNDTRACK[nextIndex].id);
+    return (this.index + 1) % SOUNDTRACK.length;
   }
+
+  next() { return this.selectTrack(SOUNDTRACK[this.chooseNextIndex()].id); }
 
   previous() {
     const nextIndex = (this.index - 1 + SOUNDTRACK.length) % SOUNDTRACK.length;
@@ -222,27 +211,29 @@ export class MusicManager extends EventTarget {
   setUrgency(secondsRemaining) {
     const seconds = Math.max(0, Number(secondsRemaining) || 0);
     let target = 1;
-
     if (seconds <= 0) target = 1;
-    else if (seconds <= 5) target = 1.16;
-    else if (seconds <= 10) target = 1.12;
-    else if (seconds <= 20) target = 1.08;
-    else if (seconds <= 30) target = 1.04;
+    else if (seconds <= 5) target = 1.30;
+    else if (seconds <= 10) target = 1.24;
+    else if (seconds <= 20) target = 1.16;
+    else if (seconds <= 30) target = 1.10;
 
+    // tick() runs several times per second. Do not restart the rate tween if the
+    // urgency band has not changed; repeated restarts feel like micro-stutter.
+    if (Math.abs(target - this.urgencyRate) < 0.001) return;
     this.urgencyRate = target;
-    this.rampPlaybackRate(target, 500);
+    this.rampPlaybackRate(target, target === 1 ? 360 : 620);
   }
 
   resetUrgency() {
+    if (Math.abs(this.urgencyRate - 1) < 0.001 && Math.abs((this.audio.playbackRate || 1) - 1) < 0.001) return;
     this.urgencyRate = 1;
-    this.rampPlaybackRate(1, 320);
+    this.rampPlaybackRate(1, 360);
   }
 
   rampPlaybackRate(target, duration) {
     if (this.rateAnimation) cancelAnimationFrame(this.rateAnimation);
-
     const from = this.audio.playbackRate || 1;
-    const safeTarget = clamp(target, 0.75, 1.25);
+    const safeTarget = clamp(target, 0.75, 1.32);
 
     if (Math.abs(from - safeTarget) < 0.001) {
       this.audio.playbackRate = safeTarget;
@@ -255,21 +246,14 @@ export class MusicManager extends EventTarget {
       const progress = clamp((now - started) / duration, 0, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       this.audio.playbackRate = from + (safeTarget - from) * eased;
-
-      if (progress < 1) {
-        this.rateAnimation = requestAnimationFrame(step);
-      } else {
-        this.rateAnimation = 0;
-        this.audio.playbackRate = safeTarget;
-        this.emitState();
-      }
+      if (progress < 1) this.rateAnimation = requestAnimationFrame(step);
+      else { this.rateAnimation = 0; this.audio.playbackRate = safeTarget; this.emitState(); }
     };
-
     this.rateAnimation = requestAnimationFrame(step);
   }
 
   async handleEnded() {
-    if (this.roundLocked || this.repeat === 'one') {
+    if (this.repeat === 'one') {
       this.audio.currentTime = 0;
       await this.play();
       return;
@@ -280,7 +264,14 @@ export class MusicManager extends EventTarget {
       return;
     }
 
-    await this.next();
+    const nextIndex = this.chooseNextIndex();
+    // Natural song endings are allowed during gameplay. The round lock only
+    // prevents unrelated UI navigation from replacing the current track early.
+    await this.selectTrack(SOUNDTRACK[nextIndex].id, {
+      force: true,
+      autoplay: this.musicEnabled,
+      remember: false,
+    });
   }
 
   emitPreferences() {
@@ -288,7 +279,5 @@ export class MusicManager extends EventTarget {
     this.emitState();
   }
 
-  emitState() {
-    this.dispatchEvent(new CustomEvent('statechange', { detail: this.snapshot }));
-  }
+  emitState() { this.dispatchEvent(new CustomEvent('statechange', { detail: this.snapshot })); }
 }

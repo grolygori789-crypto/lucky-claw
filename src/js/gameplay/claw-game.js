@@ -1,18 +1,17 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.08';
-import { ArcadeSfx } from './sfx.js?v=003.08';
-import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.08';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.09';
+import { ArcadeSfx } from './sfx.js?v=003.09';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.09';
 
 const COPY=Object.freeze({
-  en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'LOCKED!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
-  th:{score:'คะแนน',stage:'ด่าน',min:'คะแนนขั้นต่ำ',high:'สถิติสูงสุด',move:'เลื่อน',shuffle:'คนตุ๊กตา',drop:'คีบ',menu:'เมนู',clear:'ผ่านด่าน',fail:'หมดเวลา',replay:'เล่นอีกครั้ง',points:'CLAW POINTS',newBest:'สถิติใหม่',time:'เวลา',grip:'ล็อกได้!',lateSlip:'เกือบแล้ว!',earlySlip:'หลุด!',miss:'พลาด!'},
-  ja:{score:'スコア',stage:'ステージ',min:'目標スコア',high:'ハイスコア',move:'移動',shuffle:'シャッフル',drop:'キャッチ',menu:'メニュー',clear:'ステージクリア',fail:'タイムアップ',replay:'もう一度',points:'CLAW POINTS',newBest:'ハイスコア更新',time:'タイム',grip:'ホールド!',lateSlip:'おしい!',earlySlip:'すべった!',miss:'ミス!'}
+  en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'LOCKED!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!',mission:'COLLECT',missionResult:'PLUSH MISSION',missionDone:'MISSION COMPLETE'},
+  th:{score:'คะแนน',stage:'ด่าน',min:'คะแนนขั้นต่ำ',high:'สถิติสูงสุด',move:'เลื่อน',shuffle:'คนตุ๊กตา',drop:'คีบ',menu:'เมนู',clear:'ผ่านด่าน',fail:'หมดเวลา',replay:'เล่นอีกครั้ง',points:'CLAW POINTS',newBest:'สถิติใหม่',time:'เวลา',grip:'ล็อกได้!',lateSlip:'เกือบแล้ว!',earlySlip:'หลุด!',miss:'พลาด!',mission:'ภารกิจ',missionResult:'เก็บตุ๊กตา',missionDone:'ภารกิจครบ'},
+  ja:{score:'スコア',stage:'ステージ',min:'目標スコア',high:'ハイスコア',move:'移動',shuffle:'シャッフル',drop:'キャッチ',menu:'メニュー',clear:'ステージクリア',fail:'タイムアップ',replay:'もう一度',points:'CLAW POINTS',newBest:'ハイスコア更新',time:'タイム',grip:'ホールド!',lateSlip:'おしい!',earlySlip:'すべった!',miss:'ミス!',mission:'ミッション',missionResult:'ぬいぐるみ',missionDone:'ミッション完了'}
 });
 const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
 function c(){return COPY[lang()]||COPY.en;}
 function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.08`;}
-function vibrate(pattern){ try{ navigator.vibrate?.(pattern); }catch{} }
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.09`;}
 
 function markup(){const t=c();return `
 <div class="lc-gameplay-stage" data-game-stage data-claw-state="idle">
@@ -24,19 +23,19 @@ function markup(){const t=c();return `
     <div class="lc-hud-module lc-hud-stage"><span class="lc-hud-label" data-copy-stage>${t.stage}</span><strong class="lc-hud-value" data-game-stage-value>1</strong></div>
     <div class="lc-hud-module lc-hud-target"><span class="lc-hud-label" data-copy-min>${t.min}</span><strong class="lc-hud-value" data-game-target>600</strong><span class="lc-hud-best"><span data-copy-high>${t.high}</span><b data-game-best>0</b></span></div>
   </div>
+  <div class="lc-mission-strip" data-mission-strip aria-label="${t.mission}"></div>
   <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
   <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
   <div class="lc-claw-rig" data-game-claw aria-hidden="true">
-    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.08" alt="" draggable="false"></div>
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.09" alt="" draggable="false"></div>
     <div class="lc-claw-shaft"></div>
-    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.08" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.08" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.09" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.09" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
   </div>
   <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="lc-chamber-copy lc-chamber-copy--l" aria-hidden="true"><span>Small<br>Toys</span><b>Big<br>Happiness</b><i>♡</i></div>
   <div class="lc-chamber-copy lc-chamber-copy--r" aria-hidden="true"><em>Collect<br>all 5!</em><small>♡</small></div>
   <div class="lc-plush-field" data-plush-field></div>
   <div class="lc-target-marker" data-target-marker aria-hidden="true"><span></span></div>
-  <div class="lc-prize-fence" aria-hidden="true"><i></i><i></i></div>
   <div class="lc-glass-overlay" aria-hidden="true"><i class="lc-glass-overlay__edge lc-glass-overlay__edge--l"></i><i class="lc-glass-overlay__edge lc-glass-overlay__edge--r"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--l"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--r"></i></div>
   <div class="lc-chute-glow" data-chute-glow></div>
   <div class="lc-prize-delivery" data-prize-delivery><img alt="" draggable="false"></div>
@@ -49,39 +48,44 @@ function markup(){const t=c();return `
     <button class="lc-hw-button lc-hw-button--shuffle" type="button" data-game-shuffle><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h3.2c4.7 0 5.4 10 10.8 10H21"/><path d="m18 14 3 3-3 3"/><path d="M5 17h3.2c1.8 0 3.1-1.7 4.2-3.7M14.2 10.7C15.5 8.4 16.8 7 19 7h2"/><path d="m18 4 3 3-3 3"/></svg></span><span class="lc-hw-button__text" data-copy-shuffle>${t.shuffle}</span></span><span class="lc-shuffle-budget" data-shuffle-left>15</span></button>
     <button class="lc-hw-button lc-hw-button--drop" type="button" data-game-drop><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11.5 4.5 4.6 4.5-4.6"/><path d="M6 20h12"/></svg></span><span class="lc-hw-button__text" data-copy-drop>${t.drop}</span></span></button>
   </div>
-  <div class="lc-round-result" data-round-result hidden><div class="lc-round-result__card"><h2 data-result-title>${t.clear}</h2><div class="lc-round-result__row"><span data-copy-score>${t.score}</span><strong data-result-score>0</strong></div><div class="lc-round-result__row"><span data-copy-high>${t.high}</span><strong data-result-best>0</strong></div><div class="lc-round-result__row"><span>${t.points}</span><strong data-result-points>0</strong></div><div class="lc-round-result__actions"><button type="button" data-result-replay>${t.replay}</button><button type="button" data-result-menu>${t.menu}</button></div></div></div>
+  <div class="lc-round-result" data-round-result hidden><div class="lc-round-result__card"><h2 data-result-title>${t.clear}</h2><div class="lc-round-result__row"><span data-copy-score>${t.score}</span><strong data-result-score>0</strong></div><div class="lc-round-result__row"><span data-copy-high>${t.high}</span><strong data-result-best>0</strong></div><div class="lc-round-result__row"><span data-copy-mission-result>${t.missionResult}</span><strong data-result-mission>0/5</strong></div><div class="lc-round-result__row"><span>${t.points}</span><strong data-result-points>0</strong></div><div class="lc-round-result__actions"><button type="button" data-result-replay>${t.replay}</button><button type="button" data-result-menu>${t.menu}</button></div></div></div>
 </div>`;}
 
 export function ensureGameplayScreen(){
   let screen=document.querySelector('.screen--gameplay');
   if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
-  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.08';l.dataset.lcGameplayStyle='true';document.head.append(l);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.09';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
 export function createGameplayController({getState,persistState,onMenu,music}){
   const screen=ensureGameplayScreen(), stageNode=screen.querySelector('[data-game-stage]'), field=screen.querySelector('[data-plush-field]'), clawNode=screen.querySelector('[data-game-claw]');
   const joystick=screen.querySelector('[data-game-joystick]'), shuffleBtn=screen.querySelector('[data-game-shuffle]'), dropBtn=screen.querySelector('[data-game-drop]');
-  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), payload=screen.querySelector('[data-claw-payload]'), targetMarker=screen.querySelector('[data-target-marker]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
+  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), payload=screen.querySelector('[data-claw-payload]'), targetMarker=screen.querySelector('[data-target-marker]'), missionStrip=screen.querySelector('[data-mission-strip]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
   const sfx=new ArcadeSfx(()=>getState()?.settings||{});
-  const nodes={score:screen.querySelector('[data-game-score]'),target:screen.querySelector('[data-game-target]'),best:screen.querySelector('[data-game-best]'),timer:screen.querySelector('[data-game-timer]'),shuffleLeft:screen.querySelector('[data-shuffle-left]'),resultTitle:screen.querySelector('[data-result-title]'),resultScore:screen.querySelector('[data-result-score]'),resultBest:screen.querySelector('[data-result-best]'),resultPoints:screen.querySelector('[data-result-points]')};
-  let stage=getStage(1), plushes=[], score=0, claw={x:stage.claw.homeX,z:stage.claw.homeZ}, stateName='idle', roundToken=0, startedAt=0, remaining=180, shuffleRemaining=15, timerHandle=0, completed=false, expiring=false;
-  let joystickPointer=null, vector={x:0,z:0}, movementRaf=0, lastMoveAt=0, boundaryLatch='', shuffleHolding=false, shuffleRaf=0, shuffleLast=0, shuffleStepAt=0, attached=null, targetId='';
+  const nodes={score:screen.querySelector('[data-game-score]'),target:screen.querySelector('[data-game-target]'),best:screen.querySelector('[data-game-best]'),timer:screen.querySelector('[data-game-timer]'),shuffleLeft:screen.querySelector('[data-shuffle-left]'),resultTitle:screen.querySelector('[data-result-title]'),resultScore:screen.querySelector('[data-result-score]'),resultBest:screen.querySelector('[data-result-best]'),resultMission:screen.querySelector('[data-result-mission]'),resultPoints:screen.querySelector('[data-result-points]')};
+  let stage=getStage(1), plushes=[], score=0, capturedByType={}, claw={x:stage.claw.homeX,z:stage.claw.homeZ}, stateName='idle', roundToken=0, startedAt=0, remaining=180, shuffleRemaining=15, timerHandle=0, completed=false, expiring=false;
+  let joystickPointer=null, joystickRect=null, vector={x:0,z:0}, motion={x:0,z:0}, movementRaf=0, lastMoveAt=0, boundaryLatch='', shuffleHolding=false, shuffleRaf=0, shuffleLast=0, shuffleStepAt=0, attached=null, targetId='';
 
-  function setCopy(){const t=c();screen.querySelectorAll('[data-copy-score]').forEach(n=>n.textContent=t.score);screen.querySelector('[data-copy-stage]').textContent=t.stage;screen.querySelector('[data-copy-min]').textContent=t.min;screen.querySelectorAll('[data-copy-high]').forEach(n=>n.textContent=t.high);screen.querySelector('[data-copy-move]').textContent=t.move;screen.querySelector('[data-copy-shuffle]').textContent=t.shuffle;screen.querySelector('[data-copy-drop]').textContent=t.drop;screen.querySelector('[data-copy-time]').textContent=t.time;joystick.setAttribute('aria-label',t.move);}
-  function hud(){nodes.score.textContent=String(score);nodes.target.textContent=String(stage.targetScore);nodes.best.textContent=String(Math.max(Number(getState()?.highScoresByStage?.[stage.id])||0,score));nodes.timer.textContent=fmt(remaining);nodes.shuffleLeft.textContent=String(Math.ceil(shuffleRemaining));stageNode.classList.toggle('is-urgent',remaining<=30&&remaining>0);const locked=stateName!=='idle'||expiring;dropBtn.disabled=locked||shuffleHolding;shuffleBtn.disabled=locked||shuffleRemaining<=0;}
+  function setCopy(){const t=c();screen.querySelectorAll('[data-copy-score]').forEach(n=>n.textContent=t.score);screen.querySelector('[data-copy-stage]').textContent=t.stage;screen.querySelector('[data-copy-min]').textContent=t.min;screen.querySelectorAll('[data-copy-high]').forEach(n=>n.textContent=t.high);screen.querySelectorAll('[data-copy-mission-result]').forEach(n=>n.textContent=t.missionResult);screen.querySelector('[data-copy-move]').textContent=t.move;screen.querySelector('[data-copy-shuffle]').textContent=t.shuffle;screen.querySelector('[data-copy-drop]').textContent=t.drop;screen.querySelector('[data-copy-time]').textContent=t.time;missionStrip?.setAttribute('aria-label',t.mission);joystick.setAttribute('aria-label',t.move);}
+  function missionTotal(){return Object.values(stage.mission||{}).reduce((sum,n)=>sum+(Number(n)||0),0);}
+  function missionCaught(){return Object.entries(stage.mission||{}).reduce((sum,[type,need])=>sum+Math.min(Number(need)||0,Number(capturedByType[type])||0),0);}
+  function missionComplete(){return Object.entries(stage.mission||{}).every(([type,need])=>(Number(capturedByType[type])||0)>=(Number(need)||0));}
+  function clearConditionsMet(){return score>=stage.targetScore&&missionComplete();}
+  function renderMissionStrip(){if(!missionStrip)return;missionStrip.replaceChildren();for(const type of stage.missionOrder||Object.keys(stage.mission||{})){const need=Number(stage.mission?.[type])||0;if(!need)continue;const item=document.createElement('div');item.className='lc-mission-item';item.dataset.missionType=type;const img=document.createElement('img');img.src=`./assets/plushies/gameplay/${PLUSH_TYPES[type].asset}_front.png?v=003.09`;img.alt='';img.draggable=false;const count=document.createElement('b');count.dataset.missionCount=type;item.append(img,count);missionStrip.append(item);}syncMission();}
+  function syncMission(){if(!missionStrip)return;for(const item of missionStrip.querySelectorAll('[data-mission-type]')){const type=item.dataset.missionType,need=Number(stage.mission?.[type])||0,have=Number(capturedByType[type])||0;const shown=Math.min(have,need);item.classList.toggle('is-complete',need>0&&have>=need);const count=item.querySelector('[data-mission-count]');if(count)count.textContent=`${shown}/${need}`;}missionStrip.classList.toggle('is-complete',missionComplete());}
+  function hud(){nodes.score.textContent=String(score);nodes.target.textContent=String(stage.targetScore);nodes.best.textContent=String(Math.max(Number(getState()?.highScoresByStage?.[stage.id])||0,score));nodes.timer.textContent=fmt(remaining);nodes.shuffleLeft.textContent=String(Math.ceil(shuffleRemaining));stageNode.classList.toggle('is-urgent',remaining<=30&&remaining>0);const locked=stateName!=='idle'||expiring;dropBtn.disabled=locked||shuffleHolding;shuffleBtn.disabled=locked||shuffleRemaining<=0;syncMission();}
   function setFeedback(text){feedback.textContent=text;feedback.classList.remove('is-showing');void feedback.offsetWidth;feedback.classList.add('is-showing');}
   function setShaft(v){stageNode.style.setProperty('--shaft-len',`${v}%`);}
   function nearest(){let best=null,d=Infinity;for(const p of plushes){if(p.captured)continue;const q=worldDistance(p,claw);if(q<d){best=p;d=q;}}return {plush:best,distance:d};}
   function syncTargetMarker(plush,strength=0){
-    if(!targetMarker)return;
-    if(!plush?.node||!targetId){targetMarker.classList.remove('is-active');return;}
-    const sr=stageNode.getBoundingClientRect(),pr=plush.node.getBoundingClientRect();
-    if(!sr.width||!sr.height||!pr.width){targetMarker.classList.remove('is-active');return;}
-    const left=((pr.left+pr.width*.5-sr.left)/sr.width)*100;
-    const top=((pr.top+pr.height*.46-sr.top)/sr.height)*100;
-    const width=clamp((pr.width/sr.width)*100*.72,8.8,16.2);
-    targetMarker.style.left=`${left}%`;targetMarker.style.top=`${top}%`;targetMarker.style.width=`${width}%`;targetMarker.style.setProperty('--marker-strength',String(strength));
+    if(!targetMarker||!plush||!targetId){targetMarker?.classList.remove('is-active');return;}
+    const projected=projectWorld(plush.x,plush.z);
+    const scale=PLUSH_TYPES[plush.type].scale*projected.scale;
+    targetMarker.style.left=`${projected.left}%`;
+    targetMarker.style.top=`${projected.top-(plush.elevation||0)*100-4.8*scale}%`;
+    targetMarker.style.width=`${clamp(9.4*scale,8.2,13.8)}%`;
+    targetMarker.style.setProperty('--marker-strength',String(strength));
     targetMarker.classList.add('is-active');
   }
   function updateTargetHighlight(){
@@ -137,17 +141,38 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   }
 
   function setJoystickVisual(dx,dy){joystick.style.setProperty('--joy-x',String(dx));joystick.style.setProperty('--joy-z',String(dy));}
-  function updateVectorFromEvent(e){const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=(e.clientX-cx)/(r.width*.35),dy=(e.clientY-cy)/(r.height*.34),m=Math.hypot(dx,dy);if(m<.14){vector={x:0,z:0};setJoystickVisual(0,0);return;}const q=Math.min(1,m);vector={x:dx/m*q,z:dy/m*q};setJoystickVisual(vector.x,vector.z);}
-  function movementLoop(now){if((Math.abs(vector.x)+Math.abs(vector.z))<.03||stateName!=='idle'||expiring){sfx.moveStop();movementRaf=0;lastMoveAt=0;return;}if(!lastMoveAt)lastMoveAt=now;const dt=Math.min(.035,(now-lastMoveAt)/1000);lastMoveAt=now;sfx.moveStart(claw.z);sfx.movePitch(claw.z,Math.hypot(vector.x,vector.z));const old={...claw};claw.x=clamp(claw.x+vector.x*stage.claw.speedX*dt,stage.claw.minX,stage.claw.maxX);claw.z=clamp(claw.z+vector.z*stage.claw.speedZ*dt,stage.claw.minZ,stage.claw.maxZ);let hit='';if(claw.x===stage.claw.minX&&vector.x<0)hit='l';if(claw.x===stage.claw.maxX&&vector.x>0)hit='r';if(claw.z===stage.claw.minZ&&vector.z<0)hit='b';if(claw.z===stage.claw.maxZ&&vector.z>0)hit='f';if(hit&&hit!==boundaryLatch)sfx.endStop();boundaryLatch=hit||'';if(old.x!==claw.x||old.z!==claw.z)syncClaw();movementRaf=requestAnimationFrame(movementLoop);}
+  function updateVectorFromEvent(e){const r=joystickRect||joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=(e.clientX-cx)/(r.width*.35),dy=(e.clientY-cy)/(r.height*.34),m=Math.hypot(dx,dy);if(m<.12){vector={x:0,z:0};setJoystickVisual(0,0);return;}const q=Math.min(1,m);vector={x:dx/m*q,z:dy/m*q};setJoystickVisual(vector.x,vector.z);}
+  function hardStopMovement(){if(movementRaf)cancelAnimationFrame(movementRaf);movementRaf=0;lastMoveAt=0;motion={x:0,z:0};vector={x:0,z:0};joystickRect=null;boundaryLatch='';setJoystickVisual(0,0);sfx.moveStop();}
+  function movementLoop(now){
+    if(stateName!=='idle'||expiring){hardStopMovement();return;}
+    if(!lastMoveAt)lastMoveAt=now;
+    const dt=Math.min(.032,Math.max(.001,(now-lastMoveAt)/1000));lastMoveAt=now;
+    const response=1-Math.exp(-(Math.abs(vector.x)+Math.abs(vector.z)>.02?14:18)*dt);
+    const tx=vector.x*stage.claw.speedX,tz=vector.z*stage.claw.speedZ;
+    motion.x+=(tx-motion.x)*response;motion.z+=(tz-motion.z)*response;
+    const speed=Math.hypot(motion.x,motion.z),input=Math.hypot(vector.x,vector.z);
+    if(speed<.00045&&input<.02){motion={x:0,z:0};sfx.moveStop();movementRaf=0;lastMoveAt=0;boundaryLatch='';return;}
+    if(speed>.002){sfx.moveStart(claw.z);sfx.movePitch(claw.z,clamp(speed/Math.max(stage.claw.speedX,stage.claw.speedZ),0,1));}
+    const ox=claw.x,oz=claw.z;
+    claw.x=clamp(claw.x+motion.x*dt,stage.claw.minX,stage.claw.maxX);claw.z=clamp(claw.z+motion.z*dt,stage.claw.minZ,stage.claw.maxZ);
+    let hit='';
+    if(claw.x===stage.claw.minX&&motion.x<0){hit='l';motion.x=0;}
+    if(claw.x===stage.claw.maxX&&motion.x>0){hit='r';motion.x=0;}
+    if(claw.z===stage.claw.minZ&&motion.z<0){hit='b';motion.z=0;}
+    if(claw.z===stage.claw.maxZ&&motion.z>0){hit='f';motion.z=0;}
+    if(hit&&hit!==boundaryLatch)sfx.endStop();boundaryLatch=hit||'';
+    if(ox!==claw.x||oz!==claw.z)syncClaw();
+    movementRaf=requestAnimationFrame(movementLoop);
+  }
   function ensureMoveLoop(){if(!movementRaf)movementRaf=requestAnimationFrame(movementLoop);}
-  function releaseJoystick(){joystickPointer=null;vector={x:0,z:0};setJoystickVisual(0,0);sfx.moveStop();lastMoveAt=0;boundaryLatch='';}
-  joystick.addEventListener('pointerdown',e=>{if(stateName!=='idle'||expiring)return;e.preventDefault();joystickPointer=e.pointerId;joystick.setPointerCapture?.(e.pointerId);updateVectorFromEvent(e);ensureMoveLoop();});
+  function releaseJoystick(){joystickPointer=null;joystickRect=null;vector={x:0,z:0};setJoystickVisual(0,0);if(Math.hypot(motion.x,motion.z)>.00045)ensureMoveLoop();else{sfx.moveStop();lastMoveAt=0;boundaryLatch='';}}
+  joystick.addEventListener('pointerdown',e=>{if(stateName!=='idle'||expiring)return;e.preventDefault();joystickPointer=e.pointerId;joystickRect=joystick.getBoundingClientRect();joystick.setPointerCapture?.(e.pointerId);updateVectorFromEvent(e);ensureMoveLoop();});
   joystick.addEventListener('pointermove',e=>{if(e.pointerId!==joystickPointer)return;updateVectorFromEvent(e);ensureMoveLoop();});
   joystick.addEventListener('pointerup',releaseJoystick);joystick.addEventListener('pointercancel',releaseJoystick);
   joystick.addEventListener('keydown',e=>{if(stateName!=='idle')return;const map={ArrowLeft:{x:-1,z:0},ArrowRight:{x:1,z:0},ArrowUp:{x:0,z:-1},ArrowDown:{x:0,z:1}};if(!map[e.key])return;e.preventDefault();vector=map[e.key];setJoystickVisual(vector.x,vector.z);ensureMoveLoop();});
   joystick.addEventListener('keyup',e=>{if(e.key.startsWith('Arrow'))releaseJoystick();});
 
-  function contactPlush(plush,distance){if(!plush)return;plush.node.classList.add('is-contacted');stageNode.classList.add('is-contact-hit');setTimeout(()=>{plush.node?.classList.remove('is-contacted');stageNode.classList.remove('is-contact-hit');},220);const strength=clamp(1-distance/stage.claw.grabRadius,.25,1);sfx.contact(strength);vibrate([14,16,10]);}
+  function contactPlush(plush,distance){if(!plush)return;plush.node.classList.add('is-contacted');stageNode.classList.add('is-contact-hit');setTimeout(()=>{plush.node?.classList.remove('is-contacted');stageNode.classList.remove('is-contact-hit');},220);const strength=clamp(1-distance/stage.claw.grabRadius,.25,1);sfx.contact(strength);}
   function attach(plush){mountPayload(plush);}
   async function animateClawTo(x,z,duration,token){const sx=claw.x,sz=claw.z,start=performance.now();return new Promise(resolve=>{const step=now=>{if(token!==roundToken){resolve();return;}const t=clamp((now-start)/duration,0,1),e=1-Math.pow(1-t,3);claw.x=sx+(x-sx)*e;claw.z=sz+(z-sz)*e;syncClaw();sfx.movePitch(claw.z,.75);if(t<1)requestAnimationFrame(step);else resolve();};sfx.moveStart(claw.z);requestAnimationFrame(step);});}
   async function fallBack(plush,token,late=false){
@@ -191,7 +216,7 @@ export function createGameplayController({getState,persistState,onMenu,music}){
 
   async function dropSequence(token){
     if(stateName!=='idle'||expiring)return;
-    releaseJoystick();
+    hardStopMovement();
     stateName='dropping';
     hud();
     try{
@@ -206,7 +231,7 @@ export function createGameplayController({getState,persistState,onMenu,music}){
       await sleep(860); if(token!==roundToken)return;
 
       stageNode.dataset.clawState='contact';
-      if(plush&&distance<stage.claw.grabRadius*1.1) contactPlush(plush,distance); else {sfx.contact(.28); vibrate(10);}
+      if(plush&&distance<stage.claw.grabRadius*1.1) contactPlush(plush,distance); else {sfx.contact(.28);}
       await sleep(160); if(token!==roundToken)return;
 
       stageNode.dataset.clawState='closing';
@@ -247,8 +272,12 @@ export function createGameplayController({getState,persistState,onMenu,music}){
       const di=delivery.querySelector('img'); di.src=plushSrc(plush); delivery.classList.remove('is-drop'); void delivery.offsetWidth; delivery.classList.add('is-drop'); sfx.prizeBay();
       await sleep(560); if(token!==roundToken)return;
 
-      const value=PLUSH_TYPES[plush.type].value; score+=value; persistState(applyCaptureProgress(getState(),plush.type)); sfx.score(); setFeedback(`+${value}`); hud();
-      await sleep(440); delivery.classList.remove('is-drop'); await resetClaw(token);
+      const value=PLUSH_TYPES[plush.type].value;
+      score+=value;capturedByType[plush.type]=(Number(capturedByType[plush.type])||0)+1;
+      persistState(applyCaptureProgress(getState(),plush.type));sfx.score();setFeedback(`+${value}`);hud();
+      const clearedNow=clearConditionsMet();
+      await sleep(440);delivery.classList.remove('is-drop');await resetClaw(token);
+      if(clearedNow&&token===roundToken&&!completed){await sleep(180);finishRound();}
     }catch(error){
       console.error('[Lucky Claw] DROP sequence failed.',error);
       if(token===roundToken) forceInteractionRecovery(error?.message||'drop failure');
@@ -262,12 +291,12 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   shuffleBtn.addEventListener('pointerdown',startShuffle);['pointerup','pointercancel','lostpointercapture'].forEach(ev=>shuffleBtn.addEventListener(ev,stopShuffle));window.addEventListener('pointerup',stopShuffle,{passive:true});window.addEventListener('pointercancel',stopShuffle,{passive:true});
   dropBtn.addEventListener('click',()=>void dropSequence(roundToken));
 
-  function tick(token){if(token!==roundToken||completed)return;const prev=Math.ceil(remaining);remaining=Math.max(0,stage.durationSeconds-(performance.now()-startedAt)/1000);const cur=Math.ceil(remaining);if(cur!==prev&&cur<=5&&cur>0)sfx.countdown();music?.setUrgency?.(remaining);hud();if(remaining<=0){clearInterval(timerHandle);timerHandle=0;expiring=true;stopShuffle();releaseJoystick();hud();if(stateName==='idle')finishRound();}}
-  function finishRound(){if(completed)return;completed=true;stateName='finished';stopShuffle();releaseJoystick();clearInterval(timerHandle);timerHandle=0;const rr=applyRoundResult(getState(),{stageId:stage.id,score,targetScore:stage.targetScore});persistState(rr.state);music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();nodes.resultTitle.textContent=`${rr.clear?c().clear:c().fail}${rr.newBest>rr.oldBest?` · ${c().newBest}`:''}`;nodes.resultScore.textContent=String(score);nodes.resultBest.textContent=String(rr.newBest);nodes.resultPoints.textContent=String(Number(getState()?.points)||0);result.hidden=false;rr.clear?sfx.clear():sfx.fail();}
+  function tick(token){if(token!==roundToken||completed)return;const prev=Math.ceil(remaining);remaining=Math.max(0,stage.durationSeconds-(performance.now()-startedAt)/1000);const cur=Math.ceil(remaining);if(cur!==prev&&cur<=5&&cur>0)sfx.countdown();music?.setUrgency?.(remaining);hud();if(remaining<=0){clearInterval(timerHandle);timerHandle=0;expiring=true;stopShuffle();hardStopMovement();hud();if(stateName==='idle')finishRound();}}
+  function finishRound(){if(completed)return;completed=true;stateName='finished';stopShuffle();hardStopMovement();clearInterval(timerHandle);timerHandle=0;const objectivesMet=missionComplete();const rr=applyRoundResult(getState(),{stageId:stage.id,score,targetScore:stage.targetScore,objectivesMet});persistState(rr.state);music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();nodes.resultTitle.textContent=`${rr.clear?c().clear:c().fail}${rr.newBest>rr.oldBest?` · ${c().newBest}`:''}`;nodes.resultScore.textContent=String(score);nodes.resultBest.textContent=String(rr.newBest);if(nodes.resultMission)nodes.resultMission.textContent=`${missionCaught()}/${missionTotal()}`;nodes.resultPoints.textContent=String(Number(getState()?.points)||0);result.hidden=false;rr.clear?sfx.clear():sfx.fail();}
 
-  function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;targetId='';result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';payload?.replaceChildren();setShaft(.6);renderPlushes();setCopy();syncClaw();hud();}
+  function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;capturedByType=Object.fromEntries((stage.missionOrder||Object.keys(stage.mission||{})).map(type=>[type,0]));remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;targetId='';result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';payload?.replaceChildren();hardStopMovement();setShaft(.6);renderPlushes();renderMissionStrip();setCopy();syncClaw();hud();}
   function startStage(stageId=1,options={}){stop(false);resetRound(stageId,options.durationSeconds||null);music?.lockTrackForRound?.();startedAt=performance.now();timerHandle=setInterval(()=>tick(roundToken),200);tick(roundToken);}
-  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();payload?.replaceChildren();attached=null;targetId='';targetMarker?.classList.remove('is-active');if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
+  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();hardStopMovement();payload?.replaceChildren();attached=null;targetId='';targetMarker?.classList.remove('is-active');if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
   function refreshLanguage(){setCopy();}
   screen.querySelector('[data-game-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-replay]').addEventListener('click',()=>startStage(stage.id));
   return {startStage,stop,refreshLanguage};
