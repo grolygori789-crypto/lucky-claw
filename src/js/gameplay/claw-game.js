@@ -1,6 +1,6 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.04';
-import { ArcadeSfx } from './sfx.js?v=003.04';
-import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.04';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.05';
+import { ArcadeSfx } from './sfx.js?v=003.05';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.05';
 
 const COPY=Object.freeze({
   en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'LOCKED!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
@@ -11,7 +11,7 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
 function c(){return COPY[lang()]||COPY.en;}
 function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.04`;}
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.05`;}
 function vibrate(pattern){ try{ navigator.vibrate?.(pattern); }catch{} }
 
 function markup(){const t=c();return `
@@ -24,9 +24,9 @@ function markup(){const t=c();return `
   <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
   <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
   <div class="lc-claw-rig" data-game-claw aria-hidden="true">
-    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.04" alt="" draggable="false"></div>
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.05" alt="" draggable="false"></div>
     <div class="lc-claw-shaft"></div>
-    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.04" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.04" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.05" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.05" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
   </div>
   <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="lc-plush-field" data-plush-field></div>
@@ -46,7 +46,7 @@ function markup(){const t=c();return `
 export function ensureGameplayScreen(){
   let screen=document.querySelector('.screen--gameplay');
   if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
-  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.04';l.dataset.lcGameplayStyle='true';document.head.append(l);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.05';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
@@ -66,14 +66,28 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   function nearest(){let best=null,d=Infinity;for(const p of plushes){if(p.captured)continue;const q=worldDistance(p,claw);if(q<d){best=p;d=q;}}return {plush:best,distance:d};}
   function updateTargetHighlight(){
     const {plush,distance}=nearest();
-    const next=plush && stateName==='idle' && !expiring && distance<stage.claw.grabRadius*1.18 ? plush.instanceId : '';
+    const next=plush && stateName==='idle' && !expiring && distance<stage.claw.grabRadius*1.32 ? plush.instanceId : '';
+    const strength = plush ? clamp(1 - distance/(stage.claw.grabRadius*1.32), 0, 1) : 0;
     if(next===targetId) return;
     targetId=next;
-    plushes.forEach(p=>p.node?.classList.toggle('is-targeted',p.instanceId===targetId));
+    plushes.forEach(p=>{ if(!p.node) return; const active=p.instanceId===targetId; p.node.classList.toggle('is-targeted',active); p.node.style.setProperty('--target-strength', active ? String(strength) : '0'); });
   }
   function syncClaw(){const p=projectClaw(claw.x,claw.z);stageNode.style.setProperty('--claw-left',`${p.left}%`);stageNode.style.setProperty('--claw-top',`${p.top}%`);stageNode.style.setProperty('--claw-scale',String(p.scale));stageNode.style.setProperty('--claw-bright',String(.962+claw.z*.058));clawNode.style.zIndex=String(p.zIndex);updateTargetHighlight();}
   function renderOne(plush){const p=projectWorld(plush.x,plush.z),type=PLUSH_TYPES[plush.type];plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top-(plush.elevation||0)*100}%`;plush.node.style.zIndex=String(p.zIndex+Math.round((plush.elevation||0)*100));plush.node.style.setProperty('--rot',`${plush.rotation}deg`);plush.node.style.setProperty('--scale',String(type.scale*p.scale));plush.node.style.setProperty('--bright',String(.948+plush.z*.07+(plush.elevation||0)*.18));}
   function renderPlushes(){field.replaceChildren();plushes.forEach(plush=>{const n=document.createElement('div');n.className='lc-plush';n.dataset.plushId=plush.instanceId;const halo=document.createElement('span');halo.className='lc-plush__target';const img=document.createElement('img');img.src=plushSrc(plush);img.alt='';img.draggable=false;n.append(halo,img);plush.node=n;field.append(n);renderOne(plush);});updateTargetHighlight();}
+  function computeDropShaft(target){
+    if(!target?.node) return clamp(56+claw.z*8,45,71);
+    const rigRect=clawNode.getBoundingClientRect();
+    const plushRect=target.node.getBoundingClientRect();
+    if(!rigRect.height || !plushRect.height) return clamp(56+claw.z*8,45,71);
+    const headWidth=rigRect.width * 0.76;
+    const headHeight=headWidth * (770/522);
+    const tipOffset=headHeight * 0.79;
+    const plushContactY=plushRect.top + plushRect.height * 0.48;
+    const desiredHeadTop=plushContactY - tipOffset;
+    const pct=((desiredHeadTop - rigRect.top)/rigRect.height)*100 - 6.8;
+    return clamp(pct, 43, 72);
+  }
   function mountPayload(plush){
     if(!plush?.node||!payload)return;
     attached=plush;
@@ -139,7 +153,7 @@ export function createGameplayController({getState,persistState,onMenu,music}){
     stageNode.dataset.clawState='dropping';
     const aim=nearest();
     const targetElevation=aim.plush&&aim.distance<stage.claw.grabRadius*1.22?(aim.plush.elevation||0):0;
-    const shaftTarget=clamp(59+claw.z*15.5-targetElevation*90,48,75);
+    const shaftTarget=plush ? computeDropShaft(plush) : clamp(56+claw.z*9-targetElevation*34,45,70);
     setShaft(shaftTarget);
     sfx.shaft(true,.82);
     await sleep(860); if(token!==roundToken)return;

@@ -1,4 +1,4 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.04';
+import { PLUSH_TYPES } from './stage-data.js?v=003.05';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
 export function depthScale(z){ return 0.80 + clamp(z,0,1)*0.34; }
@@ -13,6 +13,24 @@ export function projectClaw(x,z){
   const width=75.4 + zz*5.8;
   const left=50 + (xx-.5)*width;
   return { left, top: 12.1 + zz*5.45, scale: 0.83 + zz*0.17, zIndex: 126 + Math.round(zz*16) };
+}
+export function leftPileBoundary(z,bounds={}){
+  const base=bounds.minX ?? 0.32;
+  if(z >= 0.76) return Math.max(base, 0.43);
+  if(z >= 0.62) return Math.max(base, 0.39);
+  if(z >= 0.48) return Math.max(base, 0.35);
+  return base;
+}
+export function constrainPlushToPile(plush,bounds={}){
+  const z=clamp(plush.z,bounds.minZ ?? 0.14,bounds.maxZ ?? 0.91);
+  const minX=leftPileBoundary(z,bounds);
+  return {
+    ...plush,
+    x:clamp(plush.x,minX,bounds.maxX ?? 0.90),
+    z,
+    elevation:clamp(plush.elevation ?? 0,0,.18),
+    rotation:clamp(plush.rotation ?? 0,-18,18)
+  };
 }
 export function chooseGrabOutcome({plush,claw,grabRadius,random=Math.random}){
   if(!plush) return 'miss';
@@ -36,13 +54,13 @@ export function shufflePlush(plush,{now,index,bounds,intensity=1}){
   const dx=Math.sin(phase)*.010*mobility + Math.sin(phase*.41)*.0046;
   const dz=Math.cos(phase*.77)*.008*mobility;
   const de=Math.sin(phase*.59+index)*.0018*mobility;
-  return {
+  return constrainPlushToPile({
     ...plush,
-    x:clamp(plush.x+dx,bounds.minX,bounds.maxX),
-    z:clamp(plush.z+dz,bounds.minZ,bounds.maxZ),
-    elevation:clamp((plush.elevation||0)+de,0,.18),
-    rotation:clamp(plush.rotation+Math.sin(phase*1.11)*1.8*mobility,-18,18)
-  };
+    x:plush.x+dx,
+    z:plush.z+dz,
+    elevation:(plush.elevation||0)+de,
+    rotation:plush.rotation+Math.sin(phase*1.11)*1.8*mobility
+  }, bounds);
 }
 export function applyCaptureProgress(current,plushType,now=Date.now()){
   const type=PLUSH_TYPES[plushType]; if(!type) return current;

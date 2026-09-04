@@ -1,4 +1,4 @@
-/* Lucky Claw — Build 003.04 premium Stage 1 presentation */
+/* Lucky Claw — Build 003.05 premium Stage 1 presentation */
 body[data-screen="gameplay"] .cabinet-stage,
 body[data-screen="gameplay"] .cabinet-title-claw-system,
 body[data-screen="gameplay"] .cabinet-title-plush,
@@ -10,7 +10,7 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
   position:absolute;top:50%;left:50%;width:max(100vw,calc(100dvh * 841 / 1870));aspect-ratio:841/1870;
   transform:translate(-50%,-50%);overflow:hidden;isolation:isolate;color:#6f463f;
   font-family:ui-rounded,"SF Pro Rounded","Noto Sans Thai","Noto Sans JP",system-ui,sans-serif;
-  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.04") center/100% 100% no-repeat;
+  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.05") center/100% 100% no-repeat;
 }
 .lc-gameplay-stage::before{content:"";position:absolute;z-index:175;inset:0;pointer-events:none;background:
   linear-gradient(90deg,rgba(255,255,255,.10),transparent 8% 91%,rgba(255,255,255,.09)),
@@ -77,9 +77,10 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
 .lc-plush-field{position:absolute;z-index:84;inset:0;pointer-events:none;}
 .lc-plush{position:absolute;width:27.6%;transform:translate(-50%,-79%) rotate(var(--rot)) scale(var(--scale));transform-origin:50% 88%;transition:left 220ms linear,top 220ms linear,transform 240ms ease,filter 220ms ease,opacity 240ms ease;will-change:left,top,transform;filter:brightness(var(--bright,1)) drop-shadow(0 10px 7px rgba(83,47,41,.22));}
 .lc-plush img{position:relative;z-index:2;width:100%;height:auto;display:block;pointer-events:none;}
-.lc-plush__target{position:absolute;z-index:1;left:50%;top:58%;width:78%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.82);background:radial-gradient(circle,rgba(255,249,192,.34) 0,rgba(255,232,120,.18) 32%,rgba(255,232,120,.08) 48%,rgba(255,255,255,0) 72%);opacity:0;filter:blur(1px);transition:opacity 120ms ease,transform 120ms ease;pointer-events:none;}
-.lc-plush.is-targeted .lc-plush__target{opacity:1;transform:translate(-50%,-50%) scale(1.08);}
-.lc-plush.is-targeted img{filter:drop-shadow(0 0 10px rgba(255,238,151,.34));}
+.lc-plush__target{position:absolute;z-index:1;left:50%;top:58%;width:96%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.72);background:radial-gradient(circle,rgba(255,254,222,.78) 0,rgba(255,241,149,.46) 21%,rgba(255,223,112,.22) 39%,rgba(255,223,112,.10) 54%,rgba(255,255,255,0) 74%);opacity:0;filter:blur(1.15px);transition:opacity 120ms ease,transform 120ms ease,filter 120ms ease;pointer-events:none;}
+.lc-plush.is-targeted .lc-plush__target{opacity:calc(.52 + var(--target-strength, 0) * .55);transform:translate(-50%,-50%) scale(calc(.98 + var(--target-strength, 0) * .34));filter:blur(calc(1.2px - var(--target-strength, 0) * .35px));animation:lc-target-pulse 900ms ease-in-out infinite alternate;}
+.lc-plush.is-targeted img{filter:brightness(1.03) drop-shadow(0 0 16px rgba(255,240,164,.58)) drop-shadow(0 0 6px rgba(255,255,255,.34));}
+@keyframes lc-target-pulse{from{opacity:calc(.50 + var(--target-strength, 0) * .46)}to{opacity:calc(.68 + var(--target-strength, 0) * .58)}}
 .lc-plush.is-contacted{animation:lc-plush-contact 180ms ease-out 1}@keyframes lc-plush-contact{0%{margin-top:0}42%{margin-top:1.2%;transform:translate(-50%,-79%) rotate(var(--rot)) scale(calc(var(--scale)*.968))}100%{margin-top:0}}
 .lc-gameplay-stage.is-contact-hit .lc-plush-field{animation:lc-field-tremor 150ms ease-out 1}@keyframes lc-field-tremor{0%{transform:translateX(0)}30%{transform:translateX(.25%)}60%{transform:translateX(-.22%)}100%{transform:translateX(0)}}
 .lc-plush.is-carried{z-index:160!important}
