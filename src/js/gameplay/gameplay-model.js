@@ -1,4 +1,4 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.05';
+import { PLUSH_TYPES } from './stage-data.js?v=003.06';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
 export function depthScale(z){ return 0.80 + clamp(z,0,1)*0.34; }
@@ -14,21 +14,25 @@ export function projectClaw(x,z){
   const left=50 + (xx-.5)*width;
   return { left, top: 12.1 + zz*5.45, scale: 0.83 + zz*0.17, zIndex: 126 + Math.round(zz*16) };
 }
+// The real chute occupies the front-left footprint. Rear prizes can sit visually behind it;
+// front prizes cannot occupy its physical footprint or perch on the chute wall.
 export function leftPileBoundary(z,bounds={}){
-  const base=bounds.minX ?? 0.32;
-  if(z >= 0.76) return Math.max(base, 0.43);
-  if(z >= 0.62) return Math.max(base, 0.39);
-  if(z >= 0.48) return Math.max(base, 0.35);
+  const zz=clamp(z,0,1);
+  const base=bounds.minX ?? .28;
+  if(zz>=.76) return Math.max(base,.45);
+  if(zz>=.62) return Math.max(base,.40);
+  if(zz>=.46) return Math.max(base,.35);
+  if(zz>=.30) return Math.max(base,.30);
   return base;
 }
 export function constrainPlushToPile(plush,bounds={}){
-  const z=clamp(plush.z,bounds.minZ ?? 0.14,bounds.maxZ ?? 0.91);
+  const z=clamp(plush.z,bounds.minZ ?? .14,bounds.maxZ ?? .91);
   const minX=leftPileBoundary(z,bounds);
   return {
     ...plush,
-    x:clamp(plush.x,minX,bounds.maxX ?? 0.90),
+    x:clamp(plush.x,minX,bounds.maxX ?? .89),
     z,
-    elevation:clamp(plush.elevation ?? 0,0,.18),
+    elevation:clamp(plush.elevation ?? 0,0,.038),
     rotation:clamp(plush.rotation ?? 0,-18,18)
   };
 }
@@ -39,8 +43,8 @@ export function chooseGrabOutcome({plush,claw,grabRadius,random=Math.random}){
   const type=PLUSH_TYPES[plush.type];
   const quality=clamp(1-d/grabRadius,0,1);
   const centerBias=clamp(1-Math.abs((plush.rotation||0))/36,0.70,1);
-  const elevationBias=clamp(1 + (plush.elevation||0)*1.6, 1, 1.25);
-  const secureChance=clamp(.12+quality*.86+type.balance*.11-type.difficulty-(type.weight-1)*.10, .08,.94)*centerBias*elevationBias;
+  const elevationBias=clamp(1 + (plush.elevation||0)*2.0,1,1.08);
+  const secureChance=clamp(.12+quality*.86+type.balance*.11-type.difficulty-(type.weight-1)*.10,.08,.94)*centerBias*elevationBias;
   const roll=clamp(Number(random())||0,0,.999999);
   if(roll<secureChance) return 'secure';
   if(quality>.55 && roll<secureChance+.24) return 'late-slip';
@@ -51,16 +55,16 @@ export function shufflePlush(plush,{now,index,bounds,intensity=1}){
   const type=PLUSH_TYPES[plush.type];
   const phase=now/245+index*1.79;
   const mobility=(1/type.weight)*(.85+type.balance*.2)*intensity;
-  const dx=Math.sin(phase)*.010*mobility + Math.sin(phase*.41)*.0046;
-  const dz=Math.cos(phase*.77)*.008*mobility;
-  const de=Math.sin(phase*.59+index)*.0018*mobility;
+  const dx=Math.sin(phase)*.0092*mobility + Math.sin(phase*.41)*.0040;
+  const dz=Math.cos(phase*.77)*.0073*mobility;
+  const de=Math.sin(phase*.59+index)*.00065*mobility;
   return constrainPlushToPile({
     ...plush,
     x:plush.x+dx,
     z:plush.z+dz,
     elevation:(plush.elevation||0)+de,
-    rotation:plush.rotation+Math.sin(phase*1.11)*1.8*mobility
-  }, bounds);
+    rotation:plush.rotation+Math.sin(phase*1.11)*1.65*mobility
+  },bounds);
 }
 export function applyCaptureProgress(current,plushType,now=Date.now()){
   const type=PLUSH_TYPES[plushType]; if(!type) return current;

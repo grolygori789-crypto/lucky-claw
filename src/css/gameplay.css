@@ -1,4 +1,4 @@
-/* Lucky Claw — Build 003.05 premium Stage 1 presentation */
+/* Lucky Claw — Build 003.06 premium Stage 1 presentation */
 body[data-screen="gameplay"] .cabinet-stage,
 body[data-screen="gameplay"] .cabinet-title-claw-system,
 body[data-screen="gameplay"] .cabinet-title-plush,
@@ -10,7 +10,7 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
   position:absolute;top:50%;left:50%;width:max(100vw,calc(100dvh * 841 / 1870));aspect-ratio:841/1870;
   transform:translate(-50%,-50%);overflow:hidden;isolation:isolate;color:#6f463f;
   font-family:ui-rounded,"SF Pro Rounded","Noto Sans Thai","Noto Sans JP",system-ui,sans-serif;
-  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.05") center/100% 100% no-repeat;
+  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.06") center/100% 100% no-repeat;
 }
 .lc-gameplay-stage::before{content:"";position:absolute;z-index:175;inset:0;pointer-events:none;background:
   linear-gradient(90deg,rgba(255,255,255,.10),transparent 8% 91%,rgba(255,255,255,.09)),
@@ -75,11 +75,11 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
 
 /* ---------- dense perspective plush pile ---------- */
 .lc-plush-field{position:absolute;z-index:84;inset:0;pointer-events:none;}
-.lc-plush{position:absolute;width:27.6%;transform:translate(-50%,-79%) rotate(var(--rot)) scale(var(--scale));transform-origin:50% 88%;transition:left 220ms linear,top 220ms linear,transform 240ms ease,filter 220ms ease,opacity 240ms ease;will-change:left,top,transform;filter:brightness(var(--bright,1)) drop-shadow(0 10px 7px rgba(83,47,41,.22));}
+.lc-plush{position:absolute;width:29.0%;transform:translate(-50%,-79%) rotate(var(--rot)) scale(var(--scale));transform-origin:50% 88%;transition:left 220ms linear,top 220ms linear,transform 240ms ease,filter 220ms ease,opacity 240ms ease;will-change:left,top,transform;filter:brightness(var(--bright,1)) drop-shadow(0 10px 7px rgba(83,47,41,.22));}
 .lc-plush img{position:relative;z-index:2;width:100%;height:auto;display:block;pointer-events:none;}
-.lc-plush__target{position:absolute;z-index:1;left:50%;top:58%;width:96%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.72);background:radial-gradient(circle,rgba(255,254,222,.78) 0,rgba(255,241,149,.46) 21%,rgba(255,223,112,.22) 39%,rgba(255,223,112,.10) 54%,rgba(255,255,255,0) 74%);opacity:0;filter:blur(1.15px);transition:opacity 120ms ease,transform 120ms ease,filter 120ms ease;pointer-events:none;}
-.lc-plush.is-targeted .lc-plush__target{opacity:calc(.52 + var(--target-strength, 0) * .55);transform:translate(-50%,-50%) scale(calc(.98 + var(--target-strength, 0) * .34));filter:blur(calc(1.2px - var(--target-strength, 0) * .35px));animation:lc-target-pulse 900ms ease-in-out infinite alternate;}
-.lc-plush.is-targeted img{filter:brightness(1.03) drop-shadow(0 0 16px rgba(255,240,164,.58)) drop-shadow(0 0 6px rgba(255,255,255,.34));}
+.lc-plush__target{position:absolute;z-index:1;left:50%;top:58%;width:96%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.72);background:radial-gradient(circle,rgba(255,254,222,.78) 0,rgba(255,241,149,.46) 21%,rgba(255,223,112,.22) 39%,rgba(255,223,112,.10) 54%,rgba(255,255,255,0) 74%);opacity:0;filter:blur(1.15px);transition:opacity 120ms ease,transform 120ms ease,filter 120ms ease;pointer-events:none;border:1.5px solid rgba(255,244,197,.88);box-shadow:0 0 12px rgba(255,213,104,.72),0 0 24px rgba(255,177,115,.34),inset 0 0 12px rgba(255,244,207,.18);}
+.lc-plush.is-targeted .lc-plush__target{opacity:calc(.70 + var(--target-strength, 0) * .30);transform:translate(-50%,-50%) scale(calc(1.06 + var(--target-strength, 0) * .36));filter:blur(calc(1.0px - var(--target-strength, 0) * .25px));animation:lc-target-pulse 760ms ease-in-out infinite alternate;}
+.lc-plush.is-targeted img{filter:brightness(1.055) drop-shadow(0 0 3px rgba(255,252,231,.95)) drop-shadow(0 0 11px rgba(255,217,105,.88)) drop-shadow(0 0 22px rgba(255,183,113,.52));}
 @keyframes lc-target-pulse{from{opacity:calc(.50 + var(--target-strength, 0) * .46)}to{opacity:calc(.68 + var(--target-strength, 0) * .58)}}
 .lc-plush.is-contacted{animation:lc-plush-contact 180ms ease-out 1}@keyframes lc-plush-contact{0%{margin-top:0}42%{margin-top:1.2%;transform:translate(-50%,-79%) rotate(var(--rot)) scale(calc(var(--scale)*.968))}100%{margin-top:0}}
 .lc-gameplay-stage.is-contact-hit .lc-plush-field{animation:lc-field-tremor 150ms ease-out 1}@keyframes lc-field-tremor{0%{transform:translateX(0)}30%{transform:translateX(.25%)}60%{transform:translateX(-.22%)}100%{transform:translateX(0)}}
@@ -88,7 +88,7 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
 .lc-plush.is-falling{animation:none!important}.lc-plush.is-chute-fall{transition:left 300ms ease,top 620ms cubic-bezier(.48,.01,.92,.45),width 360ms ease,opacity 140ms linear!important}.lc-plush.is-captured{opacity:0}
 
 /* ---------- recessed mechanical floor agitator ---------- */
-.lc-agitator{position:absolute;z-index:82;left:24.4%;width:64.2%;top:61.25%;height:3.55%;border-radius:12px;border:1px solid rgba(132,77,43,.62);background:linear-gradient(180deg,#fff0d7 0%,#dfb076 16%,#b87943 48%,#e7bd83 72%,#fff0d5 100%);box-shadow:inset 0 2px 2px rgba(255,255,255,.85),inset 0 -3px 6px rgba(90,49,31,.16),0 2px 5px rgba(74,41,33,.14),0 0 0 2px rgba(255,231,202,.36);pointer-events:none;overflow:hidden;transform-origin:50% 50%}
+.lc-agitator{position:absolute;z-index:82;left:33.2%;width:56.3%;top:59.85%;height:4.15%;border-radius:12px;border:1px solid rgba(132,77,43,.62);background:linear-gradient(180deg,#fff0d7 0%,#dfb076 16%,#b87943 48%,#e7bd83 72%,#fff0d5 100%);box-shadow:inset 0 2px 2px rgba(255,255,255,.85),inset 0 -3px 6px rgba(90,49,31,.16),0 2px 5px rgba(74,41,33,.14),0 0 0 2px rgba(255,231,202,.36);pointer-events:none;overflow:hidden;transform-origin:50% 50%}
 .lc-agitator::before{content:"";position:absolute;left:8%;right:8%;top:22%;bottom:22%;border-radius:999px;border:1px solid rgba(89,57,43,.48);background:repeating-linear-gradient(90deg,#5d4a41 0 3.2%,#d5aa70 3.2% 6.4%,#866247 6.4% 9.6%);box-shadow:inset 0 2px 5px rgba(39,29,26,.35),0 1px rgba(255,255,255,.55)}
 .lc-agitator::after{content:"";position:absolute;inset:7%;border-radius:6px;border:1px solid rgba(255,246,225,.35);pointer-events:none}
 .lc-agitator i{position:absolute;z-index:2;top:50%;width:2.3%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff0bd 0 18%,#b47a38 24% 58%,#704325 65% 100%);box-shadow:0 1px 1px rgba(55,32,27,.25)}
@@ -122,7 +122,7 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
 .lc-hw-button__icon{width:30%;aspect-ratio:1;display:grid;place-items:center;filter:drop-shadow(0 1px 1px rgba(80,32,50,.24))}.lc-hw-button__icon svg{width:100%;height:100%;fill:none;stroke:#fff8f2;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
 .lc-hw-button__text{margin-top:2px;font-size:clamp(5.2px,1.24vw,8.2px);font-weight:900;letter-spacing:.035em;text-shadow:0 1px 2px rgba(80,32,50,.28);max-width:92%;white-space:nowrap;}
 .lc-shuffle-budget{position:absolute;z-index:4;right:-3%;bottom:-1%;min-width:24%;padding:1px 3px;border-radius:999px;background:#f9e7d0;color:#885950;border:1px solid rgba(161,103,65,.32);font-size:clamp(4.5px,1.05vw,7px);font-weight:900;font-variant-numeric:tabular-nums;}
-.lc-hw-button:disabled{filter:saturate(.6) opacity(.66)}
+.lc-hw-button:not(:disabled){opacity:1;filter:saturate(1.04)}.lc-hw-button:disabled{filter:saturate(.48) brightness(.94);opacity:.54}
 
 /* ---------- feedback / result ---------- */
 .lc-feedback{position:absolute;z-index:200;left:50%;top:29.2%;transform:translate(-50%,-50%) scale(.92);min-width:20%;padding:6px 12px;border-radius:999px;text-align:center;color:#fff3e5;background:linear-gradient(180deg,rgba(122,24,35,.93),rgba(93,16,27,.92));border:1px solid rgba(231,181,124,.52);box-shadow:0 6px 16px rgba(80,36,36,.16),inset 0 1px rgba(255,235,218,.18);opacity:0;pointer-events:none;font-weight:900;font-size:clamp(8px,2.3vw,14px);backdrop-filter:blur(5px)}.lc-feedback.is-showing{animation:lc-feedback 900ms ease both}@keyframes lc-feedback{0%{opacity:0;transform:translate(-50%,-40%) scale(.92)}18%,72%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-62%) scale(.98)}}
