@@ -1,531 +1,119 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003';
-import { ArcadeSfx } from './sfx.js?v=003';
-import { clamp, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.02';
+import { ArcadeSfx } from './sfx.js?v=003.02';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.02';
 
-const COPY = Object.freeze({
-  en: Object.freeze({ stage: 'STAGE', score: 'SCORE', target: 'TARGET', best: 'BEST', shuffle: 'SHUFFLE', drop: 'DROP', menu: 'MENU', clear: 'STAGE CLEAR', fail: 'TIME UP', replay: 'PLAY AGAIN', points: 'Claw Points', newBest: 'NEW HIGH SCORE', grip: 'Great grip!', lateSlip: 'So close!', earlySlip: 'Slipped!', miss: 'Missed!', ready: 'READY' }),
-  th: Object.freeze({ stage: 'ด่าน', score: 'คะแนน', target: 'เป้าหมาย', best: 'สูงสุด', shuffle: 'เขย่า', drop: 'คีบ', menu: 'เมนู', clear: 'ผ่านด่านแล้ว', fail: 'หมดเวลา', replay: 'เล่นอีกครั้ง', points: 'Claw Points', newBest: 'HIGH SCORE ใหม่', grip: 'คีบอยู่!', lateSlip: 'เกือบแล้ว!', earlySlip: 'หลุด!', miss: 'พลาด!', ready: 'พร้อม' }),
-  ja: Object.freeze({ stage: 'ステージ', score: 'スコア', target: '目標', best: 'ベスト', shuffle: 'シャッフル', drop: 'ドロップ', menu: 'メニュー', clear: 'ステージクリア', fail: 'タイムアップ', replay: 'もう一度', points: 'Claw Points', newBest: 'ハイスコア更新', grip: 'ナイスキャッチ!', lateSlip: 'おしい!', earlySlip: 'すべった!', miss: 'ミス!', ready: 'READY' }),
+const COPY=Object.freeze({
+  en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'GREAT GRIP!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
+  th:{score:'คะแนน',stage:'ด่าน',min:'คะแนนขั้นต่ำ',high:'สถิติสูงสุด',move:'เลื่อน',shuffle:'คนตุ๊กตา',drop:'คีบ',menu:'เมนู',clear:'ผ่านด่าน',fail:'หมดเวลา',replay:'เล่นอีกครั้ง',points:'CLAW POINTS',newBest:'สถิติใหม่',time:'เวลา',grip:'คีบอยู่!',lateSlip:'เกือบแล้ว!',earlySlip:'หลุด!',miss:'พลาด!'},
+  ja:{score:'スコア',stage:'ステージ',min:'目標スコア',high:'ハイスコア',move:'移動',shuffle:'シャッフル',drop:'キャッチ',menu:'メニュー',clear:'ステージクリア',fail:'タイムアップ',replay:'もう一度',points:'CLAW POINTS',newBest:'ハイスコア更新',time:'タイム',grip:'ナイスキャッチ!',lateSlip:'おしい!',earlySlip:'すべった!',miss:'ミス!'}
 });
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
+function c(){return COPY[lang()]||COPY.en;}
+function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.02`;}
 
-const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+function markup(){const t=c();return `
+<div class="lc-gameplay-stage" data-game-stage data-claw-state="idle">
+  <div class="lc-game-hud" aria-label="Game status"><span class="lc-hud-fascia" aria-hidden="true"></span>
+    <div class="lc-hud-module lc-hud-score"><span class="lc-hud-label" data-copy-score>${t.score}</span><strong class="lc-hud-value" data-game-score>0</strong></div>
+    <div class="lc-hud-module lc-hud-stage"><span class="lc-hud-label" data-copy-stage>${t.stage}</span><strong class="lc-hud-value" data-game-stage-value>1</strong></div>
+    <div class="lc-hud-module lc-hud-target"><span class="lc-hud-label" data-copy-min>${t.min}</span><strong class="lc-hud-value" data-game-target>600</strong><span class="lc-hud-best"><span data-copy-high>${t.high}</span><b data-game-best>0</b></span></div>
+  </div>
+  <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
+  <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
+  <div class="lc-claw-rig" data-game-claw aria-hidden="true">
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.02" alt="" draggable="false"></div>
+    <div class="lc-claw-shaft"></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.02" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.02" alt="" draggable="false"></div>
+  </div>
+  <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="lc-plush-field" data-plush-field></div>
+  <div class="lc-chute-glow" data-chute-glow></div>
+  <div class="lc-prize-delivery" data-prize-delivery><img alt="" draggable="false"></div>
+  <div class="lc-feedback" data-game-feedback aria-live="polite"></div>
+  <div class="lc-control-deck">
+    <div class="lc-joystick" data-game-joystick role="application" tabindex="0" aria-label="${t.move}"><span class="lc-joystick__well"></span><span class="lc-joystick__arrow lc-joystick__arrow--up">▲</span><span class="lc-joystick__arrow lc-joystick__arrow--right">▶</span><span class="lc-joystick__arrow lc-joystick__arrow--down">▼</span><span class="lc-joystick__arrow lc-joystick__arrow--left">◀</span><span class="lc-joystick__stem"></span><span class="lc-joystick__knob"></span><span class="lc-control-label" data-copy-move>${t.move}</span></div>
+    <div class="lc-game-timer"><span class="lc-timer-label" data-copy-time>${t.time}</span><div class="lc-game-timer__screen" data-game-timer>03:00</div></div>
+    <button class="lc-hw-button lc-hw-button--shuffle" type="button" data-game-shuffle><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h3.2c4.7 0 5.4 10 10.8 10H21"/><path d="m18 14 3 3-3 3"/><path d="M5 17h3.2c1.8 0 3.1-1.7 4.2-3.7M14.2 10.7C15.5 8.4 16.8 7 19 7h2"/><path d="m18 4 3 3-3 3"/></svg></span><span class="lc-hw-button__text" data-copy-shuffle>${t.shuffle}</span></span><span class="lc-shuffle-budget" data-shuffle-left>15</span></button>
+    <button class="lc-hw-button lc-hw-button--drop" type="button" data-game-drop><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11.5 4.5 4.6 4.5-4.6"/><path d="M6 20h12"/></svg></span><span class="lc-hw-button__text" data-copy-drop>${t.drop}</span></span></button>
+  </div>
+  <div class="lc-round-result" data-round-result hidden><div class="lc-round-result__card"><h2 data-result-title>${t.clear}</h2><div class="lc-round-result__row"><span data-copy-score>${t.score}</span><strong data-result-score>0</strong></div><div class="lc-round-result__row"><span data-copy-high>${t.high}</span><strong data-result-best>0</strong></div><div class="lc-round-result__row"><span>${t.points}</span><strong data-result-points>0</strong></div><div class="lc-round-result__actions"><button type="button" data-result-replay>${t.replay}</button><button type="button" data-result-menu>${t.menu}</button></div></div></div>
+</div>`;}
 
-function language() {
-  const value = document.documentElement.lang?.toLowerCase() || 'en';
-  if (value.startsWith('th')) return 'th';
-  if (value.startsWith('ja')) return 'ja';
-  return 'en';
-}
-
-function copy() {
-  return COPY[language()] || COPY.en;
-}
-
-function formatTime(seconds) {
-  const safe = Math.max(0, Math.ceil(seconds));
-  return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, '0')}`;
-}
-
-function svgFor(type, uid) {
-  const common = `viewBox="0 0 160 180" role="img" aria-hidden="true" focusable="false"`;
-  if (type === 'signature') return `<svg ${common}><defs><linearGradient id="fur-${uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1d2a7"/><stop offset="1" stop-color="#c58b58"/></linearGradient></defs><ellipse cx="80" cy="149" rx="47" ry="22" fill="#b67d56" opacity=".18"/><ellipse cx="80" cy="104" rx="48" ry="51" fill="url(#fur-${uid})"/><ellipse cx="80" cy="111" rx="34" ry="38" fill="#fff5e7"/><path d="M45 66c-21 8-23 39-7 51 10-20 17-31 28-42z" fill="#9b6848"/><path d="M115 66c21 8 23 39 7 51-10-20-17-31-28-42z" fill="#9b6848"/><circle cx="80" cy="61" r="43" fill="url(#fur-${uid})"/><path d="M55 40c9-18 37-20 50 0-17 8-33 8-50 0z" fill="#fff5e7"/><ellipse cx="80" cy="76" rx="25" ry="22" fill="#fff8ec"/><circle cx="64" cy="59" r="5" fill="#2d2522"/><circle cx="96" cy="59" r="5" fill="#2d2522"/><ellipse cx="80" cy="73" rx="7" ry="5" fill="#3c2a25"/><path d="M70 82c7 7 13 7 20 0" fill="none" stroke="#744d42" stroke-width="3" stroke-linecap="round"/></svg>`;
-  if (type === 'black') return `<svg ${common}><defs><linearGradient id="fur-${uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4d4650"/><stop offset="1" stop-color="#17171d"/></linearGradient></defs><ellipse cx="80" cy="149" rx="47" ry="22" fill="#16131a" opacity=".23"/><ellipse cx="80" cy="105" rx="48" ry="52" fill="url(#fur-${uid})"/><path d="M45 66c-22 9-23 40-7 52 10-21 18-32 29-43z" fill="#17161c"/><path d="M115 66c22 9 23 40 7 52-10-21-18-32-29-43z" fill="#17161c"/><circle cx="80" cy="61" r="43" fill="url(#fur-${uid})"/><ellipse cx="80" cy="77" rx="25" ry="22" fill="#3d3942"/><circle cx="64" cy="59" r="5" fill="#f5ead7"/><circle cx="96" cy="59" r="5" fill="#f5ead7"/><ellipse cx="80" cy="73" rx="7" ry="5" fill="#111015"/><path d="M70 83c7 7 13 7 20 0" fill="none" stroke="#b7a6a0" stroke-width="3" stroke-linecap="round"/></svg>`;
-  if (type === 'bear') return `<svg ${common}><defs><linearGradient id="fur-${uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f26e6f"/><stop offset="1" stop-color="#b93646"/></linearGradient></defs><ellipse cx="80" cy="151" rx="51" ry="21" fill="#842d36" opacity=".17"/><circle cx="48" cy="40" r="21" fill="#b93646"/><circle cx="112" cy="40" r="21" fill="#b93646"/><ellipse cx="80" cy="108" rx="54" ry="56" fill="url(#fur-${uid})"/><circle cx="80" cy="63" r="45" fill="url(#fur-${uid})"/><ellipse cx="80" cy="78" rx="25" ry="20" fill="#f7c3ab"/><circle cx="64" cy="60" r="5" fill="#3d2526"/><circle cx="96" cy="60" r="5" fill="#3d2526"/><ellipse cx="80" cy="75" rx="8" ry="6" fill="#4c2a2d"/><path d="M80 80v8m-11 0c8 6 14 6 22 0" fill="none" stroke="#6d3738" stroke-width="3" stroke-linecap="round"/></svg>`;
-  if (type === 'chick') return `<svg ${common}><defs><linearGradient id="fur-${uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe87a"/><stop offset="1" stop-color="#e7b735"/></linearGradient></defs><ellipse cx="80" cy="150" rx="42" ry="18" fill="#b68b22" opacity=".16"/><ellipse cx="80" cy="109" rx="47" ry="51" fill="url(#fur-${uid})"/><circle cx="80" cy="66" r="42" fill="url(#fur-${uid})"/><path d="M80 19l-10 14 12-4 9 9 2-18z" fill="#e8bb32"/><circle cx="65" cy="62" r="5" fill="#342d20"/><circle cx="95" cy="62" r="5" fill="#342d20"/><path d="M71 76h18l-9 9z" fill="#ed8b3a"/><path d="M38 101c-16 11-17 30-3 39 7-14 14-23 24-29zM122 101c16 11 17 30 3 39-7-14-14-23-24-29z" fill="#e6b533"/></svg>`;
-  return `<svg ${common}><defs><linearGradient id="fur-${uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf8"/><stop offset="1" stop-color="#e5dcd7"/></linearGradient></defs><ellipse cx="80" cy="151" rx="46" ry="19" fill="#b9a7a0" opacity=".15"/><path d="M55 56C37 21 44 2 58 7c13 6 17 30 15 49z" fill="url(#fur-${uid})"/><path d="M105 56c18-35 11-54-3-49-13 6-17 30-15 49z" fill="url(#fur-${uid})"/><path d="M57 48C47 24 49 14 57 16c8 4 10 20 10 33zM103 48c10-24 8-34 0-32-8 4-10 20-10 33z" fill="#f2c3cb"/><ellipse cx="80" cy="111" rx="48" ry="52" fill="url(#fur-${uid})"/><circle cx="80" cy="67" r="42" fill="url(#fur-${uid})"/><circle cx="65" cy="65" r="5" fill="#393035"/><circle cx="95" cy="65" r="5" fill="#393035"/><ellipse cx="80" cy="78" rx="7" ry="5" fill="#d28c98"/><path d="M71 86c7 6 11 6 18 0" fill="none" stroke="#a56f78" stroke-width="3" stroke-linecap="round"/></svg>`;
-}
-
-function gameplayMarkup() {
-  const c = copy();
-  return `
-    <div class="lc-gameplay-stage" data-game-stage>
-      <div class="lc-game-chamber">
-        <div class="lc-game-hud" aria-label="Game status">
-          <div class="lc-hardware-display"><small data-game-stage-label>${c.stage}</small><strong data-game-stage-value>1</strong></div>
-          <div class="lc-hardware-display lc-hardware-display--score"><small>${c.score}</small><strong data-game-score>0</strong><span><b>${c.target}</b> <em data-game-target>600</em></span></div>
-          <div class="lc-hardware-display"><small>${c.best}</small><strong data-game-best>0</strong></div>
-        </div>
-        <div class="lc-game-rail" aria-hidden="true"><span></span><span></span></div>
-        <div class="lc-gameplay-claw" data-game-claw aria-hidden="true">
-          <div class="lc-claw-carriage"><i></i></div>
-          <div class="lc-claw-shaft"><span></span></div>
-          <div class="lc-claw-collar"></div>
-          <div class="lc-claw-hub"><i class="lc-claw-arm lc-claw-arm--left"></i><i class="lc-claw-arm lc-claw-arm--mid"></i><i class="lc-claw-arm lc-claw-arm--right"></i></div>
-        </div>
-        <div class="lc-shuffle-agitator" data-agitator aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="lc-prize-chute" aria-hidden="true"><span class="lc-prize-chute__rim"></span><span class="lc-prize-chute__well">LUCKY</span></div>
-        <div class="lc-plush-field" data-plush-field></div>
-        <div class="lc-game-feedback" data-game-feedback aria-live="polite"></div>
-      </div>
-      <div class="lc-game-controls">
-        <button class="lc-game-menu" type="button" data-game-menu>${c.menu}</button>
-        <div class="lc-game-joystick" data-game-joystick role="slider" aria-label="Joystick" aria-valuemin="27" aria-valuemax="90" aria-valuenow="57" tabindex="0"><span class="lc-game-joystick__base"></span><span class="lc-game-joystick__stem"></span><span class="lc-game-joystick__knob"></span></div>
-        <button class="lc-game-shuffle" type="button" data-game-shuffle><span>${c.shuffle}</span><b data-shuffle-left>15.0s</b></button>
-        <div class="lc-game-timer"><small>TIMER</small><strong data-game-timer>3:00</strong></div>
-        <button class="lc-game-drop" type="button" data-game-drop><span>↓</span><b>${c.drop}</b></button>
-      </div>
-      <div class="lc-round-result" data-round-result hidden>
-        <div class="lc-round-result__card">
-          <span class="lc-round-result__spark">✦</span>
-          <h2 data-result-title>${c.clear}</h2>
-          <p><span>${c.score}</span><strong data-result-score>0</strong></p>
-          <p><span>${c.best}</span><strong data-result-best>0</strong></p>
-          <p><span>${c.points}</span><strong data-result-points>0</strong></p>
-          <div class="lc-round-result__actions"><button type="button" data-result-replay>${c.replay}</button><button type="button" data-result-menu>${c.menu}</button></div>
-        </div>
-      </div>
-    </div>`;
-}
-
-export function ensureGameplayScreen() {
-  let screen = document.querySelector('.screen--gameplay');
-  if (!screen) {
-    screen = document.createElement('section');
-    screen.className = 'screen screen--gameplay';
-    screen.dataset.screen = 'gameplay';
-    screen.setAttribute('aria-label', 'Lucky Claw gameplay');
-    screen.setAttribute('aria-hidden', 'true');
-    screen.innerHTML = gameplayMarkup();
-    document.querySelector('#app')?.append(screen);
-  }
-  if (!document.querySelector('link[data-lc-gameplay-style]')) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = './src/css/gameplay.css?v=003';
-    link.dataset.lcGameplayStyle = 'true';
-    document.head.append(link);
-  }
+export function ensureGameplayScreen(){
+  let screen=document.querySelector('.screen--gameplay');
+  if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.02';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
-export function createGameplayController({ getState, persistState, onMenu, music }) {
-  const screen = ensureGameplayScreen();
-  const stageNode = screen.querySelector('[data-game-stage]');
-  const plushField = screen.querySelector('[data-plush-field]');
-  const clawNode = screen.querySelector('[data-game-claw]');
-  const joystick = screen.querySelector('[data-game-joystick]');
-  const shuffleButton = screen.querySelector('[data-game-shuffle]');
-  const dropButton = screen.querySelector('[data-game-drop]');
-  const agitator = screen.querySelector('[data-agitator]');
-  const feedback = screen.querySelector('[data-game-feedback]');
-  const result = screen.querySelector('[data-round-result]');
-  const sfx = new ArcadeSfx(() => getState()?.settings || {});
+export function createGameplayController({getState,persistState,onMenu,music}){
+  const screen=ensureGameplayScreen(), stageNode=screen.querySelector('[data-game-stage]'), field=screen.querySelector('[data-plush-field]'), clawNode=screen.querySelector('[data-game-claw]');
+  const joystick=screen.querySelector('[data-game-joystick]'), knob=screen.querySelector('.lc-joystick__knob'), stem=screen.querySelector('.lc-joystick__stem'), shuffleBtn=screen.querySelector('[data-game-shuffle]'), dropBtn=screen.querySelector('[data-game-drop]');
+  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
+  const sfx=new ArcadeSfx(()=>getState()?.settings||{});
+  const nodes={score:screen.querySelector('[data-game-score]'),target:screen.querySelector('[data-game-target]'),best:screen.querySelector('[data-game-best]'),timer:screen.querySelector('[data-game-timer]'),shuffleLeft:screen.querySelector('[data-shuffle-left]'),resultTitle:screen.querySelector('[data-result-title]'),resultScore:screen.querySelector('[data-result-score]'),resultBest:screen.querySelector('[data-result-best]'),resultPoints:screen.querySelector('[data-result-points]')};
+  let stage=getStage(1), plushes=[], score=0, claw={x:stage.claw.homeX,z:stage.claw.homeZ}, stateName='idle', roundToken=0, startedAt=0, remaining=180, shuffleRemaining=15, timerHandle=0, completed=false, expiring=false;
+  let joystickPointer=null, vector={x:0,z:0}, movementRaf=0, lastMoveAt=0, boundaryLatch='', shuffleHolding=false, shuffleRaf=0, shuffleLast=0, shuffleStepAt=0, attached=null;
 
-  let stage = getStage(1);
-  let plushes = [];
-  let score = 0;
-  let clawX = stage.claw.homeX;
-  let stateName = 'idle';
-  let roundToken = 0;
-  let timerHandle = 0;
-  let startedAt = 0;
-  let remaining = stage.durationSeconds;
-  let shuffleRemaining = stage.shuffleSeconds;
-  let shuffleHolding = false;
-  let shuffleTicker = 0;
-  let shuffleLastAt = 0;
-  let joystickDirection = 0;
-  let joystickFrame = 0;
-  let joystickLastAt = 0;
-  let expiring = false;
-  let completed = false;
+  function setCopy(){const t=c();screen.querySelectorAll('[data-copy-score]').forEach(n=>n.textContent=t.score);screen.querySelector('[data-copy-stage]').textContent=t.stage;screen.querySelector('[data-copy-min]').textContent=t.min;screen.querySelectorAll('[data-copy-high]').forEach(n=>n.textContent=t.high);screen.querySelector('[data-copy-move]').textContent=t.move;screen.querySelector('[data-copy-shuffle]').textContent=t.shuffle;screen.querySelector('[data-copy-drop]').textContent=t.drop;screen.querySelector('[data-copy-time]').textContent=t.time;joystick.setAttribute('aria-label',t.move);}
+  function hud(){nodes.score.textContent=String(score);nodes.target.textContent=String(stage.targetScore);nodes.best.textContent=String(Math.max(Number(getState()?.highScoresByStage?.[stage.id])||0,score));nodes.timer.textContent=fmt(remaining);nodes.shuffleLeft.textContent=String(Math.ceil(shuffleRemaining));stageNode.classList.toggle('is-urgent',remaining<=30&&remaining>0);const locked=stateName!=='idle'||expiring;dropBtn.disabled=locked;shuffleBtn.disabled=locked||shuffleRemaining<=0;}
+  function setFeedback(text){feedback.textContent=text;feedback.classList.remove('is-showing');void feedback.offsetWidth;feedback.classList.add('is-showing');}
+  function setShaft(v){stageNode.style.setProperty('--shaft-len',`${v}%`);}
+  function syncClaw(){const p=projectClaw(claw.x,claw.z);stageNode.style.setProperty('--claw-left',`${p.left}%`);stageNode.style.setProperty('--claw-top',`${p.top}%`);stageNode.style.setProperty('--claw-scale',String(p.scale));stageNode.style.setProperty('--claw-bright',String(.965+claw.z*.055));clawNode.style.zIndex=String(p.zIndex);if(attached)syncCarried();}
+  function renderOne(plush){const p=projectWorld(plush.x,plush.z),type=PLUSH_TYPES[plush.type];plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top-(plush.elevation||0)*100}%`;plush.node.style.zIndex=String(p.zIndex);plush.node.style.setProperty('--rot',`${plush.rotation}deg`);plush.node.style.setProperty('--scale',String(type.scale*p.scale));plush.node.style.setProperty('--bright',String(.95+plush.z*.065));}
+  function renderPlushes(){field.replaceChildren();plushes.forEach(plush=>{const n=document.createElement('div');n.className='lc-plush';n.dataset.plushId=plush.instanceId;const img=document.createElement('img');img.src=plushSrc(plush);img.alt='';img.draggable=false;n.append(img);plush.node=n;field.append(n);renderOne(plush);});}
+  function syncCarried(){if(!attached?.node)return;const p=projectClaw(claw.x,claw.z),type=PLUSH_TYPES[attached.type];attached.node.style.left=`${p.left}%`;attached.node.style.top=`${p.top+28.5*p.scale}%`;attached.node.style.zIndex='160';attached.node.style.setProperty('--scale',String(type.scale*(.71+.18*claw.z)));}
 
-  const nodes = {
-    score: screen.querySelector('[data-game-score]'),
-    target: screen.querySelector('[data-game-target]'),
-    best: screen.querySelector('[data-game-best]'),
-    timer: screen.querySelector('[data-game-timer]'),
-    shuffleLeft: screen.querySelector('[data-shuffle-left]'),
-    resultTitle: screen.querySelector('[data-result-title]'),
-    resultScore: screen.querySelector('[data-result-score]'),
-    resultBest: screen.querySelector('[data-result-best]'),
-    resultPoints: screen.querySelector('[data-result-points]'),
-  };
+  function setJoystickVisual(dx,dy){knob.style.transform=`translate(-50%,-50%) translate(${dx*13}px,${dy*11}px)`;stem.style.transform=`translate(-50%,-22%) rotateZ(${dx*13}deg) rotateX(${8-dy*17}deg)`;}
+  function updateVectorFromEvent(e){const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=(e.clientX-cx)/(r.width*.35),dy=(e.clientY-cy)/(r.height*.34),m=Math.hypot(dx,dy);if(m<.14){vector={x:0,z:0};setJoystickVisual(0,0);return;}const q=Math.min(1,m);vector={x:dx/m*q,z:dy/m*q};setJoystickVisual(vector.x,vector.z);}
+  function movementLoop(now){if((Math.abs(vector.x)+Math.abs(vector.z))<.03||stateName!=='idle'||expiring){sfx.moveStop();movementRaf=0;lastMoveAt=0;return;}if(!lastMoveAt)lastMoveAt=now;const dt=Math.min(.035,(now-lastMoveAt)/1000);lastMoveAt=now;sfx.moveStart(claw.z);sfx.movePitch(claw.z,Math.hypot(vector.x,vector.z));const old={...claw};claw.x=clamp(claw.x+vector.x*stage.claw.speedX*dt,stage.claw.minX,stage.claw.maxX);claw.z=clamp(claw.z+vector.z*stage.claw.speedZ*dt,stage.claw.minZ,stage.claw.maxZ);let hit='';if(claw.x===stage.claw.minX&&vector.x<0)hit='l';if(claw.x===stage.claw.maxX&&vector.x>0)hit='r';if(claw.z===stage.claw.minZ&&vector.z<0)hit='b';if(claw.z===stage.claw.maxZ&&vector.z>0)hit='f';if(hit&&hit!==boundaryLatch)sfx.endStop();boundaryLatch=hit||'';if(old.x!==claw.x||old.z!==claw.z)syncClaw();movementRaf=requestAnimationFrame(movementLoop);}
+  function ensureMoveLoop(){if(!movementRaf)movementRaf=requestAnimationFrame(movementLoop);}
+  function releaseJoystick(){joystickPointer=null;vector={x:0,z:0};setJoystickVisual(0,0);sfx.moveStop();lastMoveAt=0;boundaryLatch='';}
+  joystick.addEventListener('pointerdown',e=>{if(stateName!=='idle'||expiring)return;e.preventDefault();joystickPointer=e.pointerId;joystick.setPointerCapture?.(e.pointerId);updateVectorFromEvent(e);ensureMoveLoop();});
+  joystick.addEventListener('pointermove',e=>{if(e.pointerId!==joystickPointer)return;updateVectorFromEvent(e);ensureMoveLoop();});
+  joystick.addEventListener('pointerup',releaseJoystick);joystick.addEventListener('pointercancel',releaseJoystick);
+  joystick.addEventListener('keydown',e=>{if(stateName!=='idle')return;const map={ArrowLeft:{x:-1,z:0},ArrowRight:{x:1,z:0},ArrowUp:{x:0,z:-1},ArrowDown:{x:0,z:1}};if(!map[e.key])return;e.preventDefault();vector=map[e.key];setJoystickVisual(vector.x,vector.z);ensureMoveLoop();});
+  joystick.addEventListener('keyup',e=>{if(e.key.startsWith('Arrow'))releaseJoystick();});
 
-  function setClawX(value, animate = true) {
-    clawX = clamp(value, 8, 92);
-    stageNode.style.setProperty('--claw-x', `${clawX}%`);
-    stageNode.classList.toggle('no-claw-x-transition', !animate);
-    joystick.setAttribute('aria-valuenow', String(Math.round(clawX)));
-  }
+  function nearest(){let best=null,d=Infinity;for(const p of plushes){if(p.captured)continue;const q=worldDistance(p,claw);if(q<d){best=p;d=q;}}return {plush:best,distance:d};}
+  function contactPlush(plush,distance){if(!plush)return;plush.node.classList.add('is-contacted');setTimeout(()=>plush.node?.classList.remove('is-contacted'),220);const strength=clamp(1-distance/stage.claw.grabRadius,.25,1);sfx.contact(strength);}
+  function attach(plush){attached=plush;plush.node.classList.add('is-carried');syncCarried();}
+  function detach(plush){plush.node.classList.remove('is-carried');attached=null;renderOne(plush);}
+  async function animateClawTo(x,z,duration,token){const sx=claw.x,sz=claw.z,start=performance.now();return new Promise(resolve=>{const step=now=>{if(token!==roundToken){resolve();return;}const t=clamp((now-start)/duration,0,1),e=1-Math.pow(1-t,3);claw.x=sx+(x-sx)*e;claw.z=sz+(z-sz)*e;syncClaw();sfx.movePitch(claw.z,.75);if(t<1)requestAnimationFrame(step);else resolve();};sfx.moveStart(claw.z);requestAnimationFrame(step);});}
+  async function fallBack(plush,token,late=false){if(!plush)return;plush.node.classList.remove('is-carried');attached=null;plush.node.classList.add('is-falling');const p=projectWorld(plush.x,plush.z);plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top}%`;plush.node.style.setProperty('--scale',String(PLUSH_TYPES[plush.type].scale*p.scale));await sleep(late?410:300);if(token!==roundToken)return;sfx.plushImpact(late?.75:.45);plush.node.classList.remove('is-falling');renderOne(plush);}
 
-  function setShaft(percent) {
-    stageNode.style.setProperty('--shaft-len', `${percent}%`);
-  }
-
-  function refreshCopy() {
-    const c = copy();
-    screen.querySelector('[data-game-stage-label]').textContent = c.stage;
-    screen.querySelector('.lc-hardware-display--score small').textContent = c.score;
-    screen.querySelector('.lc-hardware-display--score span b').textContent = c.target;
-    screen.querySelector('.lc-hardware-display:last-child small').textContent = c.best;
-    screen.querySelector('[data-game-menu]').textContent = c.menu;
-    shuffleButton.querySelector('span').textContent = c.shuffle;
-    dropButton.querySelector('b').textContent = c.drop;
-    screen.querySelector('[data-result-replay]').textContent = c.replay;
-    screen.querySelector('[data-result-menu]').textContent = c.menu;
-  }
-
-  function renderPlushes() {
-    plushField.replaceChildren();
-    plushes.forEach((plush) => {
-      const type = PLUSH_TYPES[plush.type];
-      const node = document.createElement('div');
-      node.className = `lc-plush lc-plush--${plush.type} lc-plush--${plush.layer}`;
-      node.dataset.plushId = plush.instanceId;
-      node.style.setProperty('--x', `${plush.x}%`);
-      node.style.setProperty('--y', `${plush.y}%`);
-      node.style.setProperty('--rot', `${plush.rotation}deg`);
-      node.style.setProperty('--scale', String(type.scale));
-      node.innerHTML = svgFor(plush.type, plush.instanceId);
-      plush.node = node;
-      plushField.append(node);
-    });
-  }
-
-  function refreshHud() {
-    nodes.score.textContent = String(score);
-    nodes.target.textContent = String(stage.targetScore);
-    const saved = Number(getState()?.highScoresByStage?.[stage.id]) || 0;
-    nodes.best.textContent = String(Math.max(saved, score));
-    nodes.timer.textContent = formatTime(remaining);
-    nodes.shuffleLeft.textContent = `${Math.max(0, shuffleRemaining).toFixed(1)}s`;
-    stageNode.classList.toggle('is-urgent', remaining <= 30 && remaining > 0);
-    shuffleButton.disabled = shuffleRemaining <= 0 || stateName !== 'idle' || expiring;
-    dropButton.disabled = stateName !== 'idle' || expiring;
-  }
-
-  function setFeedback(text, kind = '') {
-    feedback.textContent = text;
-    feedback.dataset.kind = kind;
-    feedback.classList.remove('is-showing');
-    void feedback.offsetWidth;
-    feedback.classList.add('is-showing');
-  }
-
-  function attachPlush(plush, x = clawX, y = 44) {
-    plush.node.classList.add('is-carried');
-    plush.node.style.setProperty('--x', `${x}%`);
-    plush.node.style.setProperty('--y', `${y}%`);
-    plush.node.style.setProperty('--rot', '0deg');
-  }
-
-  function moveCarried(plush, x, y, duration = 420) {
-    plush.node.style.setProperty('--carry-ms', `${duration}ms`);
-    plush.node.style.setProperty('--x', `${x}%`);
-    plush.node.style.setProperty('--y', `${y}%`);
-  }
-
-  function detachToPile(plush, x, y, rotation = 0) {
-    plush.x = clamp(x, stage.pileBounds.minX, stage.pileBounds.maxX);
-    plush.y = clamp(y, stage.pileBounds.minY, stage.pileBounds.maxY);
-    plush.rotation = rotation;
-    plush.node.classList.remove('is-carried');
-    plush.node.style.setProperty('--x', `${plush.x}%`);
-    plush.node.style.setProperty('--y', `${plush.y}%`);
-    plush.node.style.setProperty('--rot', `${plush.rotation}deg`);
-  }
-
-  function nearestPlush() {
-    const live = plushes.filter((plush) => !plush.captured);
-    let nearest = null;
-    let distance = Infinity;
-    live.forEach((plush) => {
-      const d = Math.abs(plush.x - clawX);
-      if (d < distance) { nearest = plush; distance = d; }
-    });
-    return { plush: nearest, distance };
-  }
-
-  function chooseOutcome(plush, distance) {
-    return chooseGrabOutcome({ plush, distance, grabRadius: stage.claw.grabRadius });
-  }
-
-  function persistCapture(plush) {
-    persistState(applyCaptureProgress(getState(), plush.type));
-  }
-
-  async function resolveDrop(token) {
-    if (stateName !== 'idle' || expiring) return;
-    stateName = 'dropping';
-    refreshHud();
-    sfx.button(true);
-    stageNode.dataset.clawState = 'dropping';
-    setShaft(78);
-    sfx.motor(0.72, true);
-    await sleep(720);
-    if (token !== roundToken) return;
-
-    stageNode.dataset.clawState = 'closing';
-    sfx.clawClose();
-    await sleep(260);
-    if (token !== roundToken) return;
-
-    const { plush, distance } = nearestPlush();
-    const outcome = chooseOutcome(plush, distance);
-    stageNode.dataset.clawState = 'lifting';
-    setShaft(9);
-    sfx.motor(0.68, false);
-
-    if (outcome !== 'miss' && plush) {
-      attachPlush(plush, clawX, plush.y);
-      sfx.catch();
-      moveCarried(plush, clawX, 28, 650);
+  async function dropSequence(token){if(stateName!=='idle'||expiring)return;releaseJoystick();stateName='dropping';hud();sfx.dropRelay();stageNode.dataset.clawState='dropping';const aim=nearest();const targetElevation=aim.plush&&aim.distance<stage.claw.grabRadius*1.18?(aim.plush.elevation||0):0;const shaftTarget=40+claw.z*10.5-targetElevation*72;setShaft(shaftTarget);sfx.shaft(true,.78);await sleep(790);if(token!==roundToken)return;
+    const {plush,distance}=aim;stageNode.dataset.clawState='contact';if(plush&&distance<stage.claw.grabRadius*1.08)contactPlush(plush,distance);else{sfx.contact(.3);}await sleep(150);if(token!==roundToken)return;
+    stageNode.dataset.clawState='closing';sfx.clawClose();await sleep(270);if(token!==roundToken)return;
+    const outcome=chooseGrabOutcome({plush,claw,grabRadius:stage.claw.grabRadius});stageNode.dataset.clawState='lifting';setShaft(3.0);sfx.shaft(false,.83,outcome!=='miss');if(outcome!=='miss'&&plush){attach(plush);sfx.catch();}await sleep(outcome==='early-slip'?440:840);if(token!==roundToken)return;
+    if(outcome==='miss'||!plush){setFeedback(c().miss);await resetClaw(token);return;}
+    if(outcome==='early-slip'){sfx.slip(false);setFeedback(c().earlySlip);await fallBack(plush,token,false);await resetClaw(token);return;}
+    stageNode.dataset.clawState='carrying';if(outcome==='late-slip'){
+      const tx=clamp((claw.x+stage.chute.x)/2,stage.claw.minX,stage.claw.maxX),tz=clamp(claw.z+.12,stage.claw.minZ,stage.claw.maxZ);await animateClawTo(tx,tz,620,token);sfx.moveStop();if(token!==roundToken)return;sfx.slip(true);setFeedback(c().lateSlip);await fallBack(plush,token,true);await resetClaw(token);return;
     }
-
-    await sleep(outcome === 'early-slip' ? 380 : 680);
-    if (token !== roundToken) return;
-
-    if (outcome === 'miss' || !plush) {
-      setFeedback(copy().miss, 'miss');
-      await resetClaw(token, 420);
-      return;
-    }
-
-    if (outcome === 'early-slip') {
-      sfx.slip(false);
-      setFeedback(copy().earlySlip, 'slip');
-      detachToPile(plush, plush.x + (Math.random() * 4 - 2), plush.y, plush.rotation + 5);
-      await resetClaw(token, 480);
-      return;
-    }
-
-    if (outcome === 'late-slip') {
-      stageNode.dataset.clawState = 'carrying';
-      setClawX(38, true);
-      moveCarried(plush, 38, 24, 620);
-      await sleep(560);
-      if (token !== roundToken) return;
-      sfx.slip(true);
-      setFeedback(copy().lateSlip, 'slip');
-      detachToPile(plush, 34 + Math.random() * 8, 80, Math.random() * 12 - 6);
-      await resetClaw(token, 520);
-      return;
-    }
-
-    stageNode.dataset.clawState = 'carrying';
-    setFeedback(copy().grip, 'secure');
-    setClawX(stage.chute.dropX, true);
-    moveCarried(plush, stage.chute.dropX, 24, 780);
-    await sleep(760);
-    if (token !== roundToken) return;
-    setShaft(72);
-    moveCarried(plush, stage.chute.dropX, 74, 420);
-    await sleep(420);
-    if (token !== roundToken) return;
-    stageNode.dataset.clawState = 'releasing';
-    plush.node.classList.add('is-chute-drop');
-    moveCarried(plush, stage.chute.dropX, 91, 360);
-    sfx.chute();
-    await sleep(360);
-    if (token !== roundToken) return;
-
-    plush.captured = true;
-    plush.node.classList.add('is-captured');
-    plush.node.classList.remove('is-carried');
-    const value = PLUSH_TYPES[plush.type].value;
-    score += value;
-    persistCapture(plush);
-    sfx.score();
-    setFeedback(`+${value}`, 'score');
-    refreshHud();
-    await resetClaw(token, 520);
+    setFeedback(c().grip);await animateClawTo(stage.chute.x,stage.chute.z,880,token);sfx.moveStop();if(token!==roundToken)return;stageNode.dataset.clawState='releasing';chuteGlow.classList.add('is-active');setShaft(22);sfx.shaft(true,.34);await sleep(350);if(token!==roundToken)return;
+    plush.node.classList.remove('is-carried');attached=null;plush.node.classList.add('is-falling');const cp=projectClaw(claw.x,claw.z);plush.node.style.left='15.4%';plush.node.style.top='61.0%';plush.node.style.setProperty('--scale',String(PLUSH_TYPES[plush.type].scale*.82));sfx.chuteTravel();await sleep(520);if(token!==roundToken)return;plush.node.classList.add('is-captured');plush.captured=true;chuteGlow.classList.remove('is-active');
+    const di=delivery.querySelector('img');di.src=plushSrc(plush);delivery.classList.remove('is-drop');void delivery.offsetWidth;delivery.classList.add('is-drop');sfx.prizeBay();await sleep(380);if(token!==roundToken)return;
+    const value=PLUSH_TYPES[plush.type].value;score+=value;persistState(applyCaptureProgress(getState(),plush.type));sfx.score();setFeedback(`+${value}`);hud();await sleep(420);delivery.classList.remove('is-drop');await resetClaw(token);
   }
 
-  async function resetClaw(token, delay = 480) {
-    stageNode.dataset.clawState = 'resetting';
-    setShaft(7);
-    await sleep(delay);
-    if (token !== roundToken) return;
-    setClawX(stage.claw.homeX, true);
-    await sleep(360);
-    if (token !== roundToken) return;
-    stageNode.dataset.clawState = 'idle';
-    stateName = 'idle';
-    refreshHud();
-    if (expiring) finishRound();
-  }
+  async function resetClaw(token){stageNode.dataset.clawState='resetting';setShaft(3.0);await sleep(360);if(token!==roundToken)return;await animateClawTo(stage.claw.homeX,stage.claw.homeZ,520,token);sfx.moveStop();if(token!==roundToken)return;stageNode.dataset.clawState='idle';stateName='idle';hud();if(expiring)finishRound();}
 
-  function applyShuffleStep() {
-    const now = performance.now();
-    if (!shuffleLastAt) shuffleLastAt = now;
-    const dt = Math.min(0.08, (now - shuffleLastAt) / 1000);
-    shuffleLastAt = now;
-    shuffleRemaining = Math.max(0, shuffleRemaining - dt);
-    stageNode.classList.add('is-shuffling');
-    agitator.classList.add('is-active');
+  function shuffleFrame(now){if(!shuffleHolding||stateName!=='idle'||shuffleRemaining<=0||expiring){stopShuffle();return;}if(!shuffleLast)shuffleLast=now;const dt=Math.min(.05,(now-shuffleLast)/1000);shuffleLast=now;shuffleRemaining=Math.max(0,shuffleRemaining-dt);agitator.classList.add('is-active');shuffleBtn.classList.add('is-active');if(!shuffleStepAt||now-shuffleStepAt>90){shuffleStepAt=now;plushes.filter(p=>!p.captured).forEach((p,i)=>{Object.assign(p,shufflePlush(p,{now,index:i,bounds:stage.pileBounds,intensity:.95}));renderOne(p);});}hud();shuffleRaf=requestAnimationFrame(shuffleFrame);}
+  function startShuffle(e){if(stateName!=='idle'||expiring||shuffleRemaining<=0)return;e?.preventDefault?.();shuffleHolding=true;shuffleLast=0;shuffleStepAt=0;sfx.button(false);sfx.shuffleStart();shuffleRaf=requestAnimationFrame(shuffleFrame);}
+  function stopShuffle(){shuffleHolding=false;if(shuffleRaf)cancelAnimationFrame(shuffleRaf);shuffleRaf=0;shuffleLast=0;agitator.classList.remove('is-active');shuffleBtn.classList.remove('is-active');sfx.shuffleStop();hud();}
+  shuffleBtn.addEventListener('pointerdown',startShuffle);['pointerup','pointercancel','pointerleave'].forEach(ev=>shuffleBtn.addEventListener(ev,stopShuffle));
+  dropBtn.addEventListener('click',()=>void dropSequence(roundToken));
 
-    if (!shuffleTicker || now - shuffleTicker > 260) {
-      shuffleTicker = now;
-      plushes.filter((plush) => !plush.captured && !plush.node.classList.contains('is-carried')).forEach((plush, index) => {
-        const next = shufflePlush(plush, { now, index, bounds: stage.pileBounds });
-        plush.x = next.x; plush.y = next.y; plush.rotation = next.rotation;
-        plush.node.style.setProperty('--x', `${plush.x}%`);
-        plush.node.style.setProperty('--y', `${plush.y}%`);
-        plush.node.style.setProperty('--rot', `${plush.rotation}deg`);
-      });
-      sfx.shufflePulse();
-    }
-    refreshHud();
-    if (shuffleHolding && shuffleRemaining > 0 && stateName === 'idle' && !expiring) {
-      requestAnimationFrame(applyShuffleStep);
-    } else {
-      stopShuffle();
-    }
-  }
+  function tick(token){if(token!==roundToken||completed)return;const prev=Math.ceil(remaining);remaining=Math.max(0,stage.durationSeconds-(performance.now()-startedAt)/1000);const cur=Math.ceil(remaining);if(cur!==prev&&cur<=5&&cur>0)sfx.countdown();music?.setUrgency?.(remaining);hud();if(remaining<=0){clearInterval(timerHandle);timerHandle=0;expiring=true;stopShuffle();releaseJoystick();hud();if(stateName==='idle')finishRound();}}
+  function finishRound(){if(completed)return;completed=true;stateName='finished';stopShuffle();releaseJoystick();clearInterval(timerHandle);timerHandle=0;const rr=applyRoundResult(getState(),{stageId:stage.id,score,targetScore:stage.targetScore});persistState(rr.state);music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();nodes.resultTitle.textContent=`${rr.clear?c().clear:c().fail}${rr.newBest>rr.oldBest?` · ${c().newBest}`:''}`;nodes.resultScore.textContent=String(score);nodes.resultBest.textContent=String(rr.newBest);nodes.resultPoints.textContent=String(Number(getState()?.points)||0);result.hidden=false;rr.clear?sfx.clear():sfx.fail();}
 
-  function startShuffle(event) {
-    if (shuffleRemaining <= 0 || stateName !== 'idle' || expiring) return;
-    event?.preventDefault?.();
-    sfx.button(false);
-    shuffleHolding = true;
-    shuffleLastAt = 0;
-    applyShuffleStep();
-  }
-
-  function stopShuffle() {
-    shuffleHolding = false;
-    shuffleLastAt = 0;
-    stageNode.classList.remove('is-shuffling');
-    agitator.classList.remove('is-active');
-    refreshHud();
-  }
-
-  function tickTimer(token) {
-    if (token !== roundToken || completed) return;
-    const elapsed = (performance.now() - startedAt) / 1000;
-    const previous = Math.ceil(remaining);
-    remaining = Math.max(0, stage.durationSeconds - elapsed);
-    const current = Math.ceil(remaining);
-    if (current !== previous && current <= 5 && current > 0) sfx.countdown();
-    music?.setUrgency?.(remaining);
-    refreshHud();
-    if (remaining <= 0) {
-      window.clearInterval(timerHandle);
-      timerHandle = 0;
-      expiring = true;
-      stopShuffle();
-      refreshHud();
-      if (stateName === 'idle') finishRound();
-    }
-  }
-
-  function finishRound() {
-    if (completed) return;
-    completed = true;
-    stateName = 'finished';
-    stopShuffle();
-    window.clearInterval(timerHandle);
-    timerHandle = 0;
-    const current = getState();
-    const roundResult = applyRoundResult(current, { stageId: stage.id, score, targetScore: stage.targetScore });
-    const { oldBest, newBest, clear } = roundResult;
-    persistState(roundResult.state);
-    music?.unlockTrackAfterRound?.({ applyQueued: true });
-    music?.resetUrgency?.();
-    nodes.resultTitle.textContent = `${clear ? copy().clear : copy().fail}${newBest > oldBest ? ` · ${copy().newBest}` : ''}`;
-    nodes.resultScore.textContent = String(score);
-    nodes.resultBest.textContent = String(newBest);
-    nodes.resultPoints.textContent = String(Number(getState()?.points) || 0);
-    result.hidden = false;
-    if (clear) sfx.clear(); else sfx.fail();
-  }
-
-  function resetRound(stageId = 1, durationOverride = null) {
-    roundToken += 1;
-    stage = { ...getStage(stageId) };
-    if (Number.isFinite(durationOverride) && durationOverride > 0) stage.durationSeconds = durationOverride;
-    plushes = stage.plushes.map((plush) => ({ ...plush, captured: false, node: null }));
-    score = 0;
-    remaining = stage.durationSeconds;
-    shuffleRemaining = stage.shuffleSeconds;
-    clawX = stage.claw.homeX;
-    stateName = 'idle';
-    expiring = false;
-    completed = false;
-    result.hidden = true;
-    feedback.textContent = '';
-    stageNode.dataset.clawState = 'idle';
-    setClawX(clawX, false);
-    setShaft(7);
-    renderPlushes();
-    refreshCopy();
-    refreshHud();
-  }
-
-  function startStage(stageId = 1, options = {}) {
-    stop(false);
-    resetRound(stageId, options.durationSeconds || null);
-    music?.lockTrackForRound?.();
-    startedAt = performance.now();
-    const token = roundToken;
-    timerHandle = window.setInterval(() => tickTimer(token), 200);
-    tickTimer(token);
-  }
-
-  function stop(unlockMusic = true) {
-    roundToken += 1;
-    window.clearInterval(timerHandle);
-    timerHandle = 0;
-    stopShuffle();
-    joystickDirection = 0;
-    cancelAnimationFrame(joystickFrame);
-    joystickFrame = 0;
-    if (unlockMusic) {
-      music?.unlockTrackAfterRound?.({ applyQueued: true });
-      music?.resetUrgency?.();
-    }
-  }
-
-  function moveLoop(now) {
-    if (!joystickLastAt) joystickLastAt = now;
-    const dt = Math.min(0.04, (now - joystickLastAt) / 1000);
-    joystickLastAt = now;
-    if (stateName === 'idle' && !expiring && joystickDirection) {
-      setClawX(clamp(clawX + joystickDirection * 31 * dt, stage.claw.minX, stage.claw.maxX), false);
-    }
-    if (joystickDirection) joystickFrame = requestAnimationFrame(moveLoop);
-    else { joystickFrame = 0; joystickLastAt = 0; }
-  }
-
-  function setJoystick(direction) {
-    joystickDirection = clamp(direction, -1, 1);
-    joystick.style.setProperty('--joy', String(joystickDirection));
-    if (joystickDirection && !joystickFrame) joystickFrame = requestAnimationFrame(moveLoop);
-    if (!joystickDirection) { cancelAnimationFrame(joystickFrame); joystickFrame = 0; joystickLastAt = 0; }
-  }
-
-  function joystickFromPointer(event) {
-    const rect = joystick.getBoundingClientRect();
-    const center = rect.left + rect.width / 2;
-    const normalized = clamp((event.clientX - center) / (rect.width * 0.38), -1, 1);
-    setJoystick(Math.abs(normalized) < 0.16 ? 0 : normalized);
-  }
-
-  joystick.addEventListener('pointerdown', (event) => {
-    if (stateName !== 'idle' || expiring) return;
-    sfx.ensureContext();
-    joystick.setPointerCapture?.(event.pointerId);
-    joystickFromPointer(event);
-  });
-  joystick.addEventListener('pointermove', (event) => { if (joystick.hasPointerCapture?.(event.pointerId)) joystickFromPointer(event); });
-  joystick.addEventListener('pointerup', () => setJoystick(0));
-  joystick.addEventListener('pointercancel', () => setJoystick(0));
-  joystick.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') { event.preventDefault(); setJoystick(-1); }
-    if (event.key === 'ArrowRight') { event.preventDefault(); setJoystick(1); }
-  });
-  joystick.addEventListener('keyup', (event) => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') setJoystick(0); });
-
-  shuffleButton.addEventListener('pointerdown', startShuffle);
-  shuffleButton.addEventListener('pointerup', stopShuffle);
-  shuffleButton.addEventListener('pointercancel', stopShuffle);
-  shuffleButton.addEventListener('pointerleave', (event) => { if (event.buttons) stopShuffle(); });
-  dropButton.addEventListener('click', () => void resolveDrop(roundToken));
-  screen.querySelector('[data-game-menu]').addEventListener('click', () => { sfx.button(false); stop(true); onMenu?.(); });
-  screen.querySelector('[data-result-menu]').addEventListener('click', () => { sfx.button(false); stop(true); onMenu?.(); });
-  screen.querySelector('[data-result-replay]').addEventListener('click', () => { sfx.button(true); startStage(stage.id); });
-
-  resetRound(1);
-  return Object.freeze({ startStage, stop, refreshLanguage: refreshCopy });
+  function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';setShaft(3.0);renderPlushes();setCopy();syncClaw();hud();}
+  function startStage(stageId=1,options={}){stop(false);resetRound(stageId,options.durationSeconds||null);music?.lockTrackForRound?.();startedAt=performance.now();timerHandle=setInterval(()=>tick(roundToken),200);tick(roundToken);}
+  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();attached=null;if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
+  function refreshLanguage(){setCopy();}
+  screen.querySelector('[data-game-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-replay]').addEventListener('click',()=>startStage(stage.id));
+  return {startStage,stop,refreshLanguage};
 }

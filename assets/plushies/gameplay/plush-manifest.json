@@ -1,0 +1,131 @@
+{
+  "version": "1.1",
+  "source": "Approved Stage 1 plush production sheet",
+  "characters": {
+    "shih-tzu-brown": {
+      "displayName": "Signature Shih Tzu",
+      "mouthState": "open-tongue",
+      "weight": 1.0,
+      "gripDifficulty": 0.08,
+      "balance": 0.84,
+      "baseScale": 1.0,
+      "poses": {
+        "front": {
+          "file": "assets/plushies/gameplay/shih-tzu-brown_front.png",
+          "width": 272,
+          "height": 250
+        },
+        "tilt": {
+          "file": "assets/plushies/gameplay/shih-tzu-brown_tilt.png",
+          "width": 263,
+          "height": 250
+        },
+        "rest": {
+          "file": "assets/plushies/gameplay/shih-tzu-brown_rest.png",
+          "width": 376,
+          "height": 203
+        }
+      }
+    },
+    "shih-tzu-black": {
+      "displayName": "Black Shih Tzu",
+      "mouthState": "open-tongue",
+      "weight": 1.06,
+      "gripDifficulty": 0.1,
+      "balance": 0.8,
+      "baseScale": 1.0,
+      "poses": {
+        "front": {
+          "file": "assets/plushies/gameplay/shih-tzu-black_front.png",
+          "width": 279,
+          "height": 246
+        },
+        "tilt": {
+          "file": "assets/plushies/gameplay/shih-tzu-black_tilt.png",
+          "width": 266,
+          "height": 246
+        },
+        "rest": {
+          "file": "assets/plushies/gameplay/shih-tzu-black_rest.png",
+          "width": 377,
+          "height": 205
+        }
+      }
+    },
+    "red-bear": {
+      "displayName": "Red Bear",
+      "mouthState": "closed-smile",
+      "weight": 1.18,
+      "gripDifficulty": 0.13,
+      "balance": 0.72,
+      "baseScale": 1.08,
+      "poses": {
+        "front": {
+          "file": "assets/plushies/gameplay/red-bear_front.png",
+          "width": 268,
+          "height": 252
+        },
+        "tilt": {
+          "file": "assets/plushies/gameplay/red-bear_tilt.png",
+          "width": 307,
+          "height": 252
+        },
+        "rest": {
+          "file": "assets/plushies/gameplay/red-bear_rest.png",
+          "width": 332,
+          "height": 206
+        }
+      }
+    },
+    "yellow-chick": {
+      "displayName": "Yellow Chick",
+      "mouthState": "open-beak",
+      "weight": 0.76,
+      "gripDifficulty": 0.05,
+      "balance": 0.9,
+      "baseScale": 0.91,
+      "poses": {
+        "front": {
+          "file": "assets/plushies/gameplay/yellow-chick_front.png",
+          "width": 276,
+          "height": 235
+        },
+        "tilt": {
+          "file": "assets/plushies/gameplay/yellow-chick_tilt.png",
+          "width": 281,
+          "height": 235
+        },
+        "rest": {
+          "file": "assets/plushies/gameplay/yellow-chick_rest.png",
+          "width": 339,
+          "height": 215
+        }
+      }
+    },
+    "white-bunny": {
+      "displayName": "White Bunny",
+      "mouthState": "closed",
+      "weight": 0.94,
+      "gripDifficulty": 0.09,
+      "balance": 0.78,
+      "baseScale": 1.01,
+      "poses": {
+        "front": {
+          "file": "assets/plushies/gameplay/white-bunny_front.png",
+          "width": 302,
+          "height": 235
+        },
+        "tilt": {
+          "file": "assets/plushies/gameplay/white-bunny_tilt.png",
+          "width": 300,
+          "height": 235
+        },
+        "rest": {
+          "file": "assets/plushies/gameplay/white-bunny_rest.png",
+          "width": 397,
+          "height": 204
+        }
+      }
+    }
+  }
+}
