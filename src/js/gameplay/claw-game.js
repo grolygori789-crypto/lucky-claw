@@ -1,6 +1,6 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.07';
-import { ArcadeSfx } from './sfx.js?v=003.07';
-import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.07';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.08';
+import { ArcadeSfx } from './sfx.js?v=003.08';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.08';
 
 const COPY=Object.freeze({
   en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'LOCKED!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
@@ -11,7 +11,7 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
 function c(){return COPY[lang()]||COPY.en;}
 function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.07`;}
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.08`;}
 function vibrate(pattern){ try{ navigator.vibrate?.(pattern); }catch{} }
 
 function markup(){const t=c();return `
@@ -27,12 +27,15 @@ function markup(){const t=c();return `
   <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
   <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
   <div class="lc-claw-rig" data-game-claw aria-hidden="true">
-    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.07" alt="" draggable="false"></div>
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.08" alt="" draggable="false"></div>
     <div class="lc-claw-shaft"></div>
-    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.07" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.07" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.08" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.08" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
   </div>
   <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="lc-chamber-copy lc-chamber-copy--l" aria-hidden="true"><span>Small<br>Toys</span><b>Big<br>Happiness</b><i>♡</i></div>
+  <div class="lc-chamber-copy lc-chamber-copy--r" aria-hidden="true"><em>Collect<br>all 5!</em><small>♡</small></div>
   <div class="lc-plush-field" data-plush-field></div>
+  <div class="lc-target-marker" data-target-marker aria-hidden="true"><span></span></div>
   <div class="lc-prize-fence" aria-hidden="true"><i></i><i></i></div>
   <div class="lc-glass-overlay" aria-hidden="true"><i class="lc-glass-overlay__edge lc-glass-overlay__edge--l"></i><i class="lc-glass-overlay__edge lc-glass-overlay__edge--r"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--l"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--r"></i></div>
   <div class="lc-chute-glow" data-chute-glow></div>
@@ -52,14 +55,14 @@ function markup(){const t=c();return `
 export function ensureGameplayScreen(){
   let screen=document.querySelector('.screen--gameplay');
   if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
-  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.07';l.dataset.lcGameplayStyle='true';document.head.append(l);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.08';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
 export function createGameplayController({getState,persistState,onMenu,music}){
   const screen=ensureGameplayScreen(), stageNode=screen.querySelector('[data-game-stage]'), field=screen.querySelector('[data-plush-field]'), clawNode=screen.querySelector('[data-game-claw]');
   const joystick=screen.querySelector('[data-game-joystick]'), shuffleBtn=screen.querySelector('[data-game-shuffle]'), dropBtn=screen.querySelector('[data-game-drop]');
-  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), payload=screen.querySelector('[data-claw-payload]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
+  const agitator=screen.querySelector('[data-agitator]'), chuteGlow=screen.querySelector('[data-chute-glow]'), delivery=screen.querySelector('[data-prize-delivery]'), payload=screen.querySelector('[data-claw-payload]'), targetMarker=screen.querySelector('[data-target-marker]'), feedback=screen.querySelector('[data-game-feedback]'), result=screen.querySelector('[data-round-result]');
   const sfx=new ArcadeSfx(()=>getState()?.settings||{});
   const nodes={score:screen.querySelector('[data-game-score]'),target:screen.querySelector('[data-game-target]'),best:screen.querySelector('[data-game-best]'),timer:screen.querySelector('[data-game-timer]'),shuffleLeft:screen.querySelector('[data-shuffle-left]'),resultTitle:screen.querySelector('[data-result-title]'),resultScore:screen.querySelector('[data-result-score]'),resultBest:screen.querySelector('[data-result-best]'),resultPoints:screen.querySelector('[data-result-points]')};
   let stage=getStage(1), plushes=[], score=0, claw={x:stage.claw.homeX,z:stage.claw.homeZ}, stateName='idle', roundToken=0, startedAt=0, remaining=180, shuffleRemaining=15, timerHandle=0, completed=false, expiring=false;
@@ -70,28 +73,40 @@ export function createGameplayController({getState,persistState,onMenu,music}){
   function setFeedback(text){feedback.textContent=text;feedback.classList.remove('is-showing');void feedback.offsetWidth;feedback.classList.add('is-showing');}
   function setShaft(v){stageNode.style.setProperty('--shaft-len',`${v}%`);}
   function nearest(){let best=null,d=Infinity;for(const p of plushes){if(p.captured)continue;const q=worldDistance(p,claw);if(q<d){best=p;d=q;}}return {plush:best,distance:d};}
+  function syncTargetMarker(plush,strength=0){
+    if(!targetMarker)return;
+    if(!plush?.node||!targetId){targetMarker.classList.remove('is-active');return;}
+    const sr=stageNode.getBoundingClientRect(),pr=plush.node.getBoundingClientRect();
+    if(!sr.width||!sr.height||!pr.width){targetMarker.classList.remove('is-active');return;}
+    const left=((pr.left+pr.width*.5-sr.left)/sr.width)*100;
+    const top=((pr.top+pr.height*.46-sr.top)/sr.height)*100;
+    const width=clamp((pr.width/sr.width)*100*.72,8.8,16.2);
+    targetMarker.style.left=`${left}%`;targetMarker.style.top=`${top}%`;targetMarker.style.width=`${width}%`;targetMarker.style.setProperty('--marker-strength',String(strength));
+    targetMarker.classList.add('is-active');
+  }
   function updateTargetHighlight(){
     const {plush,distance}=nearest();
     const next=plush && stateName==='idle' && !expiring && distance<stage.claw.grabRadius*1.32 ? plush.instanceId : '';
     const strength = plush ? clamp(1 - distance/(stage.claw.grabRadius*1.32), 0, 1) : 0;
     targetId=next;
     plushes.forEach(p=>{ if(!p.node) return; const active=p.instanceId===targetId; p.node.classList.toggle('is-targeted',active); p.node.style.setProperty('--target-strength', active ? String(strength) : '0'); });
+    syncTargetMarker(next?plush:null,strength);
   }
   function syncClaw(){const p=projectClaw(claw.x,claw.z);stageNode.style.setProperty('--claw-left',`${p.left}%`);stageNode.style.setProperty('--claw-top',`${p.top}%`);stageNode.style.setProperty('--claw-scale',String(p.scale));stageNode.style.setProperty('--claw-bright',String(.962+claw.z*.058));clawNode.style.zIndex=String(p.zIndex);updateTargetHighlight();}
   function renderOne(plush){const p=projectWorld(plush.x,plush.z),type=PLUSH_TYPES[plush.type];plush.node.style.left=`${p.left}%`;plush.node.style.top=`${p.top-(plush.elevation||0)*100}%`;plush.node.style.zIndex=String(p.zIndex+Math.round((plush.elevation||0)*100));plush.node.style.setProperty('--rot',`${plush.rotation}deg`);plush.node.style.setProperty('--scale',String(type.scale*p.scale));plush.node.style.setProperty('--bright',String(.948+plush.z*.07+(plush.elevation||0)*.18));}
   function renderPlushes(){field.replaceChildren();plushes.forEach(plush=>{const n=document.createElement('div');n.className='lc-plush';n.dataset.plushId=plush.instanceId;const halo=document.createElement('span');halo.className='lc-plush__target';const img=document.createElement('img');img.src=plushSrc(plush);img.alt='';img.draggable=false;n.append(halo,img);plush.node=n;field.append(n);renderOne(plush);});updateTargetHighlight();}
   function computeDropShaft(target){
-    if(!target?.node) return clamp(54+claw.z*8,40,69);
+    if(!target?.node) return clamp(50+claw.z*10,10,69);
     const rigRect=clawNode.getBoundingClientRect();
     const headRect=clawNode.querySelector('.lc-claw-head')?.getBoundingClientRect();
     const plushRect=target.node.getBoundingClientRect();
-    if(!rigRect.height||!headRect?.height||!plushRect.height) return clamp(54+claw.z*8,40,69);
+    if(!rigRect.height||!headRect?.height||!plushRect.height) return clamp(50+claw.z*10,10,69);
     const current=parseFloat(getComputedStyle(stageNode).getPropertyValue('--shaft-len'))||.6;
     // Physical contact: align the visible finger tips with the upper-middle body of the selected plush.
     // The calculation uses rendered DOM geometry, so depth scaling and pose height are already included.
     const contactY=plushRect.top+plushRect.height*.44;
     const deltaPx=contactY-headRect.bottom;
-    return clamp(current+(deltaPx/rigRect.height)*100,34,69);
+    return clamp(current+(deltaPx/rigRect.height)*100,8,69);
   }
 
   function mountPayload(plush){
@@ -185,7 +200,7 @@ export function createGameplayController({getState,persistState,onMenu,music}){
       const aim=nearest();
       const {plush,distance}=aim;
       const targetElevation=plush&&distance<stage.claw.grabRadius*1.22?(plush.elevation||0):0;
-      const shaftTarget=plush ? computeDropShaft(plush) : clamp(55+claw.z*8-targetElevation*24,43,69);
+      const shaftTarget=plush ? computeDropShaft(plush) : clamp(50+claw.z*10-targetElevation*20,10,69);
       setShaft(shaftTarget);
       sfx.shaft(true,.82);
       await sleep(860); if(token!==roundToken)return;
@@ -252,7 +267,7 @@ export function createGameplayController({getState,persistState,onMenu,music}){
 
   function resetRound(stageId=1,durationOverride=null){roundToken+=1;stage={...getStage(stageId)};if(Number.isFinite(durationOverride)&&durationOverride>0)stage.durationSeconds=durationOverride;plushes=stage.plushes.map(p=>({...p,captured:false,node:null}));score=0;remaining=stage.durationSeconds;shuffleRemaining=stage.shuffleSeconds;claw={x:stage.claw.homeX,z:stage.claw.homeZ};stateName='idle';completed=false;expiring=false;attached=null;targetId='';result.hidden=true;delivery.classList.remove('is-drop');stageNode.dataset.clawState='idle';payload?.replaceChildren();setShaft(.6);renderPlushes();setCopy();syncClaw();hud();}
   function startStage(stageId=1,options={}){stop(false);resetRound(stageId,options.durationSeconds||null);music?.lockTrackForRound?.();startedAt=performance.now();timerHandle=setInterval(()=>tick(roundToken),200);tick(roundToken);}
-  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();payload?.replaceChildren();attached=null;targetId='';if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
+  function stop(unlock=true){roundToken+=1;clearInterval(timerHandle);timerHandle=0;stopShuffle();releaseJoystick();payload?.replaceChildren();attached=null;targetId='';targetMarker?.classList.remove('is-active');if(unlock){music?.unlockTrackAfterRound?.({applyQueued:true});music?.resetUrgency?.();}}
   function refreshLanguage(){setCopy();}
   screen.querySelector('[data-game-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-menu]').addEventListener('click',()=>{stop(true);onMenu?.();});screen.querySelector('[data-result-replay]').addEventListener('click',()=>startStage(stage.id));
   return {startStage,stop,refreshLanguage};

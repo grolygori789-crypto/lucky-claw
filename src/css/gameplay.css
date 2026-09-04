@@ -1,16 +1,16 @@
-/* Lucky Claw — Build 003.07 premium Stage 1 presentation */
+/* Lucky Claw — Build 003.08 premium Stage 1 presentation */
 body[data-screen="gameplay"] .cabinet-stage,
 body[data-screen="gameplay"] .cabinet-title-claw-system,
 body[data-screen="gameplay"] .cabinet-title-plush,
 body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-events:none !important; }
 
-.screen--gameplay{z-index:30;display:block;padding:0;overflow:hidden;background:#ead0c6;}
+.screen--gameplay{z-index:30;display:block;padding:0;overflow:hidden;background:radial-gradient(ellipse at 50% 46%,#f7e6de 0%,#ecd4ca 54%,#ddbeb2 100%);}
 .lc-gameplay-stage{
   --claw-left:54%;--claw-top:13.9%;--claw-scale:.90;--shaft-len:.6%;
-  position:absolute;top:50%;left:50%;width:max(100vw,calc(100dvh * 841 / 1870));aspect-ratio:841/1870;
+  position:absolute;top:50%;left:50%;width:min(100vw,calc(100dvh * 841 / 1870));aspect-ratio:841/1870;
   transform:translate(-50%,-50%);overflow:hidden;isolation:isolate;color:#6f463f;
   font-family:ui-rounded,"SF Pro Rounded","Noto Sans Thai","Noto Sans JP",system-ui,sans-serif;
-  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.07") center/100% 100% no-repeat;
+  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.08") center/100% 100% no-repeat;
 }
 .lc-gameplay-stage::before{content:"";position:absolute;z-index:175;inset:0;pointer-events:none;background:
   linear-gradient(90deg,rgba(255,255,255,.10),transparent 8% 91%,rgba(255,255,255,.09)),
@@ -138,12 +138,12 @@ html[lang^="th"] .lc-hud-label{letter-spacing:.035em}
 html[lang^="ja"] .lc-hud-label{letter-spacing:.025em}
 
 /* ========================================================================== */
-/* Build 003.07 — art-directed premium arcade benchmark pass                  */
+/* Build 003.08 — art-directed premium arcade benchmark pass                  */
 /* ========================================================================== */
 .lc-gameplay-stage{
   background-image:
     linear-gradient(180deg,rgba(255,255,255,.035),transparent 16%),
-    url("../../assets/machines/classic/gameplay-cabinet.png?v=003.07");
+    url("../../assets/machines/classic/gameplay-cabinet.png?v=003.08");
 }
 
 /* ruby/gold marquee integrated into the cabinet crown */
@@ -227,3 +227,70 @@ html[lang^="ja"] .lc-hud-label{letter-spacing:.025em}
 @media(max-width:340px){
   .lc-marquee{left:24%;width:52%;}.lc-header-whisper{display:none}.lc-game-hud{top:5.15%;left:3.9%;right:3.9%;gap:1.45%}.lc-console-speaker{opacity:.56;width:5.5%;}
 }
+
+
+/* ========================================================================== */
+/* Build 003.08 — premium rebuild                                             */
+/* ========================================================================== */
+.lc-gameplay-stage{--claw-left:55%;--claw-top:13.6%;--claw-scale:.89;--shaft-len:.6%;}
+.lc-gameplay-stage::before{background:
+  linear-gradient(90deg,rgba(255,255,255,.11),transparent 8% 91%,rgba(255,255,255,.10)),
+  linear-gradient(115deg,transparent 8% 17%,rgba(255,255,255,.11) 23%,transparent 30% 73%,rgba(255,255,255,.07) 78%,transparent 84%),
+  radial-gradient(circle at 50% 13%,rgba(255,244,232,.24),transparent 30%);
+}
+.lc-gameplay-stage::after{left:2.6%;right:2.6%;top:12.6%;height:52.0%;box-shadow:inset 0 0 46px rgba(255,255,255,.10),inset 0 -18px 28px rgba(128,71,61,.05),inset 0 0 0 1px rgba(255,255,255,.10);}
+.lc-marquee{top:.68%;left:24.7%;width:50.8%;height:4.2%;box-shadow:inset 0 0 24px rgba(255,89,95,.28),inset 0 1px rgba(255,240,215,.44),0 4px 8px rgba(82,47,36,.18),0 0 0 2px #e7b76d,0 0 0 4px rgba(255,234,192,.90),0 0 0 5px rgba(117,68,35,.64);}
+.lc-marquee strong{font-size:clamp(16px,4.8vw,31px);}
+.lc-marquee small{margin-top:4px;font-size:clamp(4.5px,1.0vw,6.7px);}
+.lc-header-whisper{top:1.5%;font-size:clamp(3.7px,.84vw,5.6px);color:rgba(143,81,69,.76)}
+.lc-game-menu{top:.78%;right:2.15%;width:6.1%;box-shadow:0 2px 4px rgba(78,39,35,.18),inset 0 1px rgba(255,255,255,.9)}
+.lc-game-hud{top:5.35%;height:6.45%;left:4.35%;right:4.35%;gap:1.95%;}
+.lc-hud-fascia{inset:-10% -1.35% -11%;border-radius:18px;background:linear-gradient(180deg,rgba(255,243,224,.97),rgba(239,202,170,.92));box-shadow:0 4px 10px rgba(77,42,34,.14),inset 0 1px rgba(255,255,255,.97),0 0 0 2px rgba(247,218,179,.78),0 0 0 3px rgba(133,79,43,.42);}
+.lc-hud-module{border-radius:12px;padding:3.3% 4%;background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 18%),radial-gradient(ellipse at 50% 103%,rgba(232,43,68,.44),transparent 54%),linear-gradient(180deg,#801621,#a51f2a 48%,#65111a 100%);}
+.lc-roof-grid{top:12.0%;left:8.0%;right:7.9%;}
+.lc-roof-grid::before,.lc-roof-grid::after{height:5.2%;}
+.lc-claw-rig{height:53%;}
+.lc-claw-head{width:79%;filter:drop-shadow(0 10px 8px rgba(73,42,36,.20));}
+.lc-plush-field{z-index:88;}
+.lc-plush{width:30.6%;filter:brightness(var(--bright,1)) saturate(1.02) drop-shadow(0 11px 8px rgba(83,47,41,.23));}
+.lc-plush__target{top:60%;width:72%;transform:translate(-50%,-50%) scale(.60);background:radial-gradient(circle,rgba(255,250,228,.82) 0,rgba(255,235,152,.54) 20%,rgba(255,222,112,.18) 42%,rgba(255,255,255,0) 70%);border:1.2px solid rgba(255,244,197,.82);box-shadow:0 0 10px rgba(255,213,104,.62),0 0 18px rgba(255,177,115,.24),inset 0 0 10px rgba(255,244,207,.12);}
+.lc-plush.is-targeted .lc-plush__target{opacity:calc(.76 + var(--target-strength, 0) * .24);transform:translate(-50%,-50%) scale(calc(.94 + var(--target-strength, 0) * .22));}
+.lc-plush.is-targeted img{filter:brightness(1.07) drop-shadow(0 0 3px rgba(255,252,231,.86)) drop-shadow(0 0 9px rgba(255,217,105,.64));}
+.lc-chamber-copy{position:absolute;z-index:80;pointer-events:none;user-select:none;}
+.lc-chamber-copy--l{left:18.3%;top:26.5%;display:flex;flex-direction:column;gap:2px;align-items:flex-start;color:rgba(255,236,223,.88);text-shadow:0 0 8px rgba(255,175,145,.52),0 2px 2px rgba(112,63,58,.34)}
+.lc-chamber-copy--l span,.lc-chamber-copy--l b{font-style:italic;font-weight:800;line-height:.95;font-size:clamp(11px,3.0vw,20px)}
+.lc-chamber-copy--l b{font-size:clamp(13px,3.4vw,22px)}
+.lc-chamber-copy--l i{font-style:normal;font-size:clamp(8px,2vw,14px);margin-left:7px}
+.lc-chamber-copy--r{right:17.7%;top:28.9%;display:flex;flex-direction:column;align-items:center;justify-content:center;width:13.5%;height:11.7%;border-radius:4px;background:linear-gradient(180deg,rgba(255,244,239,.62),rgba(242,210,198,.54));border:1px solid rgba(178,124,102,.45);box-shadow:0 2px 6px rgba(95,57,48,.10),inset 0 1px rgba(255,255,255,.74);color:#bc7d6f;transform:rotate(-.8deg)}
+.lc-chamber-copy--r::before{content:"";position:absolute;inset:4%;border-radius:3px;border:1px solid rgba(255,255,255,.45)}
+.lc-chamber-copy--r em{position:relative;z-index:1;font-style:italic;font-weight:800;line-height:1.04;text-align:center;font-size:clamp(7px,1.75vw,11.5px)}
+.lc-chamber-copy--r small{position:relative;z-index:1;font-size:clamp(8px,1.9vw,12px);margin-top:3px}
+.lc-prize-fence{left:8.2%;right:7.0%;top:49.2%;height:14.1%;border-radius:4px 4px 9px 9px;background:linear-gradient(90deg,rgba(255,255,255,.020),rgba(255,255,255,.082) 13%,rgba(255,255,255,.02) 46%,rgba(255,255,255,.075) 84%,rgba(255,255,255,.015));}
+.lc-prize-fence i:first-child{left:15%}.lc-prize-fence i:last-child{right:8%}
+.lc-glass-overlay{left:3.95%;right:3.9%;top:12.75%;height:51.9%;}
+.lc-glass-overlay__shine--l{left:3.7%;width:8.8%;opacity:.72}.lc-glass-overlay__shine--r{right:5%;width:6.2%;opacity:.44}
+.lc-agitator{z-index:70;left:31.2%;width:55.3%;top:57.7%;height:2.45%;opacity:.28;filter:blur(.1px);}
+.lc-agitator::before{left:8%;right:8%;top:27%;bottom:27%;}
+.lc-agitator.is-active{opacity:.62;}
+.lc-control-deck{left:4.0%;right:4.0%;top:65.0%;height:8.8%;gap:2.0%;padding:0 .65%;}
+.lc-control-deck::before{inset:-3% -1%;border-radius:18px;box-shadow:inset 0 1px rgba(255,255,255,.95),inset 0 -2px 5px rgba(128,73,47,.08),0 5px 9px rgba(70,40,33,.13),0 0 0 2px rgba(255,234,207,.45)}
+.lc-joystick__well{width:88%;}
+.lc-joystick__knob{width:44%;}
+.lc-game-timer{height:80%;}
+.lc-game-timer__screen{font-size:clamp(21px,5.7vw,36px);letter-spacing:.065em;}
+.lc-hw-button{height:86%;}
+.lc-hw-button__text{font-size:clamp(6px,1.28vw,8.5px)}
+.lc-prize-out-label{top:84.65%;}
+.lc-prize-delivery{left:24.9%;top:85.8%;width:34.8%;}
+@media(max-width:340px){.lc-chamber-copy--l{left:18%;top:27.2%}.lc-chamber-copy--r{right:16.6%;width:14%;height:11.2%}}
+
+.lc-target-marker{position:absolute;z-index:158;aspect-ratio:1;transform:translate(-50%,-50%) scale(.88);border-radius:50%;pointer-events:none;opacity:0;border:1.4px solid rgba(255,242,179,.90);background:radial-gradient(circle,rgba(255,252,225,.08) 0 42%,rgba(255,223,121,.08) 43% 49%,transparent 50%);box-shadow:0 0 0 1px rgba(177,106,53,.35),0 0 10px rgba(255,218,120,.55),0 0 20px rgba(255,174,111,.23),inset 0 0 9px rgba(255,247,208,.13);transition:left 90ms linear,top 90ms linear,width 90ms ease,opacity 100ms ease,transform 100ms ease;}
+.lc-target-marker::before,.lc-target-marker::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.lc-target-marker::before{width:16%;aspect-ratio:1;border-radius:50%;background:#fff6ca;box-shadow:0 0 7px rgba(255,207,105,.86);}
+.lc-target-marker::after{width:118%;aspect-ratio:1;border-radius:50%;border:1px dashed rgba(255,235,169,.50);}
+.lc-target-marker span::before,.lc-target-marker span::after{content:"";position:absolute;background:linear-gradient(90deg,transparent,#fff0a8,transparent);opacity:.80;}
+.lc-target-marker span::before{left:-9%;right:-9%;top:50%;height:1px;}
+.lc-target-marker span::after{top:-9%;bottom:-9%;left:50%;width:1px;background:linear-gradient(180deg,transparent,#fff0a8,transparent);}
+.lc-target-marker.is-active{opacity:calc(.72 + var(--marker-strength,0)*.28);transform:translate(-50%,-50%) scale(1);animation:lc-marker-breathe 820ms ease-in-out infinite alternate;}
+[data-claw-state]:not([data-claw-state="idle"]) .lc-target-marker{opacity:0!important;}
+@keyframes lc-marker-breathe{to{box-shadow:0 0 0 1px rgba(177,106,53,.42),0 0 13px rgba(255,218,120,.68),0 0 26px rgba(255,174,111,.30),inset 0 0 10px rgba(255,247,208,.16);}}
