@@ -1,4 +1,4 @@
-export const BUILD_TAG = '003.03';
+export const BUILD_TAG = '003.04';
 
 export const PLUSH_TYPES = Object.freeze({
   signature: Object.freeze({ id:'signature', value:120, clawPoints:12, scale:1.00, weight:1.00, difficulty:0.08, balance:0.84, asset:'shih-tzu-brown' }),
@@ -8,25 +8,35 @@ export const PLUSH_TYPES = Object.freeze({
   bunny: Object.freeze({ id:'bunny', value:110, clawPoints:11, scale:1.01, weight:0.94, difficulty:0.09, balance:0.78, asset:'white-bunny' }),
 });
 
-// Dense real-machine pile: four depth layers compressed into 12 visible prizes.
-// z: 0 = rear glass, 1 = front glass.  Left chute exclusion remains x < .22.
 const pile = [
-  // Dense organic mound: overlapping depth, varied elevation and poses. Chute x < .22 stays clear.
-  ['bear',      .44,.18,-9,'tilt', .132],
-  ['black',     .59,.22, 7,'rest', .148],
-  ['bunny',     .75,.27,-6,'tilt', .118],
-  ['signature', .86,.34, 9,'rest', .086],
-  ['chick',     .31,.39,-8,'tilt', .092],
-  ['signature', .47,.43, 6,'front',.106],
-  ['bear',      .64,.46,-7,'front',.122],
-  ['black',     .80,.51, 8,'tilt', .082],
-  ['bunny',     .29,.60, 7,'front',.058],
-  ['black',     .43,.65,-6,'front',.074],
-  ['signature', .59,.69, 5,'tilt', .088],
-  ['bear',      .75,.73,-7,'front',.052],
-  ['chick',     .34,.81, 6,'front',.010],
-  ['bunny',     .54,.84,-6,'rest', .018],
-  ['signature', .78,.87, 4,'front',.000],
+  ['bear',      .33,.16,-11,'tilt', .158],
+  ['black',     .50,.18,  8,'rest', .172],
+  ['bunny',     .66,.19, -8,'tilt', .162],
+  ['signature', .81,.22,  9,'rest', .142],
+
+  ['chick',     .27,.31,-10,'tilt', .128],
+  ['signature', .42,.31,  7,'front',.144],
+  ['bear',      .57,.33, -8,'front',.154],
+  ['black',     .72,.34,  8,'tilt', .145],
+  ['bunny',     .86,.35, -6,'rest', .124],
+
+  ['signature', .26,.46,  7,'tilt', .102],
+  ['black',     .39,.47, -5,'front',.118],
+  ['bunny',     .53,.48,  5,'front',.122],
+  ['bear',      .67,.49, -7,'front',.126],
+  ['signature', .82,.50,  6,'tilt', .112],
+
+  ['chick',     .25,.62,  5,'front',.074],
+  ['bunny',     .39,.64, -6,'rest', .068],
+  ['black',     .54,.66,  7,'front',.072],
+  ['signature', .68,.67, -5,'tilt', .078],
+  ['bear',      .83,.68,  6,'front',.070],
+
+  ['signature', .30,.80,  5,'front',.026],
+  ['chick',     .46,.82, -5,'front',.022],
+  ['bunny',     .60,.84,  4,'rest', .016],
+  ['black',     .74,.85, -4,'front',.014],
+  ['signature', .86,.87,  3,'front',.008],
 ];
 
 export const STAGE_ONE = Object.freeze({
@@ -34,9 +44,9 @@ export const STAGE_ONE = Object.freeze({
   durationSeconds:180,
   targetScore:600,
   shuffleSeconds:15,
-  claw:Object.freeze({ minX:.10, maxX:.90, minZ:.07, maxZ:.91, homeX:.55, homeZ:.28, speedX:.27, speedZ:.25, grabRadius:.122 }),
+  claw:Object.freeze({ minX:.10, maxX:.90, minZ:.07, maxZ:.91, homeX:.55, homeZ:.28, speedX:.27, speedZ:.25, grabRadius:.134 }),
   chute:Object.freeze({ x:.105, z:.80, radius:.12 }),
-  pileBounds:Object.freeze({ minX:.245, maxX:.90, minZ:.12, maxZ:.91 }),
+  pileBounds:Object.freeze({ minX:.235, maxX:.90, minZ:.14, maxZ:.91 }),
   plushes:Object.freeze(pile.map(([type,x,z,rotation,pose,elevation],i)=>Object.freeze({instanceId:`s1-${i+1}`,type,x,z,rotation,pose,elevation}))),
 });
 

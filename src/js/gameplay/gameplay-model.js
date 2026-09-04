@@ -1,19 +1,18 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.03';
+import { PLUSH_TYPES } from './stage-data.js?v=003.04';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
-export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.92); }
-export function depthScale(z){ return 0.82 + clamp(z,0,1)*0.30; }
+export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
+export function depthScale(z){ return 0.80 + clamp(z,0,1)*0.34; }
 export function projectWorld(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
-  // Perspective converges toward rear wall; front prizes are larger and sit lower.
-  const width=76.5 + zz*5.0;
+  const width=74.8 + zz*7.2;
   const left=50 + (xx-.5)*width;
-  return { left, top: 49.2 + zz*13.65, scale: depthScale(zz), zIndex: 42 + Math.round(zz*68) };
+  return { left, top: 47.1 + zz*15.0, scale: depthScale(zz), zIndex: 42 + Math.round(zz*72) };
 }
 export function projectClaw(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
-  const width=75.8 + zz*4.8;
+  const width=75.4 + zz*5.8;
   const left=50 + (xx-.5)*width;
-  return { left, top: 12.55 + zz*5.15, scale: 0.84 + zz*0.16, zIndex: 126 + Math.round(zz*14) };
+  return { left, top: 12.1 + zz*5.45, scale: 0.83 + zz*0.17, zIndex: 126 + Math.round(zz*16) };
 }
 export function chooseGrabOutcome({plush,claw,grabRadius,random=Math.random}){
   if(!plush) return 'miss';
@@ -21,22 +20,29 @@ export function chooseGrabOutcome({plush,claw,grabRadius,random=Math.random}){
   if(d>grabRadius) return 'miss';
   const type=PLUSH_TYPES[plush.type];
   const quality=clamp(1-d/grabRadius,0,1);
-  const centerBias=clamp(1-Math.abs((plush.rotation||0))/36,0.68,1);
-  const secureChance=clamp(.09+quality*.83+type.balance*.09-type.difficulty-(type.weight-1)*.11, .05,.92)*centerBias;
+  const centerBias=clamp(1-Math.abs((plush.rotation||0))/36,0.70,1);
+  const elevationBias=clamp(1 + (plush.elevation||0)*1.6, 1, 1.25);
+  const secureChance=clamp(.12+quality*.86+type.balance*.11-type.difficulty-(type.weight-1)*.10, .08,.94)*centerBias*elevationBias;
   const roll=clamp(Number(random())||0,0,.999999);
   if(roll<secureChance) return 'secure';
-  if(quality>.53 && roll<secureChance+.28) return 'late-slip';
-  if(quality>.22) return 'early-slip';
+  if(quality>.55 && roll<secureChance+.24) return 'late-slip';
+  if(quality>.24) return 'early-slip';
   return 'miss';
 }
 export function shufflePlush(plush,{now,index,bounds,intensity=1}){
   const type=PLUSH_TYPES[plush.type];
-  const phase=now/270+index*1.81;
+  const phase=now/245+index*1.79;
   const mobility=(1/type.weight)*(.85+type.balance*.2)*intensity;
-  const dx=Math.sin(phase)*.0085*mobility + Math.sin(phase*.43)*.004;
-  const dz=Math.cos(phase*.79)*.0065*mobility;
-  const de=Math.sin(phase*.61+index)*.0014*mobility;
-  return {...plush,x:clamp(plush.x+dx,bounds.minX,bounds.maxX),z:clamp(plush.z+dz,bounds.minZ,bounds.maxZ),elevation:clamp((plush.elevation||0)+de,0,.095),rotation:clamp(plush.rotation+Math.sin(phase*1.13)*1.45*mobility,-16,16)};
+  const dx=Math.sin(phase)*.010*mobility + Math.sin(phase*.41)*.0046;
+  const dz=Math.cos(phase*.77)*.008*mobility;
+  const de=Math.sin(phase*.59+index)*.0018*mobility;
+  return {
+    ...plush,
+    x:clamp(plush.x+dx,bounds.minX,bounds.maxX),
+    z:clamp(plush.z+dz,bounds.minZ,bounds.maxZ),
+    elevation:clamp((plush.elevation||0)+de,0,.18),
+    rotation:clamp(plush.rotation+Math.sin(phase*1.11)*1.8*mobility,-18,18)
+  };
 }
 export function applyCaptureProgress(current,plushType,now=Date.now()){
   const type=PLUSH_TYPES[plushType]; if(!type) return current;
