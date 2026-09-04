@@ -1,12 +1,12 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.06';
+import { PLUSH_TYPES } from './stage-data.js?v=003.07';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
-export function depthScale(z){ return 0.80 + clamp(z,0,1)*0.34; }
+export function depthScale(z){ return 0.84 + clamp(z,0,1)*0.30; }
 export function projectWorld(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
-  const width=74.8 + zz*7.2;
+  const width=75.8 + zz*6.4;
   const left=50 + (xx-.5)*width;
-  return { left, top: 47.1 + zz*15.0, scale: depthScale(zz), zIndex: 42 + Math.round(zz*72) };
+  return { left, top: 47.4 + zz*14.4, scale: depthScale(zz), zIndex: 42 + Math.round(zz*72) };
 }
 export function projectClaw(x,z){
   const zz=clamp(z,0,1), xx=clamp(x,0,1);
@@ -18,11 +18,12 @@ export function projectClaw(x,z){
 // front prizes cannot occupy its physical footprint or perch on the chute wall.
 export function leftPileBoundary(z,bounds={}){
   const zz=clamp(z,0,1);
-  const base=bounds.minX ?? .28;
-  if(zz>=.76) return Math.max(base,.45);
-  if(zz>=.62) return Math.max(base,.40);
-  if(zz>=.46) return Math.max(base,.35);
-  if(zz>=.30) return Math.max(base,.30);
+  const base=bounds.minX ?? .235;
+  // The acrylic chute rises only at the front-left. Rear prizes may be visible behind it.
+  if(zz>=.76) return Math.max(base,.445);
+  if(zz>=.62) return Math.max(base,.37);
+  if(zz>=.48) return Math.max(base,.30);
+  if(zz>=.32) return Math.max(base,.245);
   return base;
 }
 export function constrainPlushToPile(plush,bounds={}){
@@ -32,7 +33,7 @@ export function constrainPlushToPile(plush,bounds={}){
     ...plush,
     x:clamp(plush.x,minX,bounds.maxX ?? .89),
     z,
-    elevation:clamp(plush.elevation ?? 0,0,.038),
+    elevation:clamp(plush.elevation ?? 0,0,.055),
     rotation:clamp(plush.rotation ?? 0,-18,18)
   };
 }
@@ -57,7 +58,7 @@ export function shufflePlush(plush,{now,index,bounds,intensity=1}){
   const mobility=(1/type.weight)*(.85+type.balance*.2)*intensity;
   const dx=Math.sin(phase)*.0092*mobility + Math.sin(phase*.41)*.0040;
   const dz=Math.cos(phase*.77)*.0073*mobility;
-  const de=Math.sin(phase*.59+index)*.00065*mobility;
+  const de=Math.sin(phase*.59+index)*.00026*mobility;
   return constrainPlushToPile({
     ...plush,
     x:plush.x+dx,

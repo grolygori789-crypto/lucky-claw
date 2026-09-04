@@ -1,4 +1,4 @@
-/* Lucky Claw — Build 003.06 premium Stage 1 presentation */
+/* Lucky Claw — Build 003.07 premium Stage 1 presentation */
 body[data-screen="gameplay"] .cabinet-stage,
 body[data-screen="gameplay"] .cabinet-title-claw-system,
 body[data-screen="gameplay"] .cabinet-title-plush,
@@ -10,7 +10,7 @@ body[data-screen="gameplay"] .cabinet-controls { opacity:0 !important; pointer-e
   position:absolute;top:50%;left:50%;width:max(100vw,calc(100dvh * 841 / 1870));aspect-ratio:841/1870;
   transform:translate(-50%,-50%);overflow:hidden;isolation:isolate;color:#6f463f;
   font-family:ui-rounded,"SF Pro Rounded","Noto Sans Thai","Noto Sans JP",system-ui,sans-serif;
-  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.06") center/100% 100% no-repeat;
+  background:url("../../assets/machines/classic/gameplay-cabinet.png?v=003.07") center/100% 100% no-repeat;
 }
 .lc-gameplay-stage::before{content:"";position:absolute;z-index:175;inset:0;pointer-events:none;background:
   linear-gradient(90deg,rgba(255,255,255,.10),transparent 8% 91%,rgba(255,255,255,.09)),
@@ -136,3 +136,94 @@ html[lang^="th"] .lc-hw-button__text{font-size:clamp(4.8px,1.08vw,7.4px)}
 html[lang^="ja"] .lc-hw-button__text{font-size:clamp(4.7px,1.05vw,7.2px)}
 html[lang^="th"] .lc-hud-label{letter-spacing:.035em}
 html[lang^="ja"] .lc-hud-label{letter-spacing:.025em}
+
+/* ========================================================================== */
+/* Build 003.07 — art-directed premium arcade benchmark pass                  */
+/* ========================================================================== */
+.lc-gameplay-stage{
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 16%),
+    url("../../assets/machines/classic/gameplay-cabinet.png?v=003.07");
+}
+
+/* ruby/gold marquee integrated into the cabinet crown */
+.lc-marquee{
+  position:absolute;z-index:194;left:25.2%;top:.72%;width:49.6%;height:3.95%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:46% 46% 28% 28% / 54% 54% 30% 30%;overflow:hidden;pointer-events:none;
+  color:#fff1d2;border:1px solid rgba(113,57,27,.88);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.20),transparent 22%),
+    radial-gradient(ellipse at 50% 105%,rgba(215,44,54,.52),transparent 56%),
+    linear-gradient(180deg,#7d151e 0%,#a01f29 48%,#64111a 100%);
+  box-shadow:
+    inset 0 0 18px rgba(255,89,95,.24),inset 0 1px rgba(255,240,215,.42),
+    0 3px 6px rgba(82,47,36,.15),0 0 0 2px #e7b76d,0 0 0 4px rgba(255,234,192,.86),0 0 0 5px rgba(117,68,35,.60);
+}
+.lc-marquee::before{content:"";position:absolute;left:7%;right:7%;top:7%;height:28%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.24),transparent);}
+.lc-marquee strong{position:relative;z-index:2;font-family:"URW Chancery L","Apple Chancery","Segoe Script",cursive;font-size:clamp(15px,4.45vw,30px);font-weight:800;line-height:.82;letter-spacing:.015em;color:#ffe6a7;text-shadow:0 0 8px rgba(255,187,111,.58),0 2px 1px rgba(79,20,19,.75);white-space:nowrap;}
+.lc-marquee small{position:relative;z-index:2;margin-top:5px;font-size:clamp(4.2px,.94vw,6.4px);font-weight:900;letter-spacing:.145em;color:#fff5df;text-shadow:0 1px 2px rgba(65,14,17,.7);white-space:nowrap;}
+.lc-marquee__star{position:absolute;z-index:2;left:8%;top:35%;font-size:clamp(7px,1.8vw,12px);color:#fff0b7;text-shadow:0 0 7px rgba(255,210,123,.75)}
+.lc-marquee__star--r{left:auto;right:8%;}
+.lc-header-whisper{position:absolute;z-index:193;top:1.58%;max-width:18%;font-size:clamp(3.7px,.82vw,5.4px);line-height:1.25;font-weight:800;letter-spacing:.05em;color:rgba(128,72,62,.72);pointer-events:none;}
+.lc-header-whisper--l{left:7%;text-align:left}.lc-header-whisper--r{right:8%;text-align:right;font-style:italic;}
+
+/* HUD lowered just enough to create the same marquee > HUD hierarchy as the benchmark */
+.lc-game-hud{top:5.25%;height:6.35%;left:4.6%;right:4.6%;gap:2.05%;}
+.lc-hud-fascia{inset:-11% -1.25% -11%;border-radius:17px;background:linear-gradient(180deg,rgba(255,243,224,.95),rgba(239,202,170,.90));box-shadow:0 4px 10px rgba(77,42,34,.13),inset 0 1px rgba(255,255,255,.95),0 0 0 2px rgba(247,218,179,.72),0 0 0 3px rgba(133,79,43,.36);}
+.lc-hud-module{border-radius:11px;padding:3% 4%;box-shadow:inset 0 0 23px rgba(255,75,88,.25),inset 0 1px rgba(255,234,217,.36),0 3px 7px rgba(65,30,28,.17),0 0 0 2px #f5d08d,0 0 0 3px rgba(120,67,34,.72),0 0 0 5px rgba(255,240,213,.58);}
+.lc-hud-value{text-shadow:0 0 10px rgba(255,238,208,.40),0 2px 2px rgba(47,12,15,.58);}
+.lc-game-menu{top:.72%;right:2.35%;width:6.4%;z-index:210;background:linear-gradient(180deg,rgba(255,250,244,.96),rgba(247,219,209,.94));}
+
+/* deeper roof rails, like a real commercial cabinet */
+.lc-roof-grid{top:12.25%;left:8.5%;right:8.4%;opacity:1;}
+.lc-roof-grid::before,.lc-roof-grid::after{height:5%;background:linear-gradient(180deg,#fff9df 0%,#efcb82 14%,#94603b 37%,#f8dc98 63%,#71492f 100%);box-shadow:0 2px 5px rgba(58,35,29,.22),inset 0 1px rgba(255,255,255,.92);}
+
+/* dense plush mound: large hero prizes in front, compressed crown behind */
+.lc-plush{width:28.7%;filter:brightness(var(--bright,1)) saturate(1.015) drop-shadow(0 10px 7px rgba(83,47,41,.22));}
+.lc-plush-field{z-index:86;}
+
+/* clear acrylic retaining wall in front of the mound */
+.lc-prize-fence{position:absolute;z-index:116;left:9.0%;right:8.1%;top:50.2%;height:12.9%;border-radius:3px 3px 8px 8px;pointer-events:none;
+  border-left:1px solid rgba(179,110,67,.42);border-right:1px solid rgba(179,110,67,.42);border-bottom:1px solid rgba(179,110,67,.54);
+  background:linear-gradient(90deg,rgba(255,255,255,.025),rgba(255,255,255,.075) 13%,rgba(255,255,255,.018) 48%,rgba(255,255,255,.06) 86%,rgba(255,255,255,.015));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 2px 3px rgba(91,54,42,.04);}
+.lc-prize-fence::before{content:"";position:absolute;left:-.6%;right:-.6%;top:-1px;height:2px;border-radius:999px;background:linear-gradient(180deg,#ffe9b6,#b4763d 48%,#f9d18a);box-shadow:0 1px 2px rgba(79,45,33,.18);}
+.lc-prize-fence i{position:absolute;top:-2px;width:1.4%;height:102%;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.62),rgba(187,112,67,.28),rgba(255,255,255,.34));opacity:.52;}
+.lc-prize-fence i:first-child{left:14%}.lc-prize-fence i:last-child{right:7%;}
+
+/* the floor mixing assembly is real hardware but visually buried under a full pile */
+.lc-agitator{z-index:73;left:29.0%;width:59.5%;top:57.35%;height:3.05%;opacity:.48;border-radius:7px;}
+.lc-agitator::before{left:7%;right:7%;top:25%;bottom:25%;}
+.lc-agitator.is-active{opacity:.90;}
+
+/* richer cabinet glass without muting plush colors */
+.lc-glass-overlay{z-index:171;left:4.1%;right:4.0%;top:12.95%;height:51.6%;}
+.lc-glass-overlay::before{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012) 16%,rgba(255,255,255,0) 47%,rgba(255,221,231,.035) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);}
+.lc-glass-overlay__shine--l{left:4%;width:8%;opacity:.70}.lc-glass-overlay__shine--r{right:6%;width:6%;opacity:.42}
+
+/* full-width commercial control plate: one physical surface, not floating web cards */
+.lc-control-deck{z-index:190;left:4.25%;right:4.25%;top:65.0%;height:8.85%;grid-template-columns:1.08fr 1.48fr .94fr .94fr;gap:2.15%;padding:0 .7%;isolation:isolate;}
+.lc-control-deck::before{content:"";position:absolute;z-index:-1;inset:-3% -1.3%;border-radius:16px;border:1px solid rgba(144,87,49,.53);
+  background:linear-gradient(180deg,rgba(255,248,237,.90),rgba(239,207,183,.89) 52%,rgba(248,227,207,.90));
+  box-shadow:inset 0 1px rgba(255,255,255,.95),inset 0 -2px 5px rgba(128,73,47,.08),0 5px 9px rgba(70,40,33,.12),0 0 0 2px rgba(255,234,207,.44);}
+.lc-control-deck::after{content:"";position:absolute;z-index:-1;left:1.2%;right:1.2%;top:6%;height:26%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.30),transparent);pointer-events:none;}
+.lc-joystick{height:93%;}
+.lc-joystick__well{width:86%;top:58%;background:radial-gradient(ellipse at 50% 43%,#171515 0 23%,#42322c 25% 31%,#a56b39 33% 37%,#f6d58d 39% 51%,#a16635 53% 58%,#fff0ce 61% 100%);box-shadow:inset 0 6px 10px rgba(36,25,22,.37),0 4px 8px rgba(72,42,35,.16),0 0 0 2px rgba(255,234,199,.55);}
+.lc-joystick__knob{width:43%;background:radial-gradient(circle at 31% 23%,#fff 0 7%,#ffd9e5 10%,#f38eaf 38%,#d24f7e 66%,#8d315a 87%,#e787aa 100%);box-shadow:0 7px 10px rgba(78,42,45,.22),inset 0 3px 3px rgba(255,255,255,.84),0 0 0 2px rgba(255,221,229,.32);}
+.lc-game-timer{height:78%;border-radius:11px;background:linear-gradient(180deg,#f8dca8 0%,#9f602f 43%,#f3ce91 100%);box-shadow:0 4px 8px rgba(76,43,35,.16),inset 0 1px rgba(255,255,255,.90),0 0 0 2px rgba(255,232,197,.58);}
+.lc-game-timer__screen{border-radius:7px;background:linear-gradient(180deg,rgba(255,255,255,.11),transparent 20%),radial-gradient(ellipse at 50% 108%,rgba(236,43,69,.48),transparent 52%),linear-gradient(180deg,#5d1019,#8e1424 47%,#4b0c16);box-shadow:inset 0 0 22px rgba(255,66,91,.36),inset 0 1px rgba(255,220,210,.23),0 1px rgba(255,255,255,.55);}
+.lc-hw-button{height:84%;}
+.lc-hw-button::before{inset:0;border:1px solid rgba(122,72,36,.50);background:linear-gradient(145deg,#fff0c9 0%,#dba35c 34%,#9b5a29 66%,#ffe0a0 100%);box-shadow:0 6px 9px rgba(67,38,31,.20),inset 0 1px rgba(255,255,255,.90),0 0 0 2px rgba(255,232,194,.50);}
+.lc-hw-button__cap{inset:8.5%;background:radial-gradient(circle at 31% 22%,#fff 0 7%,#ffd9e5 10%,#ef8cae 38%,#d05682 65%,#963c66 87%,#e78aaa 100%);box-shadow:0 5px 7px rgba(69,39,42,.22),inset 0 4px 4px rgba(255,255,255,.74),inset 0 -4px 7px rgba(89,31,55,.18);}
+.lc-hw-button--shuffle .lc-hw-button__cap{background:radial-gradient(circle at 31% 22%,#fff 0 7%,#f5d9e2 11%,#d99fb5 40%,#b36d90 67%,#81516c 88%,#d8a1b6 100%);}
+.lc-console-speaker{position:absolute;z-index:5;left:56.7%;top:50%;width:6.4%;height:38%;transform:translate(-50%,-50%);pointer-events:none;opacity:.82;background:radial-gradient(circle,#5c4038 0 19%,transparent 22%) 0 0/7px 7px;filter:drop-shadow(0 1px rgba(255,255,255,.55));}
+
+/* premium prize-bay labeling; delivered plush renders above it */
+.lc-prize-out-label{position:absolute;z-index:172;left:25%;top:84.7%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none;color:rgba(255,228,225,.85);text-shadow:0 0 5px rgba(255,117,137,.34),0 1px 2px rgba(78,34,34,.50);}
+.lc-prize-out-label strong{font-size:clamp(7px,1.75vw,11.5px);font-weight:900;letter-spacing:.075em;}.lc-prize-out-label span{font-size:clamp(8px,2vw,13px);line-height:.75;}
+.lc-prize-delivery{left:25%;top:85.9%;width:31.5%;z-index:178;}
+
+@media(max-width:340px){
+  .lc-marquee{left:24%;width:52%;}.lc-header-whisper{display:none}.lc-game-hud{top:5.15%;left:3.9%;right:3.9%;gap:1.45%}.lc-console-speaker{opacity:.56;width:5.5%;}
+}

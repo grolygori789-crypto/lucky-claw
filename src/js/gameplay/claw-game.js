@@ -1,6 +1,6 @@
-import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.06';
-import { ArcadeSfx } from './sfx.js?v=003.06';
-import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.06';
+import { getStage, PLUSH_TYPES } from './stage-data.js?v=003.07';
+import { ArcadeSfx } from './sfx.js?v=003.07';
+import { clamp, worldDistance, projectWorld, projectClaw, chooseGrabOutcome, shufflePlush, applyCaptureProgress, applyRoundResult } from './gameplay-model.js?v=003.07';
 
 const COPY=Object.freeze({
   en:{score:'SCORE',stage:'STAGE',min:'MIN SCORE',high:'HIGH SCORE',move:'MOVE',shuffle:'SHUFFLE',drop:'DROP',menu:'MENU',clear:'STAGE CLEAR',fail:'TIME UP',replay:'PLAY AGAIN',points:'CLAW POINTS',newBest:'NEW HIGH SCORE',time:'TIME',grip:'LOCKED!',lateSlip:'SO CLOSE!',earlySlip:'SLIPPED!',miss:'MISSED!'},
@@ -11,11 +11,14 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 function lang(){const l=(document.documentElement.lang||'en').toLowerCase();return l.startsWith('th')?'th':l.startsWith('ja')?'ja':'en';}
 function c(){return COPY[lang()]||COPY.en;}
 function fmt(sec){const s=Math.max(0,Math.ceil(sec));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.06`;}
+function plushSrc(plush){const t=PLUSH_TYPES[plush.type];return `./assets/plushies/gameplay/${t.asset}_${plush.pose||'front'}.png?v=003.07`;}
 function vibrate(pattern){ try{ navigator.vibrate?.(pattern); }catch{} }
 
 function markup(){const t=c();return `
 <div class="lc-gameplay-stage" data-game-stage data-claw-state="idle">
+  <div class="lc-marquee" aria-hidden="true"><span class="lc-marquee__star">✦</span><strong>Lucky Claw</strong><small>CATCH A LITTLE HAPPINESS</small><span class="lc-marquee__star lc-marquee__star--r">✦</span></div>
+  <div class="lc-header-whisper lc-header-whisper--l" aria-hidden="true">PLAY · SMILE · COLLECT · REPEAT</div>
+  <div class="lc-header-whisper lc-header-whisper--r" aria-hidden="true">GOOD THINGS COME TO YOU</div>
   <div class="lc-game-hud" aria-label="Game status"><span class="lc-hud-fascia" aria-hidden="true"></span>
     <div class="lc-hud-module lc-hud-score"><span class="lc-hud-label" data-copy-score>${t.score}</span><strong class="lc-hud-value" data-game-score>0</strong></div>
     <div class="lc-hud-module lc-hud-stage"><span class="lc-hud-label" data-copy-stage>${t.stage}</span><strong class="lc-hud-value" data-game-stage-value>1</strong></div>
@@ -24,19 +27,22 @@ function markup(){const t=c();return `
   <button class="lc-game-menu" type="button" data-game-menu aria-label="${t.menu}">×</button>
   <div class="lc-roof-grid" aria-hidden="true"><i class="lc-roof-side lc-roof-side--l"></i><i class="lc-roof-side lc-roof-side--r"></i></div>
   <div class="lc-claw-rig" data-game-claw aria-hidden="true">
-    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.06" alt="" draggable="false"></div>
+    <div class="lc-claw-carriage"><img src="./assets/machines/classic/gameplay-carriage.png?v=003.07" alt="" draggable="false"></div>
     <div class="lc-claw-shaft"></div>
-    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.06" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.06" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
+    <div class="lc-claw-head"><img class="lc-claw-head__fixed" src="./assets/machines/classic/gameplay-claw-head.png?v=003.07" alt="" draggable="false"><img class="lc-claw-head__arms" src="./assets/machines/classic/gameplay-claw-head.png?v=003.07" alt="" draggable="false"><div class="lc-claw-payload" data-claw-payload></div></div>
   </div>
   <div class="lc-agitator" data-agitator aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="lc-plush-field" data-plush-field></div>
+  <div class="lc-prize-fence" aria-hidden="true"><i></i><i></i></div>
   <div class="lc-glass-overlay" aria-hidden="true"><i class="lc-glass-overlay__edge lc-glass-overlay__edge--l"></i><i class="lc-glass-overlay__edge lc-glass-overlay__edge--r"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--l"></i><i class="lc-glass-overlay__shine lc-glass-overlay__shine--r"></i></div>
   <div class="lc-chute-glow" data-chute-glow></div>
   <div class="lc-prize-delivery" data-prize-delivery><img alt="" draggable="false"></div>
+  <div class="lc-prize-out-label" aria-hidden="true"><strong>PRIZE OUT</strong><span>⌄</span></div>
   <div class="lc-feedback" data-game-feedback aria-live="polite"></div>
   <div class="lc-control-deck">
     <div class="lc-joystick" data-game-joystick role="application" tabindex="0" aria-label="${t.move}"><span class="lc-joystick__well"></span><span class="lc-joystick__arrow lc-joystick__arrow--up">▲</span><span class="lc-joystick__arrow lc-joystick__arrow--right">▶</span><span class="lc-joystick__arrow lc-joystick__arrow--down">▼</span><span class="lc-joystick__arrow lc-joystick__arrow--left">◀</span><span class="lc-joystick__stem"></span><span class="lc-joystick__knob"></span><span class="lc-control-label" data-copy-move>${t.move}</span></div>
     <div class="lc-game-timer"><span class="lc-timer-label" data-copy-time>${t.time}</span><div class="lc-game-timer__screen" data-game-timer>03:00</div></div>
+    <span class="lc-console-speaker" aria-hidden="true"></span>
     <button class="lc-hw-button lc-hw-button--shuffle" type="button" data-game-shuffle><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h3.2c4.7 0 5.4 10 10.8 10H21"/><path d="m18 14 3 3-3 3"/><path d="M5 17h3.2c1.8 0 3.1-1.7 4.2-3.7M14.2 10.7C15.5 8.4 16.8 7 19 7h2"/><path d="m18 4 3 3-3 3"/></svg></span><span class="lc-hw-button__text" data-copy-shuffle>${t.shuffle}</span></span><span class="lc-shuffle-budget" data-shuffle-left>15</span></button>
     <button class="lc-hw-button lc-hw-button--drop" type="button" data-game-drop><span class="lc-hw-button__cap"><span class="lc-hw-button__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 11.5 4.5 4.6 4.5-4.6"/><path d="M6 20h12"/></svg></span><span class="lc-hw-button__text" data-copy-drop>${t.drop}</span></span></button>
   </div>
@@ -46,7 +52,7 @@ function markup(){const t=c();return `
 export function ensureGameplayScreen(){
   let screen=document.querySelector('.screen--gameplay');
   if(!screen){screen=document.createElement('section');screen.className='screen screen--gameplay';screen.dataset.screen='gameplay';screen.setAttribute('aria-label','Lucky Claw gameplay');screen.setAttribute('aria-hidden','true');screen.innerHTML=markup();document.querySelector('#app')?.append(screen);}
-  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.06';l.dataset.lcGameplayStyle='true';document.head.append(l);}
+  if(!document.querySelector('link[data-lc-gameplay-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./src/css/gameplay.css?v=003.07';l.dataset.lcGameplayStyle='true';document.head.append(l);}
   return screen;
 }
 
@@ -68,7 +74,6 @@ export function createGameplayController({getState,persistState,onMenu,music}){
     const {plush,distance}=nearest();
     const next=plush && stateName==='idle' && !expiring && distance<stage.claw.grabRadius*1.32 ? plush.instanceId : '';
     const strength = plush ? clamp(1 - distance/(stage.claw.grabRadius*1.32), 0, 1) : 0;
-    if(next===targetId) return;
     targetId=next;
     plushes.forEach(p=>{ if(!p.node) return; const active=p.instanceId===targetId; p.node.classList.toggle('is-targeted',active); p.node.style.setProperty('--target-strength', active ? String(strength) : '0'); });
   }
