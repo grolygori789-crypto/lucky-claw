@@ -1,4 +1,4 @@
-import { PLUSH_TYPES } from './stage-data.js?v=003.10';
+import { PLUSH_TYPES } from './stage-data.js?v=003.11';
 export const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
 export function worldDistance(a,b){ return Math.hypot((a?.x??0)-(b?.x??0),((a?.z??0)-(b?.z??0))*0.90); }
 export function depthScale(z){ return 0.83 + clamp(z,0,1)*0.34; }

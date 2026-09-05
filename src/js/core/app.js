@@ -8,10 +8,10 @@ import { bindLanguageScreen } from '../screens/language.js?v=001.20';
 import { runSplash } from '../screens/splash.js?v=001.20';
 import { bindMainMenu } from '../screens/main-menu.js?v=002.03';
 import { bindSettingsScreen, createToast } from '../screens/settings.js?v=002.03';
-import { createGameplayController, ensureGameplayScreen } from '../gameplay/claw-game.js?v=003.10';
+import { createGameplayController, ensureGameplayScreen } from '../gameplay/claw-game.js?v=003.11';
 import { createHowToGuide } from '../gameplay/howto-guide.js?v=003.09';
 
-const BUILD_ID = '003.10';
+const BUILD_ID = '003.11';
 
 // Gameplay is appended before the screen registry is captured. Existing HTML stays untouched.
 ensureGameplayScreen();
